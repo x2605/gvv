@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.1
-Date: 2020-09-06
+Date: 2020-09-05
 
   Changes:
     - Remote code(Which I recommended to paste in remote mod/map's control.lua) is changed to shorter code referring the code inside of gvv mod. Then it doesn't need to update your remote code by hand anymore when gvv provide updated remote code. Thanks for giving me this idea.
