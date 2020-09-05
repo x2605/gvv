@@ -7,5 +7,5 @@
   "homepage": "https://github.com/x2605/gvv",
   "factorio_version": "1.0",
   "dependencies": [],
-  "description": "This is a debugging tool. This mod adds commands and a hotkey(Ctrl+Shift+V) to allow you to check global table of map or each mods. Only admins can use command if it is multiplay game.\n\nYou have to edit \"control.lua\" of other mod or map to access global table of the mod or map. See \"Helper\" tab for instructions."
+  "description": "This is a debugging tool. This mod adds commands /gvv and others and a hotkey(Ctrl+Shift+V) to allow you to check global table of map or each mods. Only admins can use command if it is multiplay game.\n\nYou have to edit \"control.lua\" of other mod or map to access global table of the mod or map. See \"Helper\" tab for instructions."
 }
