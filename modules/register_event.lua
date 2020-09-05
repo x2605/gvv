@@ -1,4 +1,4 @@
---ÀÌº¥Æ® µî·Ï
+--ì´ë²¤íŠ¸ ë“±ë¡
 
 local Load = require('modules.load')
 local Gui_Event = require('modules.gui_event')

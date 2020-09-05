@@ -380,6 +380,13 @@ Gui.change_tab = function(g, index)
     g.gui.track_inter_show.visible = false
     g.gui.remove_checked_btn.visible = false
   end
+  if tab == 2 then
+    local mod_list = Util.get_accessible_mod_list()
+    g.gui.sub_modlist.clear()
+    for i, v in ipairs(mod_list) do
+      local btn = g.gui.sub_modlist.add{type = 'button', caption = v, name = '_gvv-mod_c_sub_mod_'..string.format('%d',i), mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
+    end
+  end
   if tab == 3 or tab == 4 then
     g.gui.chk_show_na.visible = true
     g.gui.chk_show_func.visible = true

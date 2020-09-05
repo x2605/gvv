@@ -245,8 +245,10 @@ vpo() do
   local btn1 = flow.add{type = 'button', name = '_gvv-mod_fix_diagnose_btn_', caption = {"gvv-mod-helpui.diagnose"}, style = 'c_sub_mod_gvv-mod', mouse_button_filter = {'left'}}
   btn1.style.right_margin = 10
   btn1.style.horizontally_stretchable = false
+  btn1.style.horizontal_align = 'center'
   local btn2 = flow.add{type = 'button', name = '_gvv-mod_fix_fix_btn_', caption = {"gvv-mod-helpui.fix"}, style = 'c_sub_mod_gvv-mod', mouse_button_filter = {'left'}}
   btn2.style.horizontally_stretchable = false
+  btn2.style.horizontal_align = 'center'
 px() end
 text{x..'7', {"",'[font=default-bold]',{"gvv-mod-helpui.fix"},'[/font]'},'.error'}
 hpo() do
@@ -254,6 +256,7 @@ hpo() do
   text{x..'8','global.report'} this.style.right_margin = 5 this.style.left_margin = 5
   local btn = p.pointer.add{type = 'button', name = '_gvv-mod_fix_clear_report_btn_', caption = {"gvv-mod-helpui.clear-report"}, style = 'c_sub_mod_gvv-mod', mouse_button_filter = {'left'}}
   btn.style.horizontally_stretchable = false
+  btn.style.horizontal_align = 'center'
 px() end
 end ---------------------------------
 

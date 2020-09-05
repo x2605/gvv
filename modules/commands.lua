@@ -64,7 +64,7 @@ Commands.gdump = function(data, lang)
           if player then
             player.print{"",{"gvv-mod-command-help.no-level-support",mod_name}}
           else
-            localised_print{"",'[COMMAND-ERROR] gdump-',lang,'(gvv) : ',{"gvv-mod-command-help.no-level-support",mod_name}}
+            localised_print{"",'[COMMAND-ERROR] gdump-',lang,'(gvv) : ',{"gvv-mod-command-help.no-mod-support",mod_name}}
           end
         end
         break
@@ -92,14 +92,14 @@ Commands.gmods = function(data)
   local s = {}
   local rmt_glob_str = {}
   local rmt_glob_cnt = 0
-  if pcall(function() return remote.call('__level__gvv','global') end) then
+  if pcall(function() return remote.interfaces['__level__gvv']['global'] end) then
     rmt_glob_str[#rmt_glob_str + 1] = 'level'
     rmt_glob_cnt = rmt_glob_cnt + 1
   end
   for name, ver in pairs(script.active_mods) do
     if #s > 0 then s[#s + 1] = ', ' end
     s[#s + 1] = name..'_'..ver
-    if pcall(function() return remote.call('__'..name..'__gvv','global') end) then
+    if pcall(function() return remote.interfaces['__'..name..'__gvv']['global'] end) then
       if #rmt_glob_str > 0 then rmt_glob_str[#rmt_glob_str + 1] = ', ' end
       rmt_glob_str[#rmt_glob_str + 1] = name
       rmt_glob_cnt = rmt_glob_cnt + 1

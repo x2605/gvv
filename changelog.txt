@@ -1,5 +1,21 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 2020-09-06
+
+  Changes:
+    - Remote code(Which I recommended to paste in remote mod/map's control.lua) is changed to shorter code referring the code inside of gvv mod. Then it doesn't need to update your remote code by hand anymore when gvv provide updated remote code. Thanks for giving me this idea.
+    - Remote code will be a function when called by require. Mods or map can freely decide whether to run the code to register gvv interface now or later or not. "now" is just having "()" brackets after require(...) function, like "require(...)()". For "later", you need to assign it to a local value first like "local something = require(...)".
+    - Remote code from 0.1.0 will work fine for now. No changes to it.
+    - Fixed changelog.txt to be parsed correctly.
+    - Fixed error message shown when /gdump <modname> failed due to demand mod is not supporting remote interface is shown as the message of map.
+    - Fixed /gmods not showing an interface registered mod in list if global table of that have errorful entry in its global table.
+    - Made 2nd tab (global) to reload available mod list when changed from other tab, instead of reopening whole main GUI.
+    - Aligned text in buttons in Troubleshooting menu to center.
+    - Added guide text that suggesting how to handle remote code at "control.lua" help page. Shortly explaining a way to put it anywhere.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2020-09-05
 
-  - First release to public.
+  Info:
+    - First release to public.

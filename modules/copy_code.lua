@@ -4,6 +4,11 @@ local Copy_Code = {}
 
 local codes = {}
 
+local version_code = function() return [[version=function()
+  return '1'
+end,
+]] end
+
 local fix_code = function(nilstr) return [[=function()
   local rm,po,mt,c,e,p,l,j,it={},{},{},0,0,0,0,0
   ]]--[[ rm:trouble path, po:potentially trouble path --]]..[[
@@ -146,10 +151,7 @@ end,
 
 
 codes.in_control_lua = [[
-remote.add_interface("__"..script.mod_name.."__gvv",{global=function() return global end,
-diag]]..fix_code('')..[[
-fix]]..fix_code('b[k]=nil')..[[
-})
+if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 ]]
 
 
@@ -157,6 +159,7 @@ codes.in_console_enable = [[/c
 remote.add_interface("__level__gvv",{global=function() return global end,
 diag]]..fix_code('')..[[
 fix]]..fix_code('b[k]=nil')..[[
+]]..version_code()..[[
 })
 ]]
 
