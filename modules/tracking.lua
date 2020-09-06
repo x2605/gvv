@@ -65,9 +65,11 @@ Tracking.value_output = function(elem, full_path)
   if type(full_path) == 'table' then
     elem.body['_gvv-mod_tracking_output_'].caption = Table_to_str.value_to_str(Tree.get_tree_value(full_path))
     elem.body['_gvv-mod_tracking_output_'].style.font_color = {1,1,1}
+    elem.body['_gvv-mod_tracking_output_'].tooltip = {"gvv-mod.right-to-copy-code"}
   elseif type(full_path) == 'string' then
     elem.body['_gvv-mod_tracking_output_'].caption = Table_to_str.value_to_str(assert(loadstring('return '..full_path))())
     elem.body['_gvv-mod_tracking_output_'].style.font_color = {1,1,1}
+    elem.body['_gvv-mod_tracking_output_'].tooltip = {"gvv-mod.right-to-copy-code"}
   else
     error('full_path is not table nor string')
   end
@@ -80,6 +82,7 @@ Tracking.refresh_value = function(g)
   for _, elem in pairs(panel.children) do
     pc, ret = pcall(Tracking.value_output, elem, list[elem.name])
     if not pc then
+      elem.body['_gvv-mod_tracking_output_'].tooltip = ret
       elem.body['_gvv-mod_tracking_output_'].caption = ret
       elem.body['_gvv-mod_tracking_output_'].style.font_color = { r = 1.000, g = 0.630, b = 0.259 }
     end

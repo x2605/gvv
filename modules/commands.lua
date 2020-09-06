@@ -119,4 +119,77 @@ Commands.gmods = function(data)
   end
 end
 
+-- /gvv-c & /gvv-silent-command
+local command_execute = function(data, broadcast)
+  local player
+  if data.player_index then player = game.players[data.player_index] end
+  if player then
+    if not player.admin and game.is_multiplayer() then
+      player.print{"",data.name,' : ',{"gvv-mod-command-help.only-admin"}}
+      return
+    end
+  end
+  if data.parameter then
+    data.parameter = data.parameter:gsub('^%s*(.-)%s*$', '%1')..''
+  else
+    data.parameter = ''
+  end
+
+  if broadcast then
+    local name, chat_color
+    if player then
+      local tag = player.tag
+      if tag ~= '' then
+        name = player.name..tag
+      else
+        name = player.name
+      end
+      chat_color = player.chat_color
+    else
+      name = '<server>'
+      chat_color = { r = 0.7  , g = 0.7  , b = 0.7   }
+    end
+    local player_message
+
+    player_message = '[font=var-outline-gvv-mod]'..name..' (gvv-command): '..data.parameter..'[/font]'
+    for _, p in pairs(game.connected_players) do
+      p.print(player_message, chat_color)
+    end
+    print('[COMMAND] '..name..' (gvv-command): '..data.parameter)
+  end
+
+  local pc, ret = pcall(function() assert(loadstring(data.parameter))() end)
+  if not pc then
+    local message
+    if broadcast then
+      message = 'Cannot execute command /gvv-c. Error: '
+    else
+      message = 'Cannot execute command /gvv-silent-command. Error: '
+    end
+    player_message = {"",'[font=var-outline-gvv-mod]',message,ret,'[/font]'}
+    if broadcast then
+      for _, p in pairs(game.connected_players) do
+        p.print(player_message, {1,0.85,0.7,1})
+      end
+      log(message..ret)
+    else
+      if player then
+        player.print(player_message, {1,0.85,0.7,1})
+      else
+        log(message..ret)
+      end
+    end
+  end
+end
+
+-- /gvv-c
+Commands.g_command = function(data)
+  command_execute(data, true)
+end
+
+-- /gvv-silent-command
+Commands.g_silent_command = function(data)
+  command_execute(data, false)
+end
+
 return Commands

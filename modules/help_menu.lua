@@ -53,8 +53,8 @@ Help_Menu.draw_page = function(g, name)
   content_writer[name]()
 end
 
-local function text(locstr)
-  local u = p.pointer.add{type = 'label', caption = locstr}
+local function text(locstr, tooltip)
+  local u = p.pointer.add{type = 'label', caption = locstr, tooltip = tooltip}
   u.style.horizontally_stretchable = true
   u.style.single_line = false
   this = u
@@ -147,6 +147,8 @@ text{x..'2'}
 text{x..'3', ' [font=default-bold]/gvv[/font]'}
 text{x..'4', ' [font=default-bold]/gmods[/font]'}
 text{x..'5', ' [font=default-bold]/gdump[/font]', '[font=default-bold]/gdump-luaon & /gdump-json[/font]', '[font=default-bold]/gdump-luaon[/font]'}
+text{x..'5-1', ' [font=default-bold]/g-command[/font]', '[font=default-bold]/g-silent-command[/font]'}
+text{x..'5-2', ' [font=default-bold]/g-c & /g-sc[/font]', '[font=default-bold]/g-command[/font]', '[font=default-bold]/g-silent-command[/font]'}
 text(' ')
 text{x..'6'}
 copyable(Copy_Code.in_console_enable())
@@ -290,15 +292,18 @@ head{x..'1'}
 hr()
 head2{x..'2'}
 text{x..'3'}
+text{x..'3-0', {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}}
 text{x..'3-1'}
-copyable('/c if not global._gvv then global._gvv={} end global._gvv["'..game.players[looking_player_index].name..'"]={}')
+copyable('/g-c if not global.memo then global.memo={} end global.memo["'..game.players[looking_player_index].name..'"]={}')
+  this.style.bottom_margin = 5
 text{x..'3-2'}
-local memo_prefix = '/silent-command local MEMO=global._gvv["'..game.players[looking_player_index].name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
-copyable(memo_prefix..'game.player.selected')
+local memo_prefix = '/g-sc local MEMO=global.memo["'..game.players[looking_player_index].name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
+copyable(memo_prefix..'game.player.selected') this.style.bottom_margin = 5
 text{x..'3-3'}
-copyable(memo_prefix)
-text{x..'3-4', '[font=default-semibold][color=128, 206, 240]Enter[/color][/font]'}
-copyable('/silent-command local t=setmetatable({},{__newindex=function(a,b,c) global._gvv["'..game.players[looking_player_index].name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
+copyable(memo_prefix) this.style.bottom_margin = 5
+text({x..'3-4', '[font=default-semibold][color=128, 206, 240]Enter[/color][/font]'}, {x..'3-4'..'-tooltip'})
+copyable('/g-sc local t=setmetatable({},{__newindex=function(a,b,c) global.memo["'..game.players[looking_player_index].name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
+  this.style.bottom_margin = 5
 text{x..'3-5'}
 text(' ')
 hr()
@@ -320,6 +325,10 @@ text{x..'11',
   {"",'[font=default-bold]',{"gui-menu.game-menu"},' - ',{"gui-menu.settings"},' - ',{"gui-menu.mod-settings"},' - ',{"gui-mod-settings.map"},'[/font]'},
   {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}
 }
+text(' ')
+hr()
+head2{x..'12'}
+text{x..'13'}
 text(' ')
 
 end ---------------------------------

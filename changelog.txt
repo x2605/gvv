@@ -3,12 +3,16 @@ Version: 0.1.2
 Date: 2020-09-06
 
   Changes:
+	- Added new commands : /g-c, /g-sc, /g-command, /g-silent-command, which are equivalent to built-in commands such as /c, /sc but execution scope is gvv global.
     - Now return values in tracking list can be copied.
     - Added "Usage Tips" menu in "Helper" tab.
-    - Fixed unable to right-click in "Variable trace" if there is nothing.
 
   Info:
-    - In new "Usage Tips", I wrote tips I forgot to write before, and introduced a trick to use global table of map as space for memo.
+    - In new "Usage Tips", I wrote tips I forgot to write before, and introduced a trick to use global table space for memo.
+
+  Fixes:
+    - Fixed unable to right-click in "Variable trace" if there is nothing.
+	- Fixed loading map saved when gvv is 0.1.0 causing global CRC check fail.
 
 
 ---------------------------------------------------------------------------------------------------
@@ -18,9 +22,6 @@ Date: 2020-09-05
   Changes:
     - Remote code(Which I recommended to paste in remote mod/map's control.lua) is changed to shorter code referring the code inside of gvv mod. Then it doesn't need to update your remote code by hand anymore when gvv provide updated remote code. Thanks for giving me this idea.
     - Added guide text that suggesting how to handle remote code at "control.lua" help page. Shortly explaining a way to put it anywhere.
-    - Fixed changelog.txt to be parsed correctly.
-    - Fixed error message shown when /gdump <modname> failed due to demand mod is not supporting remote interface is shown as the message of map.
-    - Fixed /gmods not showing an interface registered mod in list if global table of that have errorful entry in its global table.
     - Made 2nd tab (global) to reload available mod list when everytime changed from other tab, instead of reopening whole main GUI to refresh.
     - Aligned text in buttons in Troubleshooting menu to center.
 
@@ -28,6 +29,11 @@ Date: 2020-09-05
     - Remote code will be a function when called by require. Mods or map can freely decide whether to run the code to register gvv interface now or later or not. "now" is just having "()" brackets after require(...) function, like "require(...)()". For "later", you need to assign it to a local value first like "local something = require(...)".
     - Remote code from 0.1.0 will work fine for now. No changes to it, but it is recommended to change it to code of 0.1.1. Then no further by hand.
     - Still you can get raw remote code from "Helper" - "Console command - 1" page. Just delete leading "/c ".
+
+  Fixes:
+    - Fixed changelog.txt to be parsed correctly.
+    - Fixed error message shown when /gdump <modname> failed due to demand mod is not supporting remote interface is shown as the message of map.
+    - Fixed /gmods not showing an interface registered mod in list if global table of that have errorful entry in its global table.
 
 
 ---------------------------------------------------------------------------------------------------
