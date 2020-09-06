@@ -227,12 +227,22 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
 
     elseif t == 'function' or t == 'table' and getmetatable(obj) == global.meta_data._function_ then
       label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
-      if not g.show_func then label_wrap.visible = false end
-      label_container = draw_branch(label_wrap, k, true)
-      last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = '[color=0.5,0.5,0.5,0.5]'..Table_to_str.to_richtext(k, true)..'(...)[/color]',
-        style = 'tree-item-func_gvv-mod', mouse_button_filter = {'right'},
-      }
-      tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
+      if prop_allowed then
+        if not g.show_func then label_wrap.visible = false end
+        label_container = draw_branch(label_wrap, k, true)
+        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = '[color=0.5,0.5,0.5,0.5]'..Table_to_str.to_richtext(k, true)..'(...)[/color]',
+          style = 'tree-item-func_gvv-mod', mouse_button_filter = {'right'},
+        }
+        tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
+      else
+        label_container = draw_branch(label_wrap, k, true)
+        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = Table_to_str.to_richtext(k, true),
+          style = 'tree-item_gvv-mod', mouse_button_filter = {'right'},
+        }
+        tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
+        label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
+        last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(obj)}
+      end
 
     elseif t == 'table' and type(obj.__self) ~= 'userdata' and not obj.object_name then
       folder, label = draw_folder(tree_data, parent_container, parent_label, k, Table_to_str.to_richtext(k, true))

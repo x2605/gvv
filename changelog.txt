@@ -3,7 +3,7 @@ Version: 0.1.2
 Date: 2020-09-06
 
   Changes:
-	- Added new commands : /g-c, /g-sc, /g-command, /g-silent-command, which are equivalent to built-in commands such as /c, /sc but execution scope is gvv global.
+    - Added new commands : /g-c, /g-sc, /g-command, /g-silent-command, which are almost equivalents to built-in commands such as /c, /sc but execution scope is global of gvv, not level(map).
     - Now return values in tracking list can be copied.
     - Added "Usage Tips" menu in "Helper" tab.
 
@@ -12,7 +12,9 @@ Date: 2020-09-06
 
   Fixes:
     - Fixed unable to right-click in "Variable trace" if there is nothing.
-	- Fixed loading map saved when gvv is 0.1.0 causing global CRC check fail.
+    - Fixed loading map saved when gvv is 0.1.0 causing global CRC check fail.
+    - Little fix in remote diagnose code. Changed few report name strings that is not changing behavior of previous versions to make it show key names properly in some cases.
+    - Fixed "global" tree gui to show functions(if they are placed in global of gvv) regardless of "method view" setting of "property" or "LuaObject". functions in global cannot be saved, and cannot be brought by LuaRemote. Only functions in gvv global can be shown because there is no need to "bring" for gvv itself.
 
 
 ---------------------------------------------------------------------------------------------------

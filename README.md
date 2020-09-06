@@ -40,3 +40,5 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
   If no <mod_name> is given, level(current map) will be used.  
 - **/gdump-json** <mod_name>(optional) : Prints global data of accessible mod in js object notation format.  
   If no <mod_name> is given, level(current map) will be used.  
+- **/g-c /g-command** <lua_code> : Execute Lua code in global scope of gvv mod. Only for admin.
+- **/g-sc /g-silent-command** <lua_code> : Execute Lua code in global scope of gvv mod without printing input to console. Only for admin.

@@ -37,8 +37,15 @@ local fix_code = function(nilstr) return [[=function()
       if t=='function' or t=='userdata' or t=='thread' or y=='function' or y=='userdata' or y=='thread' then
         if o then return true
         else
-          j=j+1
-          rm[#rm+1]=du(pth,t..j) ]]..nilstr..[[ e=e+1
+          if t=='string' or t=='number' or t=='boolean' then
+            rm[#rm+1]=du(pth,k) ]]..nilstr..[[ e=e+1
+          elseif t=='table' and getmetatable(k)=='private' and k.object_name then
+            j=j+1
+            rm[#rm+1]=du(pth,k.object_name..j) ]]..nilstr..[[ e=e+1
+          else
+            j=j+1
+            rm[#rm+1]=du(pth,t..j) ]]..nilstr..[[ e=e+1
+          end
         end
       elseif t=='nil' then
         if o then
