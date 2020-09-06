@@ -6,6 +6,7 @@ Date: 2020-09-06
     - Added new commands : /g-c, /g-sc, /g-command, /g-silent-command, which are almost equivalents to built-in commands such as /c, /sc but execution scope is global of gvv, not level(map).
     - Now return values in tracking list can be copied.
     - Added "Usage Tips" menu in "Helper" tab.
+	- Added path in tooltip of object list at left side in "property" tab.
 
   Info:
     - In new "Usage Tips", I wrote tips I forgot to write before, and introduced a trick to use global table space for memo.

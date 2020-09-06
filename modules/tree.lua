@@ -462,7 +462,7 @@ Tree.register_object = function(g, luaobj_elem)
 
     local sub_objlist = g.gui.sub_objlist
     local caption = '('..tostring(index)..') '..Table_to_str.to_luaon(data.key, true)
-    local btn = sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"gvv-mod.obj-list-tooltip"}}
+    local btn = sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"",{"gvv-mod.obj-list-tooltip"},'\n',Table_to_str.path_to_lua_prop_path(tree_path)}}
   end
 
   g.gui.tabpane.selected_tab_index = 3

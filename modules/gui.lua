@@ -267,7 +267,7 @@ Gui.open_main = function(player_index)
 
   for k, v in pairs(g.data.docked_luaobj) do
     local caption = '('..tostring(v.index)..') '..Table_to_str.to_luaon(v.key, true)
-    local btn = sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(v.index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"gvv-mod.obj-list-tooltip"}}
+    local btn = sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(v.index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"",{"gvv-mod.obj-list-tooltip"},'\n',Table_to_str.path_to_lua_prop_path(v.tree_path)}}
   end
 
   for i, v in ipairs(gobjlist) do
