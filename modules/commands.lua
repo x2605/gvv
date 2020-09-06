@@ -158,13 +158,23 @@ local command_execute = function(data, broadcast)
     print('[COMMAND] '..name..' (gvv-command): '..data.parameter)
   end
 
-  local pc, ret = pcall(function() assert(loadstring(data.parameter))() end)
+  local pc, ret
+  local m1, m2, m3, m4 = data.parameter:match('^(%s*%-%-%[%[)(.-)(%]%]%s*)(.*)',1)
+  if m2 and m4 then
+    m2 = m2:match('^%s*(.-)%s*$')
+    pc, ret = pcall(function()
+      local a,b = remote.call('__'..m2..'__gvv','c',m4)
+      if a then return b else error(b) end
+    end)
+  else
+    pc, ret = pcall(function() assert(loadstring(data.parameter))() end)
+  end
   if not pc then
     local message
     if broadcast then
-      message = 'Cannot execute command /gvv-c. Error: '
+      message = 'Cannot execute command /g-c. Error: '
     else
-      message = 'Cannot execute command /gvv-silent-command. Error: '
+      message = 'Cannot execute command /g-sc. Error: '
     end
     player_message = {"",'[font=var-outline-gvv-mod]',message,ret,'[/font]'}
     if broadcast then
