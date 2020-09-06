@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.2
+Date: 2020-09-06
+
+  Changes:
+    - Now return values in tracking list can be copied.
+    - Added "Usage Tips" menu in "Helper" tab.
+    - Fixed unable to right-click in "Variable trace" if there is nothing.
+
+  Info:
+    - In new "Usage Tips", I wrote tips I forgot to write before, and introduced a trick to use global table of map as space for memo.
+
+
+---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 2020-09-05
 

@@ -154,6 +154,7 @@ Gui.open_main = function(player_index)
   }
   local tracking_panel = panel1.add{type = 'flow', name = '_gvv-mod_tracking_panel_', direction = 'vertical', style = 'vflow_gvv-mod'}
   tracking_panel.style.vertical_spacing = 0
+  tracking_panel.style.horizontally_stretchable = true
   tracking_panel.style.vertically_stretchable = true
 
   tabpane.selected_tab_index = 1
@@ -281,7 +282,7 @@ Gui.open_main = function(player_index)
       for k, v in pairs(g.data.tracking_list) do
         pc, ret = pcall(function() Tracking.draw(panel, k, v) end)
         if not pc then
-          player.print('[font=count-font]error caused when adding codes first time : '..k..'\n'..ret..'[/font]',{1,0.85,0.7,1})
+          player.print('[font=var-outline-gvv-mod]error caused when adding codes first time : '..k..'\n'..ret..'[/font]',{1,0.85,0.7,1})
         end
       end
     else -- Example
@@ -404,6 +405,8 @@ Gui.copyable_tracking_code = function(player, str)
   if frame and frame.valid then
     frame.destroy()
   end
+
+  str = str:gsub('^“',''):gsub('”$','')
 
   frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_copy_tracking_code_frame_', {"gvv-mod.copy-code"})
   innerframe.add{type = 'textfield', name = '_gvv-mod_uneditable_text_',

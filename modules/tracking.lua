@@ -33,8 +33,8 @@ Tracking.draw = function(panel, path_str, full_path)
   body.style.left_padding = 6
   body.style.horizontal_spacing = 6
   body.add{type = 'label', name = 'report', caption = '  =  '}
-  body.add{type = 'label', name = 'out'}
-  body.out.style.font = 'default-bold'
+  body.add{type = 'label', name = '_gvv-mod_tracking_output_', tooltip = {"gvv-mod.right-to-copy-code"}}
+  body['_gvv-mod_tracking_output_'].style.font = 'default-bold'
   local interline = container.add{type = 'line', direction = 'horizontal'}
 end
 
@@ -63,9 +63,11 @@ end
 
 Tracking.value_output = function(elem, full_path)
   if type(full_path) == 'table' then
-    elem.body.out.caption = Table_to_str.value_to_str(Tree.get_tree_value(full_path))
+    elem.body['_gvv-mod_tracking_output_'].caption = Table_to_str.value_to_str(Tree.get_tree_value(full_path))
+    elem.body['_gvv-mod_tracking_output_'].style.font_color = {1,1,1}
   elseif type(full_path) == 'string' then
-    elem.body.out.caption = Table_to_str.value_to_str(assert(loadstring('return '..full_path))())
+    elem.body['_gvv-mod_tracking_output_'].caption = Table_to_str.value_to_str(assert(loadstring('return '..full_path))())
+    elem.body['_gvv-mod_tracking_output_'].style.font_color = {1,1,1}
   else
     error('full_path is not table nor string')
   end
@@ -78,7 +80,8 @@ Tracking.refresh_value = function(g)
   for _, elem in pairs(panel.children) do
     pc, ret = pcall(Tracking.value_output, elem, list[elem.name])
     if not pc then
-      elem.body.out.caption = '[color=orange]'..ret..'[/color]'
+      elem.body['_gvv-mod_tracking_output_'].caption = ret
+      elem.body['_gvv-mod_tracking_output_'].style.font_color = { r = 1.000, g = 0.630, b = 0.259 }
     end
   end
 end

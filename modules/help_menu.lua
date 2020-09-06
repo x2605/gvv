@@ -26,6 +26,10 @@ Help_Menu.page_list = {
     name = 'troubleshoot',
     caption = {"gvv-mod-help.troubleshoot"},
   },
+  {
+    name = 'tips',
+    caption = {"gvv-mod-help.tips"},
+  },
 }
 
 Help_Menu.get_page = function(name)
@@ -38,12 +42,14 @@ local x
 local p = {}
 local this
 local content_writer = {}
+local looking_player_index
 
 Help_Menu.draw_page = function(g, name)
   local panel = g.gui.sub_helppanel
   panel.clear()
 
   p = {top = panel, pointer = panel}
+  looking_player_index = g.index
   content_writer[name]()
 end
 
@@ -56,10 +62,18 @@ local function text(locstr)
 end
 
 local function head(locstr)
-  local u = p.pointer.add{type = 'label', caption = locstr}
+  local u = p.pointer.add{type = 'label', caption = locstr, style = 'heading_1_label'}
   u.style.horizontally_stretchable = true
   u.style.single_line = false
-  u.style.font = 'heading-1'
+  this = u
+  return u
+end
+
+local function head2(locstr)
+  local u = p.pointer.add{type = 'label', caption = locstr, style = 'heading_2_label'}
+  u.style.horizontally_stretchable = true
+  u.style.single_line = false
+  u.style.left_padding = 7
   this = u
   return u
 end
@@ -99,6 +113,13 @@ local function px()
   local u = p.pointer.parent
   this = u
   p.pointer = u
+  return u
+end
+
+local function hr()
+  local u = p.pointer.add{type = 'line', direction = 'horizontal'}
+  u.style.horizontally_stretchable = true
+  this = u
   return u
 end
 
@@ -258,6 +279,49 @@ hpo() do
   btn.style.horizontally_stretchable = false
   btn.style.horizontal_align = 'center'
 px() end
+end ---------------------------------
+
+
+-------------------------------------
+content_writer['tips'] = function()
+  x = 'gvv-mod-help-tips.'
+-------------------------------------
+head{x..'1'}
+hr()
+head2{x..'2'}
+text{x..'3'}
+text{x..'3-1'}
+copyable('/c if not global._gvv then global._gvv={} end global._gvv["'..game.players[looking_player_index].name..'"]={}')
+text{x..'3-2'}
+local memo_prefix = '/silent-command local MEMO=global._gvv["'..game.players[looking_player_index].name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
+copyable(memo_prefix..'game.player.selected')
+text{x..'3-3'}
+copyable(memo_prefix)
+text{x..'3-4', '[font=default-semibold][color=128, 206, 240]Enter[/color][/font]'}
+copyable('/silent-command local t=setmetatable({},{__newindex=function(a,b,c) global._gvv["'..game.players[looking_player_index].name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
+text{x..'3-5'}
+text(' ')
+hr()
+head2{x..'4'}
+text{x..'5',
+  {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'},
+  {"",'[color=0.75,0.75,0.75,1]',{x..'5'..'-word1'},'[/color]'},
+}
+text{x..'6', {"",'[font=default-bold]','property','[/font]'}}
+text{x..'7', '[font=default-semibold][color=128, 206, 240]Ctrl + C[/color][/font]'}
+text(' ')
+hr()
+head2{x..'8'}
+text{x..'9', {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}}
+text(' ')
+hr()
+head2{x..'10'}
+text{x..'11',
+  {"",'[font=default-bold]',{"gui-menu.game-menu"},' - ',{"gui-menu.settings"},' - ',{"gui-menu.mod-settings"},' - ',{"gui-mod-settings.map"},'[/font]'},
+  {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}
+}
+text(' ')
+
 end ---------------------------------
 
 

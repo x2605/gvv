@@ -30,6 +30,14 @@ data:extend{
     mipmap_count = 1,
     scale = 0.5
   },
+  {
+    type = "font",
+    name = "var-outline-gvv-mod",
+    from = "default-bold",
+    size = 14,
+    border = true,
+    border_color = {}
+  },
 }
 
 local default_gui = data.raw['gui-style'].default

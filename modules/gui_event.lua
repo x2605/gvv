@@ -218,6 +218,10 @@ Gui_Event.on_gui_click = function(event)
   elseif event.element.name == '_gvv-mod_tracking_path_str_' and event.button == defines.mouse_button_type.right then
     Gui.copyable_tracking_code(player, event.element.caption)
 
+  --tracking_panel 의 결과값을 우클릭할 때
+  elseif event.element.name == '_gvv-mod_tracking_output_' and event.button == defines.mouse_button_type.right then
+    Gui.copyable_tracking_code(player, event.element.caption)
+
   --tracking_panel 의 빈 공간을 우클릭할 때 (이 조건은 가능한한 뒤에)
   elseif g.gui.tracking_panel and Util.find_parent_gui(event.element, g.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.right then
     Gui.put_anycode_in_tracking(g)
