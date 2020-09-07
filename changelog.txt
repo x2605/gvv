@@ -1,4 +1,21 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.3
+Date: 2020-09-07
+
+  Changes:
+    - Command /g-c and same kinds now have ability to run Lua code in scope of other mod(not only level, gvv).
+    - Added new examples of using /g-c in "Usage Tips".
+    - Little bit changed stringify process of some LuaObjects not supporting .help() function, to make it do not make trouble when Factorio is updated to have .help() function for them later(or never...).
+
+
+  Info:
+    - To run Lua code in a specific mod except level or gvv, for example, mod name is my Mod-1 then type :
+    - /g-c --[[my Mod-1]] game.print(script.mod_name)
+    - Raw function is remote.call("__my Mod-1__gvv","c", script, arg1, arg2, arg3, ...) and script(string type) is for loadstring(script) function.
+    - arg1, arg2, arg3, ... will become local arg = {arg1, arg2, arg3, ...} inside of script.
+
+
+---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: 2020-09-06
 
