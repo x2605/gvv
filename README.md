@@ -18,6 +18,7 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 
 ```
 - In case of savefile, extract "**control.lua**" from it first. Then, edit code and overwrite it at same location of "**control.lua**" inside of the zipped file.  
+- There is also a way to make the mod or map accessible temporarily without editing "**control.lua**", introduced in in-game GUI.
 - Most of other helpful words are inside of **Helper** tab in **gvv** in-game GUI.  
 
 ### 사용 방법
@@ -30,6 +31,7 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 
 ```
 - 세이브파일의 경우에는 압축파일에서 "**control.lua**"만 꺼낸 뒤, 편집하고 압축파일 내부의 같은 위치에 "**control.lua**"를 덮어쓰세요.
+- "**control.lua**"를 편집하지 않고 임시로 모드나 지도를 액세스 가능하게 만드는 방법이 있습니다. 게임 내 GUI에 소개되어 있습니다.
 - 다른 도움말은 게임 내 **gvv** GUI의 **도움 기능** 탭에서 확인할 수 있습니다.
 
 ### Commands added by this mod  
@@ -40,5 +42,9 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
   If no <mod_name> is given, level(current map) will be used.  
 - **/gdump-json** <mod_name>(optional) : Prints global data of accessible mod in js object notation format.  
   If no <mod_name> is given, level(current map) will be used.  
-- **/g-c /g-command** --[[<mod_name>]](optional, default = --[[gvv]] if not given) <lua_code> : Execute Lua code in global scope of other mod. Only for admin.
-- **/g-sc /g-silent-command** --[[<mod_name>]](optional, default = --[[gvv]] if not given) <lua_code> : Execute Lua code in global scope of other mod without printing input to console. Only for admin.
+
+### LuaRemote interfaces added by this mod  
+- **remote.call("__<mod_name>__gvv","global")** : Returns global table of the mod.  
+- **remote.call("__<mod_name>__gvv","diag")** : Need to be used only internally. Performs diagnosis of global table of the mod and returns problematic paths as table.  
+- **remote.call("__<mod_name>__gvv","fix")** : Need to be used only internally. Performs diagnosis and kills entries that LuaRemote cannot handle in global table of the mod.  
+- **remote.call("__<mod_name>__gvv","c",<lua_code>, ...)** : Runs a lua code(string type) in sandbox of the mod, "..." becomes local table named "arg" in the lua code.  

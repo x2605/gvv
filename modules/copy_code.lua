@@ -18,7 +18,7 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 ]]
 
 
-codes.in_console_enable = [[/sc
+codes.in_console_enable = [[
 remote.add_interface("__"..script.mod_name.."__gvv",{global=function() return global end,
 diag]]..fix_code('')..[[
 fix]]..fix_code('b[k]=nil')..[[
@@ -28,7 +28,7 @@ version]]..version_code()..[[
 ]]
 
 
-codes.in_console_disable = [[/c
+codes.in_console_disable = [[
 remote.remove_interface("__"..script.mod_name.."__gvv")
 ]]
 
@@ -41,12 +41,18 @@ Copy_Code.in_control_lua = function()
   return codes.in_control_lua
 end
 
-Copy_Code.in_console_enable = function()
-  return codes.in_console_enable
+Copy_Code.in_console_enable = function(mod_name)
+  if not mod_name or mod_name == '' or mod_name == 'level' then mod_name = ''
+  else mod_name = '__'..mod_name..'__ '
+  end
+  return '/sc '..mod_name..codes.in_console_enable
 end
 
-Copy_Code.in_console_disable = function()
-  return codes.in_console_disable
+Copy_Code.in_console_disable = function(mod_name)
+  if not mod_name or mod_name == '' or mod_name == 'level' then mod_name = ''
+  else mod_name = '__'..mod_name..'__ '
+  end
+  return '/c '..mod_name..codes.in_console_disable
 end
 
 return Copy_Code

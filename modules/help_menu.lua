@@ -101,16 +101,16 @@ local function copyable(str, wrapper_name)
   return u
 end
 
-local function hpo()
-  local u = p.pointer.add{type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod'}
+local function hpo(name)
+  local u = p.pointer.add{type = 'flow', name = name, direction = 'horizontal', style = 'hflow_gvv-mod'}
   u.style.horizontally_stretchable = true
   this = u
   p.pointer = u
   return u
 end
 
-local function vpo()
-  local u = p.pointer.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
+local function vpo(name)
+  local u = p.pointer.add{type = 'flow', name = name, direction = 'vertical', style = 'vflow_gvv-mod'}
   u.style.horizontally_stretchable = true
   this = u
   p.pointer = u
@@ -125,8 +125,8 @@ local function px()
   return u
 end
 
-local function hr()
-  local u = p.pointer.add{type = 'line', direction = 'horizontal'}
+local function hr(name)
+  local u = p.pointer.add{type = 'line', name = name, direction = 'horizontal'}
   u.style.horizontally_stretchable = true
   this = u
   return u
@@ -157,17 +157,34 @@ text{x..'2'}
 text{x..'3', ' [font=default-bold]/gvv[/font]'}
 text{x..'4', ' [font=default-bold]/gmods[/font]'}
 text{x..'5', ' [font=default-bold]/gdump[/font]', '[font=default-bold]/gdump-luaon & /gdump-json[/font]', '[font=default-bold]/gdump-luaon[/font]'}
-text{x..'5-1', ' [font=default-bold]/g-command[/font]', '[font=default-bold]/g-silent-command[/font]'}
-text{x..'5-2', ' [font=default-bold]/g-c & /g-sc[/font]', '[font=default-bold]/g-command[/font]', '[font=default-bold]/g-silent-command[/font]'}
-text(' ')
+text{x..'5-0'} this.style.top_margin = 5
+text{x..'5-1', ' [font=default-bold]/c /command[/font]', '[font=default-bold]/sc /silent-command[/font]'}
+  this.style.bottom_margin = 5
 hr()
 head2{x..'6-0'}
 text{x..'6'}
-copyable(Copy_Code.in_console_enable())
+hpo() do
+  local modlist = Util.get_all_mod_list({gvv = true, base = true})
+  local sel = p.pointer.add{type = 'drop-down', name = '_gvv-mod_help_copy_temp_enable_code_',
+    items = modlist, selected_index = 1,
+  }
+  sel.style.horizontally_squashable = true
+  local copy = copyable('', '_gvv-mod_copyable_')
+  copy.parent['_gvv-mod_uneditable_text_buffer_'].caption = Copy_Code.in_console_enable()
+  copy.text = copy.parent['_gvv-mod_uneditable_text_buffer_'].caption
+px() end
 text{x..'7'}
-text(' ')
-text{x..'8'}
-copyable(Copy_Code.in_console_disable())
+text{x..'8'} this.style.top_margin = 5
+hpo() do
+  local modlist = Util.get_all_mod_list({gvv = true, base = true})
+  local sel = p.pointer.add{type = 'drop-down', name = '_gvv-mod_help_copy_temp_disable_code_',
+    items = modlist, selected_index = 1,
+  }
+  sel.style.horizontally_squashable = true
+  local copy = copyable('', '_gvv-mod_copyable_')
+  copy.parent['_gvv-mod_uneditable_text_buffer_'].caption = Copy_Code.in_console_disable()
+  copy.text = copy.parent['_gvv-mod_uneditable_text_buffer_'].caption
+px() end
 text{x..'9'}
 text{x..'10'}
 text(' ')
@@ -180,15 +197,27 @@ content_writer['console2'] = function()
 -------------------------------------
 head{x..'1'}
 text{x..'2'}
-vpo() do
-  local modlist = Util.get_accessible_mod_list()
-  local copy = copyable('', '_gvv-mod_copyable_')
-  local sel = p.pointer.add{type = 'list-box', name = '_gvv-mod_help_copy_mod_global_code_',
-    items = modlist, selected_index = 1, style = 'list_box-transparent_gvv-mod',
+hpo() do
+  p.pointer.style.vertical_align = 'top'
+  p.pointer.style.horizontally_squashable = true
+  local options = {'<mod_name>', '__<mod_name>__', 'remote.call..."global")', 'remote.call..."c",)'}
+  local sel1 = p.pointer.add{type = 'list-box', name = '_gvv-mod_help_copy_option_mod_string_',
+    items = options, selected_index = 3, style = 'list_box-transparent_gvv-mod',
   }
-  sel.style.vertically_stretchable = true
-  copy.parent['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..sel.items[sel.selected_index]..'__gvv","global")'
-  copy.text = copy.parent['_gvv-mod_uneditable_text_buffer_'].caption
+  sel1.style.horizontally_squashable = true
+  sel1.style.horizontally_stretchable = false
+  sel1.style.vertically_stretchable = true
+  sel1.style.width = 155
+  vpo('mod_list') do
+    local modlist = Util.get_accessible_mod_list()
+    local copy = copyable('', '_gvv-mod_copyable_')
+    local sel = p.pointer.add{type = 'list-box', name = '_gvv-mod_help_copy_mod_string_code_',
+      items = modlist, selected_index = 1, style = 'list_box-transparent_gvv-mod',
+    }
+    sel.style.vertically_stretchable = true
+    copy.parent['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..sel.items[sel.selected_index]..'__gvv","global")'
+    copy.text = copy.parent['_gvv-mod_uneditable_text_buffer_'].caption
+  px() end
 px() end
 text(' ')
 end ---------------------------------
@@ -310,15 +339,15 @@ head2{x..'2'}
 text{x..'3'}
 text{x..'3-0', {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}}
 text{x..'3-1'}
-copyable('/g-c if not global.memo then global.memo={} end global.memo["'..game.players[looking_player_index].name..'"]={}')
+copyable('/c __gvv__ if not global.memo then global.memo={} end global.memo["'..game.players[looking_player_index].name..'"]={}')
   this.style.bottom_margin = 5
 text{x..'3-2'}
-local memo_prefix = '/g-sc local MEMO=global.memo["'..game.players[looking_player_index].name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
+local memo_prefix = '/sc __gvv__ local MEMO=global.memo["'..game.players[looking_player_index].name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
 copyable(memo_prefix..'game.player.selected') this.style.bottom_margin = 5
 text{x..'3-3'}
 copyable(memo_prefix) this.style.bottom_margin = 5
 text({x..'3-4', '[font=default-semibold][color=128, 206, 240]Enter[/color][/font]'}, {x..'3-4'..'-tooltip'})
-copyable('/g-sc local t=setmetatable({},{__newindex=function(a,b,c) global.memo["'..game.players[looking_player_index].name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
+copyable('/sc __gvv__ local t=setmetatable({},{__newindex=function(a,b,c) global.memo["'..game.players[looking_player_index].name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
   this.style.bottom_margin = 5
 text{x..'3-5'}
 text(' ')
@@ -341,6 +370,9 @@ text{x..'11',
   {"",'[font=default-bold]',{"gui-menu.game-menu"},' - ',{"gui-menu.settings"},' - ',{"gui-menu.mod-settings"},' - ',{"gui-mod-settings.map"},'[/font]'},
   {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}
 }
+text{x..'11-1'}
+text{x..'11-2'}
+copyable('/sc __gvv__ settings.global["gvv-mod_enable-on-tick"]={value= false }')
 text(' ')
 hr()
 head2{x..'12'}
@@ -351,10 +383,8 @@ head2{x..'14'}
 text{x..'15'}
 copyable('/c game.player.print(script.mod_name)')
 text('Prints : [color=0.25,1,0.25]level[/color]')
-copyable('/g-c game.player.print(script.mod_name)')
+copyable('/c __gvv__ game.player.print(script.mod_name)')
 text('Prints : [color=0.25,1,0.25]gvv[/color]')
-copyable('/g-c --[[level]] game.player.print(script.mod_name)')
-text({x..'16', 'Prints : [color=0.25,1,0.25]level[/color]'})
 do
   local example_name = 'my Mod-1'
   for name in pairs(script.active_mods) do
@@ -364,10 +394,13 @@ do
       break
     end
   end
-  copyable('/g-c --[['..example_name..']] game.player.print(script.mod_name)')
+  copyable('/c __'..example_name..'__ game.player.print(script.mod_name)')
 text({x..'16', 'Prints : [color=0.25,1,0.25]'..example_name..'[/color]'})
 end
-text{x..'17'} this.style.top_margin = 5
+text(' ')
+hr()
+head2('remote.call("__<mod_name>__gvv", "c", <script>, ...)')
+text{x..'17'}
 do
   local example_name = 'gvv'
   for name in pairs(script.active_mods) do

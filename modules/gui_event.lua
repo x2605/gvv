@@ -7,6 +7,7 @@ local Table_to_str = require('modules.table_to_str')
 local Tracking = require('modules.tracking')
 local Help_Menu = require('modules.help_menu')
 local Doctor = require('modules.doctor')
+local Copy_Code = require('modules.copy_code')
 
 local Gui_Event = {}
 
@@ -342,9 +343,39 @@ Gui_Event.on_gui_selection_state_changed = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
 
-  if event.element.name == '_gvv-mod_help_copy_mod_global_code_' then
+  if event.element.name == '_gvv-mod_help_copy_mod_string_code_' or event.element.name == '_gvv-mod_help_copy_option_mod_string_' then
+    local optionbox
+    local modbox
+    if event.element.name == '_gvv-mod_help_copy_mod_string_code_' then
+      modbox = event.element
+      optionbox = event.element.parent.parent['_gvv-mod_help_copy_option_mod_string_']
+    elseif event.element.name == '_gvv-mod_help_copy_option_mod_string_' then
+      modbox = event.element.parent['mod_list']['_gvv-mod_help_copy_mod_string_code_']
+      optionbox = event.element
+    end
+    local option = optionbox.items[optionbox.selected_index]
+    local copybox = modbox.parent['_gvv-mod_copyable_']
+    if option == '__<mod_name>__' then
+      copybox['_gvv-mod_uneditable_text_buffer_'].caption = '__'..modbox.items[modbox.selected_index]..'__'
+    elseif option == 'remote.call..."global")' then
+      copybox['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..modbox.items[modbox.selected_index]..'__gvv","global")'
+    elseif option == 'remote.call..."c",)' then
+      copybox['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..modbox.items[modbox.selected_index]..'__gvv","c",)'
+    else
+      copybox['_gvv-mod_uneditable_text_buffer_'].caption = modbox.items[modbox.selected_index]
+    end
+    copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
+    copybox['_gvv-mod_uneditable_text_'].focus()
+    copybox['_gvv-mod_uneditable_text_'].select_all()
+  elseif event.element.name == '_gvv-mod_help_copy_temp_enable_code_' then
     local copybox = event.element.parent['_gvv-mod_copyable_']
-    copybox['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..event.element.items[event.element.selected_index]..'__gvv","global")'
+    copybox['_gvv-mod_uneditable_text_buffer_'].caption = Copy_Code.in_console_enable(event.element.items[event.element.selected_index])
+    copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
+    copybox['_gvv-mod_uneditable_text_'].focus()
+    copybox['_gvv-mod_uneditable_text_'].select_all()
+  elseif event.element.name == '_gvv-mod_help_copy_temp_disable_code_' then
+    local copybox = event.element.parent['_gvv-mod_copyable_']
+    copybox['_gvv-mod_uneditable_text_buffer_'].caption = Copy_Code.in_console_disable(event.element.items[event.element.selected_index])
     copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
     copybox['_gvv-mod_uneditable_text_'].focus()
     copybox['_gvv-mod_uneditable_text_'].select_all()

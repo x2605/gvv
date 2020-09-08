@@ -61,6 +61,15 @@ Util.get_accessible_mod_list = function()
   return list
 end
 
+--모든 모드 목록 얻기
+Util.get_all_mod_list = function(blacklist)
+  local modlist = {'level'}
+  for k in pairs(script.active_mods) do
+    if not blacklist[k] then modlist[#modlist + 1] = k end
+  end
+  return modlist
+end
+
 --LuaObject의 읽을 수 있는 프로퍼티 목록 가져오기
 Util.get_property_list = require('modules.luaobj_prop')
 

@@ -115,18 +115,6 @@ Load.register_volatiles = function()
     pc, ret = pcall(function()
       commands.add_command('gmods', {"gvv-mod-command-help.gmods"}, Commands.gmods)
     end) if not pc then log(ret) end
-    pc, ret = pcall(function()
-      commands.add_command('g-c', {"gvv-mod-command-help.g-c"}, Commands.g_command)
-    end) if not pc then log(ret) end
-    pc, ret = pcall(function()
-      commands.add_command('g-command', {"gvv-mod-command-help.g-command"}, Commands.g_command)
-    end) if not pc then log(ret) end
-    pc, ret = pcall(function()
-      commands.add_command('g-sc', {"gvv-mod-command-help.g-sc"}, Commands.g_silent_command)
-    end) if not pc then log(ret) end
-    pc, ret = pcall(function()
-      commands.add_command('g-silent-command', {"gvv-mod-command-help.g-silent-command"}, Commands.g_silent_command)
-    end) if not pc then log(ret) end
     _one_of_three_volatiles_executed_ = true
   end
 end
