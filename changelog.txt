@@ -5,7 +5,7 @@ Date: 2020-09-08
   Changes:
     - Removed /g-c commands because I found built-in /c commands also can access mod via /c __<mod_name>__ <code>.
     - Now mods are also can be made to be temporarily accessible by gvv without changing "control.lua".
-    - Added mod setting option to completely turning on_tick event of gvv off/on. (can be used in playtime)
+    - Added mod setting option to completely turn on_tick event of gvv off/on. (can be used in playtime)
 
   Info:
     - Though /g-c is gone, but remote.call("__<mod_name>__gvv", "c", <script>, ...) still remains.
