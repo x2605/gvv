@@ -50,4 +50,4 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 - **remote.call("__<mod_name>__gvv","c",<lua_code>, ...)** : Runs a lua code(string type) in sandbox of the mod, "..." becomes local table named "arg" in the lua code.  
 
 ### Server console exclusive  
-- **/sc __gvv__ settings.global["gvv-mod_enable-on-tick"]={value= false }** : Turns off(true for on) that, "on_tick" event used for tracking variables. Admin player already can do this in game GUI.  
+- **/sc \_\_gvv\_\_ settings.global["gvv-mod_enable-on-tick"]={value= false }** : Turns off(true for on) that, "on_tick" event used for tracking variables. Admin player already can do this in game GUI.  
