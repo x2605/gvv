@@ -109,6 +109,10 @@ Gui.open_main = function(player_index)
   }
   topspace.track_inter_slider.style.width = 80
   topspace.add{type = 'label', name = 'track_inter_show', caption = g.track_interval_tick, tooltip = {"gvv-mod.track-interval-control"}}
+  if not script.get_event_handler(defines.events.on_tick) then
+    topspace.track_inter_show.style.font_color = {1,0.25,0.25}
+    topspace.track_inter_show.tooltip = {"gvv-mod.track-interval-control-off"}
+  end
   topspace.add{type = 'textfield', name = 'track_inter_edit', text = g.track_interval_tick, tooltip = {"gvv-mod.track-interval-control"},
     numeric = true, allow_decimal = false, allow_negative = false, lose_focus_on_confirm = true, clear_and_focus_on_right_click = true,
   }

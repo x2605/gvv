@@ -1,5 +1,6 @@
 -- 컨트롤
 
+_initiated_session_ = false
 require('modules.register_event')
 
 --[[

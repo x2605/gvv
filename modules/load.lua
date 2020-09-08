@@ -2,6 +2,7 @@
 
 local Commands = require('modules.commands')
 local Util = require('modules.util')
+local Tracking = require('modules.tracking')
 
 local Load = {}
 
@@ -16,7 +17,16 @@ Load.example_load = function()
   }
 end
 
-one_of_three_volatiles_executed_ = false
+--중복해서 require('modules.load') 호출해도 한번만 실행되도록
+--run single time if called require('modules.load') multiple times
+if not _initiated_session_ then
+  -- session global variables not inside of global table
+  _on_tick_function_ = Tracking.on_tick --constant
+  _one_of_three_volatiles_executed_ = false
+  _initiated_on_tick_ = false
+  _initiated_session_ = true
+  ------
+end
 
 Load.on_configuration_changed = function(data)
   Load.register_meta_data()
@@ -41,6 +51,16 @@ Load.register_meta_data = function()
   if not global.meta_data._nil_ then global.meta_data._nil_ = {Used_for_categorizing=''} end
   if not global.meta_data._function_ then global.meta_data._function_ = {Used_for_categorizing=''} end
   if not global.meta_data._na_ then global.meta_data._na_ = {Used_for_categorizing=''} end
+  if global.meta_data['enable-on-tick'] == nil then
+    global.meta_data['enable-on-tick'] = settings.global['gvv-mod_enable-on-tick'].value
+    if not _initiated_on_tick_ and global.meta_data['enable-on-tick'] then
+      script.on_event(defines.events.on_tick, _on_tick_function_)
+      _initiated_on_tick_ = true
+    elseif not _initiated_on_tick_ and not global.meta_data['enable-on-tick'] then
+      script.on_event(defines.events.on_tick, nil)
+      _initiated_on_tick_ = true
+    end
+  end
   if not global.meta_data.initiated then
     global.meta_data.initiated = true
 
@@ -50,8 +70,8 @@ Load.register_meta_data = function()
       local final_codes = {}
       local c = 0
       while r do
-        codes[#codes + 1] = raw:match('^(.-)([-][-][[][[][]][]][-][-])')
-        raw, c = raw:gsub('^(.-)([-][-][[][[][]][]][-][-])','')
+        codes[#codes + 1] = raw:match('^(.-)(%-%-%[%[%]%]%-%-)')
+        raw, c = raw:gsub('^(.-)(%-%-%[%[%]%]%-%-)','')
         if c == 0 then
           codes[#codes + 1] = raw
           r = false
@@ -71,7 +91,14 @@ Load.register_meta_data = function()
 end
 
 Load.register_volatiles = function()
-  if not one_of_three_volatiles_executed_ then
+  if not _one_of_three_volatiles_executed_ then
+    if not _initiated_on_tick_ and global.meta_data and global.meta_data['enable-on-tick'] then
+      script.on_event(defines.events.on_tick, _on_tick_function_)
+      _initiated_on_tick_ = true
+    elseif not _initiated_on_tick_ and global.meta_data and global.meta_data['enable-on-tick'] == false then
+      script.on_event(defines.events.on_tick, nil)
+      _initiated_on_tick_ = true
+    end
     local pc, ret
     pc, ret = pcall(function()
       commands.add_command('gvv', {"gvv-mod-command-help.gvv"}, Commands.gvv)
@@ -100,8 +127,21 @@ Load.register_volatiles = function()
     pc, ret = pcall(function()
       commands.add_command('g-silent-command', {"gvv-mod-command-help.g-silent-command"}, Commands.g_silent_command)
     end) if not pc then log(ret) end
-    one_of_three_volatiles_executed_ = true
+    _one_of_three_volatiles_executed_ = true
   end
+end
+
+-- 플레이어를 삭제한 후 삭제한 플레이어 인덱스에 새 플레이어가 올 경우
+-- for when new player comes at empty index where player removed
+Load.on_player_created = function(event)
+  if global.players then
+    global.players[event.player_index] = nil
+  end
+end
+
+-- 런타임 모드 설정 변경시
+Load.on_runtime_mod_setting_changed = function(event)
+  Commands.when_change_mod_settings(event)
 end
 
 return Load

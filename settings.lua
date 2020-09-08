@@ -1,5 +1,7 @@
 --설정
 
+local prefix = 'gvv-mod_'
+
 data:extend {
   {
     type = 'string-setting',
@@ -15,5 +17,12 @@ data:extend {
     setting_type = 'runtime-global',
     default_value = false,
     order = 'b'
+  },
+  {
+    type = 'bool-setting',
+    name = prefix..'enable-on-tick',
+    setting_type = 'runtime-global',
+    default_value = true,
+    order = 'c'
   },
 }
