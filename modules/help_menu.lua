@@ -79,28 +79,22 @@ local function head2(locstr)
 end
 
 local function copyable(str, wrapper_name)
+  local newline_count = select(2, str:gsub('\n',''))
   local flow = p.pointer.add{type = 'flow', direction = 'vertical', name = wrapper_name, style = 'vflow_gvv-mod'}
-  local u = flow.add{type = 'textfield', name = '_gvv-mod_uneditable_text_', text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"}}
+  local u
+  if newline_count > 0 then
+    local height = 22 + 22 * newline_count
+    if height > 400 then height = 400 end
+    u = flow.add{type = 'text-box', name = '_gvv-mod_uneditable_text_', text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"}}
+    u.style.height = height
+  else
+    u = flow.add{type = 'textfield', name = '_gvv-mod_uneditable_text_', text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"}}
+  end
   flow.style.horizontally_stretchable = true
   u.style.horizontally_stretchable = true
   u.style.horizontally_squashable = true
   u.style.minimal_width = 10
   u.style.maximal_width = 9999
-  flow.add{type = 'label', name = '_gvv-mod_uneditable_text_buffer_', caption = str}
-  flow['_gvv-mod_uneditable_text_buffer_'].visible = false
-  this = u
-  return u
-end
-
-local function copyable_box(str, height, wrapper_name)
-  local flow = p.pointer.add{type = 'flow', direction = 'vertical', name = wrapper_name, style = 'vflow_gvv-mod'}
-  local u = flow.add{type = 'text-box', name = '_gvv-mod_uneditable_text_', text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"}}
-  flow.style.horizontally_stretchable = true
-  u.style.horizontally_stretchable = true
-  u.style.horizontally_squashable = true
-  u.style.minimal_width = 10
-  u.style.maximal_width = 9999
-  u.style.height = height
   flow.add{type = 'label', name = '_gvv-mod_uneditable_text_buffer_', caption = str}
   flow['_gvv-mod_uneditable_text_buffer_'].visible = false
   this = u
@@ -383,7 +377,7 @@ do
       break
     end
   end
-  copyable_box('remote.call("__'..example_name..'__gvv", "c", [[\n'
+  copyable('remote.call("__'..example_name..'__gvv", "c", [[\n'
     ..'local pos = {\n'
     ..'  ( arg[1].right_bottom[1] - arg[1].left_top[1] ) /2 + arg[1].left_top[1],\n'
     ..'  ( arg[1].right_bottom[2] - arg[1].left_top[2] ) /2 + arg[1].left_top[2]\n'
@@ -395,7 +389,6 @@ do
     ..'}\n'
     ..']], area, " TEST") -- area is passed to arg[1].\n'
     ..'-- area is a predefined table of Lua snippet.'
-    , 250
   )
 end
 text(' ')

@@ -407,11 +407,22 @@ Gui.copyable_tracking_code = function(player, str)
   end
 
   str = str:gsub('^“',''):gsub('”$','')
+  local newline_count = select(2, str:gsub('\n',''))
 
   frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_copy_tracking_code_frame_', {"gvv-mod.copy-code"})
-  innerframe.add{type = 'textfield', name = '_gvv-mod_uneditable_text_',
-    text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"},
-  }
+
+  if newline_count > 0 then
+    local height = 23 + 23 * newline_count
+    if height > 400 then height = 400 end
+    innerframe.add{type = 'text-box', name = '_gvv-mod_uneditable_text_',
+      text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"},
+    }
+    innerframe['_gvv-mod_uneditable_text_'].style.height = height
+  else
+    innerframe.add{type = 'textfield', name = '_gvv-mod_uneditable_text_',
+      text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"},
+    }
+  end
   innerframe['_gvv-mod_uneditable_text_'].focus()
   innerframe['_gvv-mod_uneditable_text_'].select_all()
   innerframe['_gvv-mod_uneditable_text_'].style.width = 400
