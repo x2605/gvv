@@ -5,10 +5,10 @@ Date: 2020-09-08
   Changes:
     - Removed /g-c commands because I found built-in /c commands also can access mod via /c __<mod_name>__ <code>.
     - Now mods are also can be made to be temporarily accessible by gvv without changing "control.lua".
-    - Added mod setting option to completely turn on_tick event of gvv off/on. (can be used in playtime)
+    - Added mod setting option to completely turn "on_tick" event of gvv off/on. (can be used in playtime)
 
   Info:
-    - Though /g-c is gone, but remote.call("__<mod_name>__gvv", "c", <script>, ...) still remains.
+    - Though /g-c is gone, but remote.call("__<mod_name>__gvv", "c", <script>, ...) still remains. Usable in Lua snippet of /editor or elsewhere.
     - To turn off on_tick in server console, use /sc __gvv__ settings.global["gvv-mod_enable-on-tick"]={value= false }
 
 ---------------------------------------------------------------------------------------------------
