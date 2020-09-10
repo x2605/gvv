@@ -20,7 +20,7 @@ return function(nilstr) return [[=function()
     local s,a=pcall(function()return v.valid end)
     if s then return a else return end
   end
-  local u={LuaGameScript=true,LuaBootstrap=true,LuaRemote=true,LuaCommandProcessor=true,LuaSettings=true,LuaRCON=true,LuaRendering=true}
+  local u={LuaGameScript=true,LuaBootstrap=true,LuaRemote=true,LuaCommandProcessor=true,LuaSettings=true,LuaRCON=true,LuaRendering=true,LuaLazyLoadedValue=true}
   ]]--[[ blacklisted --]]..[[
 
   it=function(b,pth,o)

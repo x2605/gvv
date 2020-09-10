@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.3
+Date: 2020-09-10
+
+  Fixes:
+    - Fixed mistakes in "/gdump-json" command which was not following js object notation strictly.
+    - Missing LuaLazyLoadedValue in remote "diag" is now recognized as errorful entry in global.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.2.2
 Date: 2020-09-10
 
