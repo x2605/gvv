@@ -189,7 +189,7 @@ Table_to_str.path_to_lua_prop_path = function(path_tbl, front_to_remote_call)
 end
 
 Table_to_str.key_to_str = function(k)
-  t = type(k)
+  local t = type(k)
   if t == 'table' then
     return Table_to_str.to_luaon(k, true)
   elseif t == 'string' then

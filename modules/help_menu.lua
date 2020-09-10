@@ -388,7 +388,7 @@ text('Prints : [color=0.25,1,0.25]gvv[/color]')
 do
   local example_name = 'my Mod-1'
   for name in pairs(script.active_mods) do
-    pc, ret = pcall(function() return remote.interfaces['__'..name..'__gvv']['c'] end)
+    local pc, ret = pcall(function() return remote.interfaces['__'..name..'__gvv']['c'] end)
     if pc and ret and name ~= 'level' and name ~= 'gvv' then
       example_name = name
       break
@@ -404,7 +404,7 @@ text{x..'17'}
 do
   local example_name = 'gvv'
   for name in pairs(script.active_mods) do
-    pc, ret = pcall(function() return remote.interfaces['__'..name..'__gvv']['c'] end)
+    local pc, ret = pcall(function() return remote.interfaces['__'..name..'__gvv']['c'] end)
     if pc and ret and name ~= 'level' and name ~= 'gvv' then
       example_name = name
       break

@@ -26,7 +26,7 @@ return function(nilstr) return [[=function()
   it=function(b,pth,o)
     ]]--[[ iterator --]]..[[
     ]]--[[ b = table, pth = path table, o = table as key deep search mode boolean --]]..[[
-    local t
+    local t, y
     for k,v in pairs(b) do
       t=type(k)
       y=type(v)

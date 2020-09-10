@@ -74,7 +74,7 @@ local draw_folder = function(tree_data, parent_container, parent_label, folder_k
   end
 
 
-  label_container = draw_branch(folder_wrap, folder_key)
+  local label_container = draw_branch(folder_wrap, folder_key)
 
   local sprite = label_container.add{type = 'sprite', name = 'folder_sprite', sprite = 'gvv-mod_folder-opened'}
   sprite.style.width = 20
@@ -439,8 +439,12 @@ Tree.register_object = function(g, luaobj_elem)
     error('Tree.track_path failed in Tree.register_object')
   end
   if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+    local pc, ret = pcall(function() return obj.valid end)
+    if pc and not ret then
+      error(luaobj_elem.caption..'('..obj.object_name..') object is not there anymore.')
+    end
   else
-    error(luaobj_elem.caption..' object is not there anymore.')
+    error(luaobj_elem.caption..'('..obj.object_name..') object is not there anymore.')
   end
   local already_exist = false
   local index

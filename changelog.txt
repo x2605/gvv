@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.2
+Date: 2020-09-10
+
+  Changes:
+    - When trying to track already non-existing LuaObject reference found in "global" tab, pops error message immediately instead of opening it at "property" tab.
+
+  Fixes:
+    - Fixed a few missing "local" notations in source code.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.2.1
 Date: 2020-09-08
 
