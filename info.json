@@ -1,6 +1,10 @@
 {
   "name": "gvv",
+<<<<<<< HEAD
   "version": "0.2.4",
+=======
+  "version": "0.2.2",
+>>>>>>> parent of a9b8003... table2json fix
   "title": "Lua API global Variable Viewer (gvv)",
   "author": "x2605",
   "contact": "",
