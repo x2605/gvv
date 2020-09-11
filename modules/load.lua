@@ -3,6 +3,7 @@
 local Commands = require('modules.commands')
 local Util = require('modules.util')
 local Tracking = require('modules.tracking')
+local Gui = require('modules.gui')
 
 local Load = {}
 

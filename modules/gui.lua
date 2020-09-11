@@ -304,9 +304,12 @@ Gui.open_main = function(player_index)
 end
 
 -- 메인 윈도우 닫기
-Gui.close_main = function(g)
+Gui.close_main = function(g, ignore_save)
   local player = game.players[g.index]
-  local pc, ret = pcall(function(g) Tree.save_on_quit(g) end, g)
+  local pc, ret
+  if not ignore_save then
+    pc, ret = pcall(function(g) Tree.save_on_quit(g) end, g)
+  end
   g.gui.frame.destroy()
   local frame
   for frame_name in pairs(other_frames_to_close_when_closing_main) do
@@ -315,7 +318,7 @@ Gui.close_main = function(g)
       frame.destroy()
     end
   end
-  if not pc then error(ret) end
+  if not ignore_save and not pc then error(ret) end
 end
 
 -- 내용을 복사할 수 있는 미니 윈도우1

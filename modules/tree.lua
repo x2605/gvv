@@ -182,7 +182,7 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
         g.data.opened_root.globtree[prev_mod_name].vis = prev_opened_root.vis
       end
     elseif tab == 'prop' then
-      local prev_root_name = parent_container.children[1].name
+      local prev_root_name = parent_container.children[3].name
       prev_opened_data = g.data.opened_data.proptree[prev_root_name]
       for k in pairs(prev_opened_data) do prev_opened_data[k] = nil end
       if parent_container.children[3].content_container then
@@ -190,7 +190,7 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
         g.data.opened_root.proptree[prev_root_name].vis = prev_opened_root.vis
       end
     elseif tab == 'gobj' then
-      local prev_root_name = parent_container.children[1].name
+      local prev_root_name = parent_container.children[3].name
       prev_opened_data = g.data.opened_data.gobjtree[prev_root_name]
       for k in pairs(prev_opened_data) do prev_opened_data[k] = nil end
       if parent_container.children[3].content_container then
@@ -392,15 +392,15 @@ end
 
 --재귀 최상위 root_container찾기
 local get_root_container
-get_root_container = function(elem)
+get_root_container = function(elem, last_child)
   if elem.parent then
     if elem.parent.name == '_gvv-mod_sub_globtree_' or elem.parent.name == '_gvv-mod_sub_proptree_' or elem.parent.name == '_gvv-mod_sub_gobjtree_' then
-      return elem.parent
+      return elem.parent, elem
     else
-      return get_root_container(elem.parent)
+      return get_root_container(elem.parent, elem)
     end
   else
-    return nil
+    return nil, elem
   end
 end
 
@@ -490,8 +490,8 @@ Tree.remove_prop_tree = function(g, index)
       end
     end
   end
-  if g.gui.sub_proptree.children[1] then
-    m = g.gui.sub_proptree.children[1].name:match('^[(](%d+)[)] .+')
+  if g.gui.sub_proptree.children[3] then
+    m = g.gui.sub_proptree.children[3].name:match('^[(](%d+)[)] .+')
     if m + 0 == index then
       g.gui.sub_proptree.clear()
     end
