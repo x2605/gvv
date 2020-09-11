@@ -163,6 +163,8 @@ Table_to_str.path_to_lua_prop_path = function(path_tbl, front_to_remote_call)
     if front_to_remote_call and i == 1 then
       if v:match('^[*]()') then
         s[#s + 1] = v:match('^[*](.*)')..''
+      elseif v:match('^_G:()') then
+        s[#s + 1] = 'remote.call("__'..v:match('^_G:(.*)')..'__gvv","_G")'
       else
         s[#s + 1] = 'remote.call("__'..v..'__gvv","global")'
       end

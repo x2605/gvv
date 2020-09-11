@@ -5,12 +5,13 @@ local Copy_Code = {}
 local codes = {}
 
 local version_code = function() return [[=function()
-  return '2'
+  return '3'
 end,
 ]] end
 
 local fix_code = require('modules.remote_code.diag_n_fix')
 local luac_code = require('modules.remote_code.lua_command')
+local get_g_code = require('modules.remote_code.get_g')
 
 
 codes.in_control_lua = [[
@@ -20,6 +21,7 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 
 codes.in_console_enable = [[
 remote.add_interface("__"..script.mod_name.."__gvv",{global=function() return global end,
+_G]]..get_g_code()..[[
 diag]]..fix_code('')..[[
 fix]]..fix_code('b[k]=nil')..[[
 c]]..luac_code()..[[

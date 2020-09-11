@@ -1,5 +1,3 @@
--- global variable diagnose code 전역 변수 진단 코드
-
 return function(nilstr) return [[=function()
 
   local rm,po,mt,c,e,p,l,j,it={},{},{},0,0,0,0,0
@@ -153,3 +151,5 @@ return function(nilstr) return [[=function()
   return {trouble=rm,meta=mt,m_count=l,n_count=c,e_count=e,potential=po,p_count=p}
 end,
 ]] end
+
+-- global variable diagnose code 전역 변수 진단 코드
