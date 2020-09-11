@@ -92,7 +92,9 @@ Gui_Event.on_gui_click = function(event)
     if Tree.ignore_in_help_page(g, event.element) then return end
     local category = Tree.get_tree_category(event.element)
     local tree_data
-    if category == 'glob' then
+    if category == '_G_glob' then
+      tree_data = g.data._G_tree_item_glob
+    elseif category == 'glob' then
       tree_data = g.data.tree_item_glob
     elseif category == 'prop' then
       tree_data = g.data.tree_item_prop
@@ -111,7 +113,13 @@ Gui_Event.on_gui_click = function(event)
           content_container.visible = not content_container.visible
           local folder = event.element.parent.parent.content_container.folder
           if table_size(folder.children) == 0 then
-            if category == 'glob' then
+            if category == '_G_glob' then
+              local tbl = Tree.get_global(event.element)
+              for i = 2, #tree_path do
+                tbl = tbl[tree_path[i]]
+              end
+              Tree.draw(g, tree_data, {}, tbl, folder, event.element, false)
+            elseif category == 'glob' then
               local tbl = Tree.get_global(event.element)
               for i = 2, #tree_path do
                 tbl = tbl[tree_path[i]]
