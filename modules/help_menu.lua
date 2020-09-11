@@ -379,11 +379,6 @@ head2{x..'12'}
 text{x..'13'}
 text(' ')
 hr()
-head2{x..'18', {"gvv-mod.tab-filtered-view"}}
-text{x..'19'}
-copyable('assert(function() <YOUR_CODE> return <RETURN_VALUE> end)()')
-text(' ')
-hr()
 head2{x..'14'}
 text{x..'15'}
 copyable('/c game.player.print(script.mod_name)')
