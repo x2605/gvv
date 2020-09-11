@@ -141,19 +141,19 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
       parent_container.clear()
     end
   end
-  if table_size(parent_container.children) > 2 then
-    local root_elem = parent_container.children[3].label_container['_gvv-mod_key_label']
+  if table_size(parent_container.children) > 0 then
+    local root_elem = parent_container.children[1].label_container['_gvv-mod_key_label']
     local prev_opened_data
     if tab == 'glob' then
-      local prev_mod_name = parent_container.children[3].name
+      local prev_mod_name = parent_container.children[1].name
       prev_opened_data = g.data.opened_data.globtree[prev_mod_name]
       for k in pairs(prev_opened_data) do prev_opened_data[k] = nil end
     elseif tab == 'prop' then
-      local prev_root_name = parent_container.children[3].name
+      local prev_root_name = parent_container.children[1].name
       prev_opened_data = g.data.opened_data.proptree[prev_root_name]
       for k in pairs(prev_opened_data) do prev_opened_data[k] = nil end
     elseif tab == 'gobj' then
-      local prev_root_name = parent_container.children[3].name
+      local prev_root_name = parent_container.children[1].name
       prev_opened_data = g.data.opened_data.gobjtree[prev_root_name]
       for k in pairs(prev_opened_data) do prev_opened_data[k] = nil end
     end
@@ -164,17 +164,10 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
   for k in pairs(tree_data) do tree_data[k] = nil end
   local folder, root
   if tab == 'glob' then
-    parent_container.add{type='flow', name='header'}
-    parent_container.header.visible = false
-    parent_container.add{type='flow', name='_G:'}
     folder, root = draw_folder(tree_data, parent_container, nil, root_name, 'remote.call("__[font=default-bold][color=green]'..mod_name_OR_luaobj..'[/color][/font]__gvv","global")')
     Tree.draw(g, tree_data, opened_folder_tree, tbl, folder, root, false)
   elseif tab == 'prop' or tab == 'gobj' then
     local props = Util.get_property_list(mod_name_OR_luaobj, true)
-    parent_container.add{type='flow', name='header'}
-    parent_container.header.visible = false
-    parent_container.add{type='flow', name='_G:'}
-    parent_container['_G:'].visible = false
     if type(mod_name_OR_luaobj) == 'table' and type(mod_name_OR_luaobj.__self) == 'userdata' and mod_name_OR_luaobj.object_name then
       folder, root = draw_folder(tree_data, parent_container, nil, root_name, root_name..' ([color=blue]'..mod_name_OR_luaobj.object_name..'[/color])')
     else
@@ -339,32 +332,28 @@ end
 
 --재귀 최상위 root_container찾기
 local get_root_container
-get_root_container = function(elem, last_child)
+get_root_container = function(elem)
   if elem.parent then
     if elem.parent.name == '_gvv-mod_sub_globtree_' or elem.parent.name == '_gvv-mod_sub_proptree_' or elem.parent.name == '_gvv-mod_sub_gobjtree_' then
-      return elem.parent, elem
+      return elem.parent
     else
-      return get_root_container(elem.parent, elem)
+      return get_root_container(elem.parent)
     end
   else
-    return nil, elem
+    return nil
   end
 end
 
 --아이템의 글로벌 변수찾기
 Tree.get_global = function(elem)
-  local root_container, root_child = get_root_container(elem)
-  if root_child.name:match('^_G:') then
-    return remote.call('__'..root_child.name..'__gvv','global')
-  else
-    return remote.call('__'..root_child.name..'__gvv','global')
-  end
+  local root_container = get_root_container(elem)
+  return remote.call('__'..root_container.children[1].name..'__gvv','global')
 end
 
 --아이템의 최상위 부모 아이템 찾기
 Tree.get_top_parent = function(elem)
-  local root_container, root_child = get_root_container(elem)
-  return root_child.label_container['_gvv-mod_key_label']
+  local root_container = get_root_container(elem)
+  return root_container.children[1].label_container['_gvv-mod_key_label']
 end
 
 --아이템의 트리 카테고리 찾기
@@ -423,8 +412,8 @@ Tree.remove_prop_tree = function(g, index)
       end
     end
   end
-  if g.gui.sub_proptree.children[3] then
-    m = g.gui.sub_proptree.children[3].name:match('^[(](%d+)[)] .+')
+  if g.gui.sub_proptree.children[1] then
+    m = g.gui.sub_proptree.children[1].name:match('^[(](%d+)[)] .+')
     if m + 0 == index then
       g.gui.sub_proptree.clear()
     end
@@ -524,16 +513,16 @@ end
 
 -- gvv 창을 닫을 때 저장하기
 Tree.save_on_quit = function(g)
-  if table_size(g.gui.sub_globtree.children) > 2 then
-    local top = g.gui.sub_globtree.children[3]
+  if table_size(g.gui.sub_globtree.children) > 0 then
+    local top = g.gui.sub_globtree.children[1]
     if not top.name:match('^[*]') then
       local opened_data = g.data.opened_data.globtree[top.name]
       for k in pairs(opened_data) do opened_data[k] = nil end
       Tree.save_opened_tree(g.data.tree_item_glob, opened_data, top.label_container['_gvv-mod_key_label'])
     end
   end
-  if table_size(g.gui.sub_proptree.children) > 2 then
-    local top = g.gui.sub_proptree.children[3]
+  if table_size(g.gui.sub_proptree.children) > 0 then
+    local top = g.gui.sub_proptree.children[1]
     if not top.name:match('^[*]') then
       local opened_data = g.data.opened_data.proptree[top.name]
       for k in pairs(opened_data) do opened_data[k] = nil end

@@ -41,16 +41,16 @@ Table_to_str.to_json = function(obj, as_key)
   elseif t == 'string' then
     return '"'..esc(obj)..'"'
   elseif t == 'number' then
-    if as_key then return '['..tostring(obj)..']' end
+    if as_key then return '"'..tostring(obj)..'"' end
     return tostring(obj)
   elseif t == 'boolean' then
-    if as_key then return '['..tostring(obj)..']' end
+    if as_key then return '"'..tostring(obj)..'"' end
     return tostring(obj)
   elseif t == 'nil' then
-    if as_key then return '[null]' end
+    if as_key then return '"null"' end
     return 'null'
   else
-    if as_key then return '['..t..']' end
+    if as_key then return '"'..t..'"' end
     return t
   end
 end
