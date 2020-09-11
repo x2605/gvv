@@ -9,26 +9,26 @@ return function() return [[=function()
     if t=='table' and type(o.__self)=='userdata' and o.object_name then
       if a or N[o.object_name] then
         j=j+1
-        r=o.object_name..j
+        r='<'..o.object_name..j..'>'
       else
         r=o
       end
     elseif t=='table' then
       if a then
         j=j+1
-        r='table'..j
+        r='<table'..j..'>'
       else
         r={}
         for k,v in next,o,nil do
           r[cp(k,true)]=cp(v)
         end
       end
-    elseif t=='function' or t=='userdata' or t=='thread' then
+    elseif t=='function' or t=='userdata' or t=='thread' or t=='nil' then
       if a then
         j=j+1
-        r=t..j
+        r='<'..t..j..'>'
       else
-        r=t
+        r='<'..t..'>'
       end
     else
       r=o

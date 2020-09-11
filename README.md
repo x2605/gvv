@@ -45,6 +45,7 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 
 ### LuaRemote interfaces added by this mod  
 - **remote.call("__<mod_name>__gvv","global")** : Returns global table of the mod.  
+- **remote.call("__<mod_name>__gvv","_G")** : Returns _G table of the mod. Some data types can not be brought.  
 - **remote.call("__<mod_name>__gvv","diag")** : Need to be used only internally. Performs diagnosis of global table of the mod and returns problematic paths as table.  
 - **remote.call("__<mod_name>__gvv","fix")** : Need to be used only internally. Performs diagnosis and kills entries that LuaRemote cannot handle in global table of the mod.  
 - **remote.call("__<mod_name>__gvv","c",<lua_code>, ...)** : Runs a lua code(string type) in sandbox of the mod, "..." becomes local table named "arg" in the lua code.  

@@ -36,12 +36,14 @@ Load.on_configuration_changed = function(data)
   if data.mod_changes then
     local thismod = data.mod_changes['gvv']
     if thismod then
-      if thismod.old_version and thismod.old_version:match('^0%.[012]%.[0123]$') then
+      if thismod.old_version and thismod.old_version:match('^0%.[012]%.(%d+)$') then
         if global.players then
           for index, g in pairs(global.players) do
-            if g.gui and g.gui.frame and g.gui.frame.valid then
-              Gui.close_main(g, true)
-            end
+            pcall(function()
+              if g.gui and g.gui.frame and g.gui.frame.valid then
+                Gui.close_main(g, true)
+              end
+            end)
           end
         end
       end
