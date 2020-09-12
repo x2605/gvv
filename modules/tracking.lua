@@ -5,7 +5,7 @@ local Tree = require('modules.tree')
 
 local Tracking = {}
 
-Tracking.draw = function(panel, path_str, full_path)
+Tracking.draw = function(panel, path_str, full_path, preinput)
   local container = panel.add{type = 'flow', name = path_str, direction = 'vertical', style = 'vflow_gvv-mod'}
   local header = container.add{type = 'flow', name = 'header', direction = 'horizontal', style = 'hflow_gvv-mod'}
   header.style.vertical_align = 'center'
@@ -26,7 +26,7 @@ Tracking.draw = function(panel, path_str, full_path)
   else
     error('full_path is not table nor string')
   end
-  header.add{type = 'label', name = '_gvv-mod_tracking_path_str_', caption = path_str, tooltip = {"gvv-mod.right-to-copy-code"}}
+  header.add{type = 'label', name = '_gvv-mod_tracking_path_str_', caption = path_str, tooltip = {"gvv-mod.right-to-copy-edit-code"}}
   header['_gvv-mod_tracking_path_str_'].style.font_color = {0.75,0.75,0.75,1}
   local body = container.add{type = 'flow', name = 'body', direction = 'horizontal', style = 'hflow_gvv-mod'}
   body.style.vertical_align = 'center'
@@ -35,10 +35,14 @@ Tracking.draw = function(panel, path_str, full_path)
   body.add{type = 'label', name = 'report', caption = '  =  '}
   body.add{type = 'label', name = '_gvv-mod_tracking_output_', tooltip = {"gvv-mod.right-to-copy-code"}}
   body['_gvv-mod_tracking_output_'].style.font = 'default-bold'
+  if preinput and type(preinput) == 'table' and type(preinput.value) == 'string' and type(preinput.remchk) == 'boolean' then
+    header.check_to_remove.state = preinput.remchk
+    body['_gvv-mod_tracking_output_'].caption = preinput.value
+  end
   local interline = container.add{type = 'line', direction = 'horizontal'}
 end
 
-Tracking.add = function(g, full_path)
+Tracking.add = function(g, full_path, preinput)
   local panel = g.gui.tracking_panel
   local list = g.data.tracking_list
   local path_str
@@ -56,7 +60,7 @@ Tracking.add = function(g, full_path)
   end
   if already then return end
 
-  Tracking.draw(panel, path_str, full_path)
+  Tracking.draw(panel, path_str, full_path, preinput)
 
   list[path_str] = full_path
 end

@@ -1,5 +1,7 @@
 -- 컨트롤
 
+local util = require('__core__.lualib.util')
+
 _initiated_session_ = false
 require('modules.register_event')
 

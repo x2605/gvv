@@ -16,7 +16,7 @@ Util.create_frame_w_closebtn = function(player, frame_name, title)
   drag.style.height = 24
   drag.style.horizontally_stretchable = true
   local closebtn = frame.header.add{type = 'sprite-button', name = 'closebtn', sprite = 'utility/close_white', style = 'frame_action_button', mouse_button_filter = {'left'}}
-  local innerframe = frame.add{type = 'flow', direction = 'vertical'}
+  local innerframe = frame.add{type = 'flow', name = 'innerframe', direction = 'vertical'}
   frame.auto_center = true
   return frame, closebtn, innerframe
 end

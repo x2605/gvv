@@ -15,6 +15,7 @@ local simple_frame_names = {
   ['_gvv-mod_dump_frame_'] = true,
   ['_gvv-mod_anycode_frame_'] = true,
   ['_gvv-mod_copy_tracking_code_frame_'] = true,
+  ['_gvv-mod_edit_tracking_code_frame_'] = true,
 }
 local other_frames_to_close_when_focusing_main = {
   --['_gvv-mod_anycode_frame_'] = true,
@@ -223,17 +224,64 @@ Gui_Event.on_gui_click = function(event)
     end
     Gui.change_tab(g, 1)
 
+  -- _gvv-mod_copy_tracking_code_frame_ 의 편집버튼을 클릭할 때
+  elseif g.gui.ecedit and g.gui.ecedit.valid and event.element == g.gui.ecedit then
+    local name = event.element.parent.parent.entry_name_buffer.caption
+    local code = event.element.parent.parent['_gvv-mod_uneditable_text_buffer_'].caption
+    local succ = Gui.edit_code_in_tracking(g, code, name)
+    if succ then
+      local top = Util.get_top_frame(event.element)
+      if top and top.valid then
+        top.destroy()
+      end
+    end
+
+  -- _gvv-mod_edit_tracking_code_frame_ 의 편집 확인 버튼을 클릭할 때
+  elseif g.gui.ecconf and g.gui.ecconf.valid and event.element == g.gui.ecconf then
+    local name = event.element.parent.parent.sc.entry_name_buffer.caption
+    local code = event.element.parent.parent['_gvv-mod_edit_tracking_code_code_'].text
+    local panel = g.gui.tracking_panel
+    local list = g.data.tracking_list
+    local buffer = {}
+    local start_adding_buffer = false
+    for i, elem in ipairs(panel.children) do
+      if start_adding_buffer then
+        buffer[#buffer + 1] = {
+          path_str = elem.name,
+          full_path = list[elem.name],
+          preinput = {
+            remchk = elem.header.check_to_remove.state,
+            value = elem.body['_gvv-mod_tracking_output_'].caption
+          }
+        }
+        elem.destroy()
+      elseif elem.name == name then
+        list[elem.name] = nil
+        elem.destroy()
+        start_adding_buffer = true
+      end
+    end
+    Tracking.add(g, code)
+    for i, v in ipairs(buffer) do
+      Tracking.draw(panel, v.path_str, v.full_path, v.preinput)
+    end
+    local top = Util.get_top_frame(event.element)
+    if top and top.valid then
+      top.destroy()
+    end
+    Gui.change_tab(g, 1)
+
   --tracking_panel 의 경로를 우클릭할 때
   elseif event.element.name == '_gvv-mod_tracking_path_str_' and event.button == defines.mouse_button_type.right then
-    Gui.copyable_tracking_code(player, event.element.caption)
+    Gui.copyable_tracking_code(g, event.element.caption, event.element.parent.parent.name)
 
   --tracking_panel 의 결과값을 우클릭할 때
   elseif event.element.name == '_gvv-mod_tracking_output_' and event.button == defines.mouse_button_type.right then
-    Gui.copyable_tracking_code(player, event.element.caption)
+    Gui.copyable_tracking_code(g, event.element.caption)
 
   --tracking_panel 의 빈 공간을 우클릭할 때 (이 조건은 가능한한 뒤에)
   elseif g.gui.tracking_panel and Util.find_parent_gui(event.element, g.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.right then
-    Gui.put_anycode_in_tracking(g)
+    local succ = Gui.put_anycode_in_tracking(g)
 
   --메인 프레임을 클릭할 때 (이 조건은 가장 마지막에)
   elseif Util.find_parent_gui(event.element, g.gui.frame) then
@@ -252,7 +300,14 @@ Gui_Event.on_gui_closed = function(event)
   if event.element then
     if event.element.player_index ~= event.player_index then return end
     if simple_frame_names[event.element.name] then
-      event.element.destroy()
+      if event.element.name == '_gvv-mod_anycode_frame_' then
+        local text = event.element.innerframe['_gvv-mod_anycode_code_'].text
+        if text == '' then
+          event.element.destroy()
+        end
+      else
+        event.element.destroy()
+      end
       return
     end
   end
@@ -295,13 +350,13 @@ Gui_Event.on_gui_confirmed = function(event)
     if g.gui.tabpane.selected_tab_index == 1 then g.gui.track_inter_show.visible = true end
     g.gui.track_inter_show.caption = g.track_interval_tick
     g.gui.track_inter_slider.slider_value = g.track_interval_tick
-  elseif event.element.name == '_gvv-mod_anycode_code_' then
-    Tracking.add(g, event.element.text)
-    local top = Util.get_top_frame(event.element)
-    if top and top.valid then
-      top.destroy()
-    end
-    Gui.change_tab(g, 1)
+  --elseif event.element.name == '_gvv-mod_anycode_code_' then
+    --Tracking.add(g, event.element.text)
+    --local top = Util.get_top_frame(event.element)
+    --if top and top.valid then
+    --  top.destroy()
+    --end
+    --Gui.change_tab(g, 1)
   end
 end
 
@@ -343,6 +398,13 @@ Gui_Event.on_gui_text_changed = function(event)
     if event.element.parent['_gvv-mod_uneditable_text_buffer_'] then
       event.element.text = event.element.parent['_gvv-mod_uneditable_text_buffer_'].caption
       event.element.select_all()
+    end
+  elseif event.element.name == '_gvv-mod_anycode_code_' then
+    if event.element.text == '' then
+      local player = game.players[event.player_index]
+      if player.opened_gui_type == defines.gui_type.none then
+        player.opened = Util.get_top_frame(event.element)
+      end
     end
   end
 end

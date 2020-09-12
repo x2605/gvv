@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.1
+Date: 2020-09-12
+
+  Changes:
+    - Entries in "Variable trace" now can be edited.
+    - "_G" scope of gvv mod now have "util" of "__core__/lualib/util.lua". gvv itself doesn't use it but you can use it for custom codes.
+    - Changed default example of "Variable trace" entries.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 2020-09-11
 

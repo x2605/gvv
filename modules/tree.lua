@@ -236,6 +236,9 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
   folder.parent.extbar.visible = false
   folder.parent.parent.label_container.vbar.visible = false
   folder.parent.parent.label_container.hbar.part.style = 'branch-hide_gvv-mod'
+  if tab ~= '_G_glob' then
+    folder.parent.parent.style.bottom_padding = 75
+  end
 end
 
 --재귀 그리기
