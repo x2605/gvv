@@ -13,6 +13,8 @@ local other_frames_to_close_when_closing_main = {
   ['_gvv-mod_anycode_frame_'] = true,
   ['_gvv-mod_copy_tracking_code_frame_'] = true,
   ['_gvv-mod_edit_tracking_code_frame_'] = true,
+  ['_gvv-mod_export_tracking_code_frame_'] = true,
+  ['_gvv-mod_import_tracking_code_frame_'] = true,
 }
 
 -- 메인 윈도우
@@ -91,7 +93,7 @@ Gui.open_main = function(player_index)
   topspace.style.horizontal_spacing = 6
   topspace.style.vertical_align = 'center'
   topspace.add{type = 'label', caption = 'W : ', tooltip = {"gvv-mod.xresize"}}
-  topspace.add{type = 'slider', name = 'xresize', minimum_value = 525, maximum_value = 1725, value = g.last_width,
+  topspace.add{type = 'slider', name = 'xresize', minimum_value = 550, maximum_value = 1750, value = g.last_width,
     value_step = 25, discrete_slider = false, discrete_values = true, tooltip = {"gvv-mod.xresize"},
   }
   topspace.xresize.style.width = 80
@@ -120,20 +122,39 @@ Gui.open_main = function(player_index)
   topspace.track_inter_edit.visible = false
   topspace.track_inter_edit.style.width = 30
   topspace.track_inter_edit.style.height = 20
+  topspace.track_inter_edit.style.right_margin = 5
   topspace.add{type = 'sprite-button', name = 'remove_checked_btn', sprite = 'utility/trash_white',
     style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.remove-checked-button"},
   }
   topspace.remove_checked_btn.style.left_margin = 8
   topspace.remove_checked_btn.style.width = 20
   topspace.remove_checked_btn.style.height = 20
+  local rcf = topspace.add{type = 'frame', name = 'remove_confirm_frame'}
+  rcf.style.padding = 0
+  rcf.style.width = 48
+  rcf.style.left_margin = -50
+  rcf.style.right_margin = -4
+  rcf.style.top_margin = -1
+  rcf.style.bottom_margin = -15
+  rcf.add{type = 'sprite-button', name = 'remove_checked_confirm_btn', sprite = 'gvv-mod_red-check',
+    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.remove-checked-button"},
+  }
+  rcf.remove_checked_confirm_btn.style.width = 18
+  rcf.remove_checked_confirm_btn.style.height = 18
+  rcf.add{type = 'sprite-button', name = 'remove_checked_cancel_btn', sprite = 'gvv-mod_green-close',
+    style = 'frame_action_button', mouse_button_filter = {'left'},
+  }
+  rcf.remove_checked_cancel_btn.style.width = 18
+  rcf.remove_checked_cancel_btn.style.height = 18
+  rcf.visible = false
   topspace.add{type = 'sprite-button', name = 'move_up_checked_btn', sprite = 'gvv-mod_arrow-up',
-    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.move-up-checked"},
+    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.move-up-checked"},
   }
   topspace.move_up_checked_btn.style.left_margin = 8
   topspace.move_up_checked_btn.style.width = 20
   topspace.move_up_checked_btn.style.height = 20
   topspace.add{type = 'sprite-button', name = 'move_down_checked_btn', sprite = 'gvv-mod_arrow-down',
-    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.move-down-checked"},
+    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.move-down-checked"},
   }
   topspace.move_down_checked_btn.style.left_margin = -3
   topspace.move_down_checked_btn.style.width = 20
@@ -144,12 +165,12 @@ Gui.open_main = function(player_index)
   topspace.check_process_btn.style.left_margin = 2
   topspace.check_process_btn.style.width = 20
   topspace.check_process_btn.style.height = 20
-  topspace.add{type = 'sprite-button', name = 'import_export_btn', sprite = 'gvv-mod_import-export',
-    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.import-export-btn"},
+  topspace.add{type = 'sprite-button', name = 'export_import_btn', sprite = 'gvv-mod_export-import',
+    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.export-import-btn"},
   }
-  topspace.import_export_btn.style.left_margin = 2
-  topspace.import_export_btn.style.width = 20
-  topspace.import_export_btn.style.height = 20
+  topspace.export_import_btn.style.left_margin = 2
+  topspace.export_import_btn.style.width = 20
+  topspace.export_import_btn.style.height = 20
 
 
   topspace.add{type = 'checkbox', name = 'chk_show_na', state = g.show_na, caption = 'n/a', tooltip = {"gvv-mod.show_na"}}
@@ -163,11 +184,14 @@ Gui.open_main = function(player_index)
   g.gui.track_inter_slider = topspace.track_inter_slider -- 사용자 개체 등록
   g.gui.track_inter_show = topspace.track_inter_show -- 사용자 개체 등록
   g.gui.track_inter_edit = topspace.track_inter_edit -- 사용자 개체 등록
+  g.gui.remove_confirm_frame = rcf -- 사용자 개체 등록
+  g.gui.remove_checked_confirm_btn = rcf.remove_checked_confirm_btn -- 사용자 개체 등록
+  g.gui.remove_checked_cancel_btn = rcf.remove_checked_cancel_btn -- 사용자 개체 등록
   g.gui.remove_checked_btn = topspace.remove_checked_btn -- 사용자 개체 등록
   g.gui.move_up_checked_btn = topspace.move_up_checked_btn -- 사용자 개체 등록
   g.gui.move_down_checked_btn = topspace.move_down_checked_btn -- 사용자 개체 등록
   g.gui.check_process_btn = topspace.check_process_btn -- 사용자 개체 등록
-  g.gui.import_export_btn = topspace.import_export_btn -- 사용자 개체 등록
+  g.gui.export_import_btn = topspace.export_import_btn -- 사용자 개체 등록
   g.gui.chk_show_na = topspace.chk_show_na -- 사용자 개체 등록
   g.gui.chk_show_func = topspace.chk_show_func -- 사용자 개체 등록
 
@@ -431,7 +455,9 @@ Gui.change_tab = function(g, index)
     g.gui.move_up_checked_btn.visible = true
     g.gui.move_down_checked_btn.visible = true
     g.gui.check_process_btn.visible = true
-    g.gui.import_export_btn.visible = true
+    g.gui.export_import_btn.visible = true
+
+    g.gui.remove_confirm_frame.visible = false
   else
     g.gui.track_refresh_btn.visible = false
     g.gui.track_inter_slider.visible = false
@@ -441,7 +467,9 @@ Gui.change_tab = function(g, index)
     g.gui.move_up_checked_btn.visible = false
     g.gui.move_down_checked_btn.visible = false
     g.gui.check_process_btn.visible = false
-    g.gui.import_export_btn.visible = false
+    g.gui.export_import_btn.visible = false
+
+    g.gui.remove_confirm_frame.visible = false
   end
   if tab == 2 then
     local mod_list = Util.get_accessible_mod_list()
@@ -561,6 +589,75 @@ Gui.edit_code_in_tracking = function(g, str, entry_name)
 
   --player.opened = frame
   return true
+end
+
+--내보내기 윈도우
+Gui.export_window = function(g)
+  local player = game.players[g.index]
+  local frame = player.gui.screen['_gvv-mod_export_tracking_code_frame_']
+  local closebtn, innerframe
+
+  if frame and frame.valid then
+    frame.destroy()
+  end
+
+  local panel = g.gui.tracking_panel
+  local str = ''
+  for i, v in ipairs(panel.children) do
+    str = str .. v.name .. '\n--[[]]--\n'
+  end
+
+  frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_export_tracking_code_frame_', {"gvv-mod.export-code-title"})
+  innerframe.add{type = 'text-box', name = '_gvv-mod_uneditable_text_', text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"}}
+  innerframe['_gvv-mod_uneditable_text_'].focus()
+  innerframe['_gvv-mod_uneditable_text_'].select_all()
+  innerframe['_gvv-mod_uneditable_text_'].style.width = 400
+  innerframe['_gvv-mod_uneditable_text_'].style.height = 300
+  innerframe.add{type = 'label', name = '_gvv-mod_uneditable_text_buffer_', caption = str}
+  innerframe['_gvv-mod_uneditable_text_buffer_'].visible = false
+
+  player.opened = frame
+end
+
+--가져오기 윈도우
+Gui.import_window = function(g)
+  local player = game.players[g.index]
+  local frame = player.gui.screen['_gvv-mod_import_tracking_code_frame_']
+  local closebtn, innerframe
+
+  if frame and frame.valid then
+    frame.destroy()
+  end
+
+  local panel = g.gui.tracking_panel
+  local str = ''
+  for i, v in ipairs(panel.children) do
+    str = str .. v.name .. '\n--[[]]--\n'
+  end
+
+  frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_import_tracking_code_frame_', {"gvv-mod.import-code-title"})
+  innerframe.add{type = 'label', name = 'comment', caption = {"gvv-mod.import-code-comment"}}
+  innerframe.comment.style.single_line = false
+  innerframe.comment.style.width = 400
+  innerframe.add{type = 'text-box', name = '_gvv-mod_import_tracking_code_code_', text = '', clear_and_focus_on_right_click = false}
+  innerframe['_gvv-mod_import_tracking_code_code_'].focus()
+  innerframe['_gvv-mod_import_tracking_code_code_'].style.width = 400
+  innerframe['_gvv-mod_import_tracking_code_code_'].style.height = 300
+
+  local right = innerframe.add{type = 'flow', direction = 'horizontal'}
+  right.style.horizontal_align = 'right'
+  right.style.horizontally_stretchable = true
+  right.style.left_padding = 0
+  right.style.top_padding = 6
+  local drag = right.add{type = 'empty-widget', name = 'dragspace', style = 'draggable_space_header'}
+  drag.drag_target = frame
+  drag.style.left_margin = 0
+  drag.style.right_margin = 8
+  drag.style.height = 32
+  drag.style.horizontally_stretchable = true
+  g.gui.imconf = right.add{type = 'button', caption = {"gvv-mod.import-code-btn"}, style = 'confirm_button', mouse_button_filter = {'left'}}
+
+  player.opened = frame
 end
 
 return Gui

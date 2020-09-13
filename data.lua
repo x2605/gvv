@@ -73,13 +73,37 @@ data:extend{
   },
   {
     type = "sprite",
-    name = "gvv-mod_import-export",
-    filename = "__gvv__/icons/import-export.png",
+    name = "gvv-mod_export-import",
+    filename = "__gvv__/icons/export-import.png",
     priority = "extra-high-no-scale",
     width = 32,
     height = 32,
     flags = {"gui-icon"},
     mipmap_count = 2,
+    scale = 0.5
+  },
+  {
+    type = "sprite",
+    name = "gvv-mod_red-check",
+    filename = "__core__/graphics/icons/mip/check-mark-white.png",
+    priority = "extra-high-no-scale",
+    width = 32,
+    height = 32,
+    flags = {"gui-icon"},
+    mipmap_count = 2,
+    tint = {r=1, g=0.25, b=0.25, a=1},
+    scale = 0.5
+  },
+  {
+    type = "sprite",
+    name = "gvv-mod_green-close",
+    filename = "__core__/graphics/icons/close-white.png",
+    priority = "extra-high-no-scale",
+    width = 32,
+    height = 32,
+    flags = {"gui-icon"},
+    mipmap_count = 1,
+    tint = {r=0, g=1, b=0, a=1},
     scale = 0.5
   },
 }

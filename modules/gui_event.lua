@@ -16,10 +16,14 @@ local simple_frame_names = {
   ['_gvv-mod_anycode_frame_'] = true,
   ['_gvv-mod_copy_tracking_code_frame_'] = true,
   ['_gvv-mod_edit_tracking_code_frame_'] = true,
+  ['_gvv-mod_export_tracking_code_frame_'] = true,
+  ['_gvv-mod_import_tracking_code_frame_'] = true,
 }
 local other_frames_to_close_when_focusing_main = {
   ['_gvv-mod_anycode_frame_'] = true,
   ['_gvv-mod_copy_tracking_code_frame_'] = true,
+  ['_gvv-mod_export_tracking_code_frame_'] = true,
+  ['_gvv-mod_import_tracking_code_frame_'] = true,
 }
 
 Gui_Event.on_gui_click = function(event)
@@ -46,12 +50,25 @@ Gui_Event.on_gui_click = function(event)
     g.gui.track_inter_slider.slider_value = g.track_interval_tick
   end
 
+  --추적 항목 삭제하려다 딴거 누를 때
+  if event.element ~= g.gui.remove_checked_btn and g.gui.remove_confirm_frame.visible and event.element ~= g.gui.remove_confirm_frame then
+    g.gui.remove_confirm_frame.visible = false
+  end
+
   --닫기 버튼
   if event.element == g.gui.closebtn then
     Gui.close_main(g)
 
   --추적 항목 삭제 버튼
   elseif event.element == g.gui.remove_checked_btn then
+    g.gui.remove_confirm_frame.visible = not g.gui.remove_confirm_frame.visible
+
+  --추적 항목 삭제 버튼 - 취소
+  elseif event.element == g.gui.remove_checked_cancel_btn then
+    g.gui.remove_confirm_frame.visible = false
+
+  --추적 항목 삭제 버튼 - 확인
+  elseif event.element == g.gui.remove_checked_confirm_btn then
     local panel = g.gui.tracking_panel
     local list = g.data.tracking_list
     for _, elem in pairs(panel.children) do
@@ -65,16 +82,127 @@ Gui_Event.on_gui_click = function(event)
   elseif event.element == g.gui.move_up_checked_btn or event.element == g.gui.move_down_checked_btn then
     local panel = g.gui.tracking_panel
     local list = g.data.tracking_list
+    local array = {}
+    for i, elem in pairs(panel.children) do
+      array[i] = {
+        index = i,
+        checked = elem.header.check_to_remove.state,
+        path_str = elem.name,
+        full_path = list[elem.name],
+        preinput = {
+          remchk = elem.header.check_to_remove.state,
+          value = elem.body['_gvv-mod_tracking_output_'].caption
+        }
+      }
+    end
+    if event.element == g.gui.move_up_checked_btn then
+      if event.button == defines.mouse_button_type.left then
+        array = Util.shift_checked(array, -1)
+      elseif event.button == defines.mouse_button_type.right then
+        array = Util.push_checked(array, -1)
+      end
+    elseif event.element == g.gui.move_down_checked_btn then
+      if event.button == defines.mouse_button_type.left then
+        array = Util.shift_checked(array, 1)
+      elseif event.button == defines.mouse_button_type.right then
+        array = Util.push_checked(array, 1)
+      end
+    end
+    for i, elem in pairs(panel.children) do
+      elem.destroy()
+    end
+    for i, v in ipairs(array) do
+      Tracking.draw(panel, v.path_str, v.full_path, v.preinput)
+    end
 
   --추적 항목 체크 조정 버튼
   elseif event.element == g.gui.check_process_btn then
     local panel = g.gui.tracking_panel
     local list = g.data.tracking_list
+    if event.button == defines.mouse_button_type.left then
+      for i, elem in pairs(panel.children) do
+        elem.header.check_to_remove.state = not elem.header.check_to_remove.state
+      end
+    elseif event.button == defines.mouse_button_type.right then
+      local something_checked = false
+      for i, elem in pairs(panel.children) do
+        if elem.header.check_to_remove.state then
+          something_checked = true
+          break
+        end
+      end
+      if something_checked then
+        for i, elem in pairs(panel.children) do
+          elem.header.check_to_remove.state = false
+        end
+      else
+        for i, elem in pairs(panel.children) do
+          elem.header.check_to_remove.state = true
+        end
+      end
+    end
 
   --추적 항목 가져오기/내보내기 버튼
-  elseif event.element == g.gui.import_export_btn then
+  elseif event.element == g.gui.export_import_btn then
     local panel = g.gui.tracking_panel
     local list = g.data.tracking_list
+    if event.button == defines.mouse_button_type.left then
+      Gui.export_window(g)
+    elseif event.button == defines.mouse_button_type.right then
+      Gui.import_window(g)
+    end
+
+  --추적 항목 가져오기 버튼 - 가져오기
+  elseif event.element == g.gui.imconf then
+    local raw = event.element.parent.parent['_gvv-mod_import_tracking_code_code_'].text
+    local r, codes = true, {}
+    local import_codes = {}
+    local c = 0
+    while r do
+      codes[#codes + 1] = raw:match('^(.-)(%-%-%[%[%]%]%-%-)')
+      raw, c = raw:gsub('^(.-)(%-%-%[%[%]%]%-%-)','')
+      if c == 0 then
+        codes[#codes + 1] = raw
+        r = false
+      end
+    end
+    for i, v in ipairs(codes) do
+      codes[i] = v:gsub('^\n',''):gsub('\n$','')
+      if codes[i]:gsub('^%s*(.-)%s*$', '%1') ~= '' then import_codes[#import_codes + 1] = codes[i] end
+    end
+    local panel = g.gui.tracking_panel
+    local list = g.data.tracking_list
+    local pnsize, imsize = #panel.children, #import_codes
+    local dup_count, new_count = 0, 0
+    local duplicate
+    for ii = 1, pnsize do
+      panel.children[ii].header.check_to_remove.state = false
+    end
+    for i = 1, imsize do
+      duplicate = false
+      for ii = 1, pnsize do
+        if panel.children[ii].name == import_codes[i] then
+          duplicate = true
+          import_codes[i] = nil
+          panel.children[ii].header.check_to_remove.state = true
+          dup_count = dup_count + 1
+          break
+        end
+      end
+      if not duplicate then
+        Tracking.add(g, import_codes[i])
+        new_count = new_count + 1
+      end
+    end
+    for i = pnsize + 1, #panel.children do
+      panel.children[i].header.check_to_remove.state = true
+    end
+    local top = Util.get_top_frame(event.element)
+    if top and top.valid then
+      top.destroy()
+    end
+    Gui.change_tab(g, 1)
+    game.players[g.index].print('(gvv) '..new_count..' new entries imported.  /  '..dup_count..' entries already exist.')
 
   --추적 갱신
   elseif event.element == g.gui.track_refresh_btn then
@@ -316,6 +444,11 @@ Gui_Event.on_gui_click = function(event)
           if text == '' then
             frame.destroy()
           end
+        --elseif frame_name == '_gvv-mod_import_tracking_code_frame_' then
+          --local text = frame.innerframe['_gvv-mod_import_tracking_code_code_'].text
+          --if text == '' then
+          --  frame.destroy()
+          --end
         else
           frame.destroy()
         end

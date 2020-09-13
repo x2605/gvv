@@ -102,4 +102,52 @@ Util.deepcopytbl = function(ori)
   return ret
 end
 
+--목록 옮기기
+Util.shift_checked = function(array, direction)
+  local buffer
+  local size = #array
+  if direction < 0 then
+    for i = 1, size - 1 do
+      if not array[i].checked and array[i + 1].checked then
+        buffer = array[i]
+        array[i] = array[i + 1]
+        array[i + 1] = buffer
+      end
+    end
+  elseif direction > 0 then
+    for i = size, 2, -1 do
+      if not array[i].checked and array[i - 1].checked then
+        buffer = array[i]
+        array[i] = array[i - 1]
+        array[i - 1] = buffer
+      end
+    end
+  end
+  return array
+end
+
+--목록 옮기기
+Util.push_checked = function(array, direction)
+  local checked, unchecked = {}, {}
+  for i, v in pairs(array) do
+    if v.checked then
+      checked[#checked + 1] = v
+    else
+      unchecked[#unchecked + 1] = v
+    end
+  end
+  if direction < 0 then
+    for _, v in ipairs(unchecked) do
+      checked[#checked + 1] = v
+    end
+    array = checked
+  elseif direction > 0 then
+    for _, v in ipairs(checked) do
+      unchecked[#unchecked + 1] = v
+    end
+    array = unchecked
+  end
+  return array
+end
+
 return Util
