@@ -36,7 +36,7 @@ end
 Util.find_parent_gui = function(elem, finding_elem)
   if not finding_elem or not finding_elem.valid then return end
   if elem.parent and elem.parent == finding_elem then
-    return true
+    return true, elem
   elseif elem.parent and elem.parent.valid then
     return Util.find_parent_gui(elem.parent, finding_elem)
   else

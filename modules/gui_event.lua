@@ -18,7 +18,7 @@ local simple_frame_names = {
   ['_gvv-mod_edit_tracking_code_frame_'] = true,
 }
 local other_frames_to_close_when_focusing_main = {
-  --['_gvv-mod_anycode_frame_'] = true,
+  ['_gvv-mod_anycode_frame_'] = true,
   ['_gvv-mod_copy_tracking_code_frame_'] = true,
 }
 
@@ -60,6 +60,21 @@ Gui_Event.on_gui_click = function(event)
         elem.destroy()
       end
     end
+
+  --추적 항목 이동 버튼
+  elseif event.element == g.gui.move_up_checked_btn or event.element == g.gui.move_down_checked_btn then
+    local panel = g.gui.tracking_panel
+    local list = g.data.tracking_list
+
+  --추적 항목 체크 조정 버튼
+  elseif event.element == g.gui.check_process_btn then
+    local panel = g.gui.tracking_panel
+    local list = g.data.tracking_list
+
+  --추적 항목 가져오기/내보내기 버튼
+  elseif event.element == g.gui.import_export_btn then
+    local panel = g.gui.tracking_panel
+    local list = g.data.tracking_list
 
   --추적 갱신
   elseif event.element == g.gui.track_refresh_btn then
@@ -280,8 +295,15 @@ Gui_Event.on_gui_click = function(event)
     Gui.copyable_tracking_code(g, event.element.caption)
 
   --tracking_panel 의 빈 공간을 우클릭할 때 (이 조건은 가능한한 뒤에)
-  elseif g.gui.tracking_panel and Util.find_parent_gui(event.element, g.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.right then
+  elseif g.gui.tracking_panel and g.gui.tabpane.selected_tab_index == 1 and Util.find_parent_gui(event.element, g.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.right then
     local succ = Gui.put_anycode_in_tracking(g)
+
+  --tracking_panel 의 빈 공간을 휠클릭할 때 (이 조건은 가능한한 뒤에)
+  elseif g.gui.tracking_panel and g.gui.tabpane.selected_tab_index == 1 and Util.find_parent_gui(event.element, g.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.middle then
+    local succ, elem = Util.find_parent_gui(event.element, g.gui.tracking_panel)
+    if succ then
+      elem.header.check_to_remove.state = not elem.header.check_to_remove.state
+    end
 
   --메인 프레임을 클릭할 때 (이 조건은 가장 마지막에)
   elseif Util.find_parent_gui(event.element, g.gui.frame) then
@@ -289,7 +311,14 @@ Gui_Event.on_gui_click = function(event)
     for frame_name in pairs(other_frames_to_close_when_focusing_main) do
       frame = player.gui.screen[frame_name]
       if frame and frame.valid then
-        frame.destroy()
+        if frame_name == '_gvv-mod_anycode_frame_' then
+          local text = frame.innerframe['_gvv-mod_anycode_code_'].text
+          if text == '' then
+            frame.destroy()
+          end
+        else
+          frame.destroy()
+        end
       end
     end
 

@@ -78,7 +78,7 @@ return function(obj, add_value)
     if add_value then
       for i, v in ipairs(obj.children_names) do
         if v == '' then
-          list[i] = obj.children[i]
+          list[i] = 'use .children['..i..'] instead.'
         else
           list[v] = obj[v]
         end

@@ -31,12 +31,56 @@ data:extend{
     scale = 0.5
   },
   {
+    type = "sprite",
+    name = "gvv-mod_folder-closed",
+    filename = "__gvv__/icons/folder-closed.png",
+    priority = "extra-high-no-scale",
+    width = 32,
+    height = 32,
+    flags = {"gui-icon"},
+    mipmap_count = 1,
+    scale = 0.5
+  },
+  {
     type = "font",
     name = "var-outline-gvv-mod",
     from = "default-bold",
     size = 14,
     border = true,
     border_color = {}
+  },
+  {
+    type = "sprite",
+    name = "gvv-mod_arrow-up",
+    filename = "__core__/graphics/arrows/table-header-sort-arrow-up-white.png",
+    priority = "extra-high-no-scale",
+    width = 16,
+    height = 16,
+    flags = {"gui-icon"},
+    mipmap_count = 1,
+    scale = 0.5
+  },
+  {
+    type = "sprite",
+    name = "gvv-mod_arrow-down",
+    filename = "__core__/graphics/arrows/table-header-sort-arrow-down-white.png",
+    priority = "extra-high-no-scale",
+    width = 16,
+    height = 16,
+    flags = {"gui-icon"},
+    mipmap_count = 1,
+    scale = 0.5
+  },
+  {
+    type = "sprite",
+    name = "gvv-mod_import-export",
+    filename = "__gvv__/icons/import-export.png",
+    priority = "extra-high-no-scale",
+    width = 32,
+    height = 32,
+    flags = {"gui-icon"},
+    mipmap_count = 2,
+    scale = 0.5
   },
 }
 

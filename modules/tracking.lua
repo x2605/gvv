@@ -11,7 +11,7 @@ Tracking.draw = function(panel, path_str, full_path, preinput)
   header.style.vertical_align = 'center'
   header.style.left_padding = 6
   header.style.horizontal_spacing = 6
-  header.add{type = 'checkbox', name = 'check_to_remove', state = false, tooltip = {"gvv-mod.check-for-remove", '[img=utility/trash_white]'}}
+  header.add{type = 'checkbox', name = 'check_to_remove', state = false, tooltip = {"gvv-mod.check-for-remove", '[img=utility/trash_white]', '[img=gvv-mod_arrow-up][img=gvv-mod_arrow-down]'}}
   local caption
   if type(full_path) == 'table' then
     if #full_path == 1 and full_path[1]:match('^[*]') then

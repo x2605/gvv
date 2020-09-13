@@ -108,7 +108,7 @@ Gui.open_main = function(player_index)
   topspace.add{type = 'slider', name = 'track_inter_slider', minimum_value = 1, maximum_value = 180, value = g.track_interval_tick,
     value_step = 1, discrete_slider = false, discrete_values = true, {"gvv-mod.track-interval-control"},
   }
-  topspace.track_inter_slider.style.width = 80
+  topspace.track_inter_slider.style.width = 70
   topspace.add{type = 'label', name = 'track_inter_show', caption = g.track_interval_tick, tooltip = {"gvv-mod.track-interval-control"}}
   if not script.get_event_handler(defines.events.on_tick) then
     topspace.track_inter_show.style.font_color = {1,0.25,0.25}
@@ -126,6 +126,32 @@ Gui.open_main = function(player_index)
   topspace.remove_checked_btn.style.left_margin = 8
   topspace.remove_checked_btn.style.width = 20
   topspace.remove_checked_btn.style.height = 20
+  topspace.add{type = 'sprite-button', name = 'move_up_checked_btn', sprite = 'gvv-mod_arrow-up',
+    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.move-up-checked"},
+  }
+  topspace.move_up_checked_btn.style.left_margin = 8
+  topspace.move_up_checked_btn.style.width = 20
+  topspace.move_up_checked_btn.style.height = 20
+  topspace.add{type = 'sprite-button', name = 'move_down_checked_btn', sprite = 'gvv-mod_arrow-down',
+    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.move-down-checked"},
+  }
+  topspace.move_down_checked_btn.style.left_margin = -3
+  topspace.move_down_checked_btn.style.width = 20
+  topspace.move_down_checked_btn.style.height = 20
+  topspace.add{type = 'sprite-button', name = 'check_process_btn', sprite = 'utility/check_mark_white',
+    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.check-process-btn"},
+  }
+  topspace.check_process_btn.style.left_margin = 2
+  topspace.check_process_btn.style.width = 20
+  topspace.check_process_btn.style.height = 20
+  topspace.add{type = 'sprite-button', name = 'import_export_btn', sprite = 'gvv-mod_import-export',
+    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.import-export-btn"},
+  }
+  topspace.import_export_btn.style.left_margin = 2
+  topspace.import_export_btn.style.width = 20
+  topspace.import_export_btn.style.height = 20
+
+
   topspace.add{type = 'checkbox', name = 'chk_show_na', state = g.show_na, caption = 'n/a', tooltip = {"gvv-mod.show_na"}}
   topspace.chk_show_na.visible = false
   topspace.add{type = 'checkbox', name = 'chk_show_func', state = g.show_func, caption = 'method', tooltip = {"gvv-mod.show_func"}}
@@ -138,6 +164,10 @@ Gui.open_main = function(player_index)
   g.gui.track_inter_show = topspace.track_inter_show -- 사용자 개체 등록
   g.gui.track_inter_edit = topspace.track_inter_edit -- 사용자 개체 등록
   g.gui.remove_checked_btn = topspace.remove_checked_btn -- 사용자 개체 등록
+  g.gui.move_up_checked_btn = topspace.move_up_checked_btn -- 사용자 개체 등록
+  g.gui.move_down_checked_btn = topspace.move_down_checked_btn -- 사용자 개체 등록
+  g.gui.check_process_btn = topspace.check_process_btn -- 사용자 개체 등록
+  g.gui.import_export_btn = topspace.import_export_btn -- 사용자 개체 등록
   g.gui.chk_show_na = topspace.chk_show_na -- 사용자 개체 등록
   g.gui.chk_show_func = topspace.chk_show_func -- 사용자 개체 등록
 
@@ -398,12 +428,20 @@ Gui.change_tab = function(g, index)
     g.gui.track_inter_edit.visible = false
     g.gui.track_inter_show.visible = true
     g.gui.remove_checked_btn.visible = true
+    g.gui.move_up_checked_btn.visible = true
+    g.gui.move_down_checked_btn.visible = true
+    g.gui.check_process_btn.visible = true
+    g.gui.import_export_btn.visible = true
   else
     g.gui.track_refresh_btn.visible = false
     g.gui.track_inter_slider.visible = false
     g.gui.track_inter_edit.visible = false
     g.gui.track_inter_show.visible = false
     g.gui.remove_checked_btn.visible = false
+    g.gui.move_up_checked_btn.visible = false
+    g.gui.move_down_checked_btn.visible = false
+    g.gui.check_process_btn.visible = false
+    g.gui.import_export_btn.visible = false
   end
   if tab == 2 then
     local mod_list = Util.get_accessible_mod_list()
