@@ -196,18 +196,19 @@ content_writer['console2'] = function()
   x = 'gvv-mod-help-console2.'
 -------------------------------------
 head{x..'1'}
-text{x..'2'}
+text{x..'2'} this.style.single_line = true
 hpo() do
   p.pointer.style.vertical_align = 'top'
-  p.pointer.style.horizontally_squashable = true
   local options = {'<mod_name>', '__<mod_name>__', 'remote.call..."global")', 'remote.call..."c",)'}
   local sel1 = p.pointer.add{type = 'list-box', name = '_gvv-mod_help_copy_option_mod_string_',
     items = options, selected_index = 3, style = 'list_box-transparent_gvv-mod',
   }
-  sel1.style.horizontally_squashable = true
+  --sel1.style.horizontally_squashable = true
   sel1.style.horizontally_stretchable = false
   sel1.style.vertically_stretchable = true
-  sel1.style.width = 155
+  sel1.style.minimal_width = 160
+  sel1.style.minimal_height = 81
+  sel1.style.right_margin = 3
   vpo('mod_list') do
     local modlist = Util.get_accessible_mod_list()
     local copy = copyable('', '_gvv-mod_copyable_')

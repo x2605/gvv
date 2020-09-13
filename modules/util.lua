@@ -126,7 +126,7 @@ Util.shift_checked = function(array, direction)
   return array
 end
 
---목록 옮기기
+--목록 옮기기 가장 끝으로
 Util.push_checked = function(array, direction)
   local checked, unchecked = {}, {}
   for i, v in pairs(array) do
