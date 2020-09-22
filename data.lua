@@ -131,6 +131,19 @@ default_gui['vflow'..suffix] = {
   vertical_spacing = 0,
   horizontal_spacing = 0,
 }
+default_gui['transparent-frame'..suffix] = {
+  type = "frame_style",
+  top_padding = 0,
+  right_padding = 0,
+  bottom_padding = 0,
+  left_padding = 0,
+  horizontal_flow_style = {type = 'horizontal_flow_style', parent = 'hflow'..suffix},
+  vertical_flow_style = {type = 'vertical_flow_style', parent = 'vflow'..suffix},
+  graphical_set = {base = {center = {position = {25, 8}, size = {1, 1}}}},
+}
+
+c = copytbl('highlighted-frame'..suffix, default_gui['transparent-frame'..suffix])
+c.graphical_set.base.center = {position = {287, 79}, size = {1, 1}}
 
 c = copytbl('output'..suffix, default_gui.label)
 c.single_line = false

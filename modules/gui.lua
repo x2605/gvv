@@ -48,10 +48,28 @@ Gui.open_main = function(player_index)
   if not g.last_width then g.last_width = 900 end
   if not g.last_height then g.last_height = 600 end
   if g.show_na == nil then g.show_na = true end
+  if g.show_nil == nil then g.show_nil = true end
   if g.show_func == nil then g.show_func = false end
+  if not g.search_settings then g.search_settings = {} end
+  if not g.search_settings.glob then g.search_settings.glob = {} end
+  if not g.search_settings.prop then g.search_settings.prop = {} end
+  if not g.search_settings.gobj then g.search_settings.gobj = {} end
+  for k, v in pairs(g.search_settings) do
+    if not v.text then v.text = '' end
+    if v.key == nil then v.key = true end
+    if v.value == nil then v.value = false end
+    if v.regexp == nil then v.regexp = false end
+    if v.case == nil then v.case = false end
+  end
+  if g.show_search == nil then g.show_search = false end
+
   if not g.data then g.data = {} end
   if not g.data.docked_luaobj then g.data.docked_luaobj = {} end
   if not g.data.tracking_list then g.data.tracking_list = {} end
+  if not g.data.search then g.data.search = {} end
+  if not g.data.search.glob then g.data.search.glob = {} end
+  if not g.data.search.prop then g.data.search.prop = {} end
+  if not g.data.search.gobj then g.data.search.gobj = {} end
 
   frame.location = {0,0}
   frame.style.width = g.last_width
@@ -173,8 +191,17 @@ Gui.open_main = function(player_index)
   topspace.export_import_btn.style.height = 20
 
 
+  topspace.add{type = 'sprite-button', name = 'search_btn', sprite = 'utility/search_white',
+    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.search-btn"},
+  }
+  topspace.search_btn.style.right_margin = 8
+  topspace.search_btn.style.width = 20
+  topspace.search_btn.style.height = 20
+  topspace.search_btn.visible = false
   topspace.add{type = 'checkbox', name = 'chk_show_na', state = g.show_na, caption = 'n/a', tooltip = {"gvv-mod.show_na"}}
   topspace.chk_show_na.visible = false
+  topspace.add{type = 'checkbox', name = 'chk_show_nil', state = g.show_nil, caption = 'nil', tooltip = {"gvv-mod.show_nil"}}
+  topspace.chk_show_nil.visible = false
   topspace.add{type = 'checkbox', name = 'chk_show_func', state = g.show_func, caption = 'method', tooltip = {"gvv-mod.show_func"}}
   topspace.chk_show_func.visible = false
 
@@ -192,7 +219,9 @@ Gui.open_main = function(player_index)
   g.gui.move_down_checked_btn = topspace.move_down_checked_btn -- 사용자 개체 등록
   g.gui.check_process_btn = topspace.check_process_btn -- 사용자 개체 등록
   g.gui.export_import_btn = topspace.export_import_btn -- 사용자 개체 등록
+  g.gui.search_btn = topspace.search_btn -- 사용자 개체 등록
   g.gui.chk_show_na = topspace.chk_show_na -- 사용자 개체 등록
+  g.gui.chk_show_nil = topspace.chk_show_nil -- 사용자 개체 등록
   g.gui.chk_show_func = topspace.chk_show_func -- 사용자 개체 등록
 
   local vdiv, hdiv
@@ -290,6 +319,60 @@ Gui.open_main = function(player_index)
 
   g.gui.sub_gobjlist = sub_gobjlist -- 사용자 개체 등록
   g.gui.sub_gobjtree = sub_gobjtree -- 사용자 개체 등록
+
+  local search_panels = {}
+  search_panels[1] = panel2.add{type = 'flow', name = 'search_glob_wrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
+  search_panels[2] = panel3.add{type = 'flow', name = 'search_prop_wrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
+  search_panels[3] = panel4.add{type = 'flow', name = 'search_gobj_wrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
+  local searchinput = {}
+  local searchfilter_key = {}
+  local searchfilter_value = {}
+  local searchfilter_regexp = {}
+  local searchfilter_case= {}
+  local searchresult = {}
+  local tree_names = {'glob', 'prop', 'gobj'}
+  for i = 1, 3 do
+    local spanel = search_panels[i]
+    spanel.style.width = 180
+    spanel.style.horizontally_stretchable = false
+    if not g.show_search then
+      spanel.visible = false
+    end
+    vdiv = spanel.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
+    vdiv.style.width = 6
+    local vwrap = spanel.add{type = 'flow', name = 'vwrap', direction = 'vertical', style = 'vflow_gvv-mod'}
+    local swrap = vwrap.add{type = 'flow', name = 'swrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
+    searchinput[i] = swrap.add{type = 'textfield',
+      text = g.search_settings[tree_names[i] ].text, name = 'searchinput',
+    }
+    searchinput[i].style.minimal_width = 50
+    searchinput[i].style.maximal_width = 9999
+    searchinput[i].style.horizontally_stretchable = true
+    local filter_wrap = swrap.add{type = 'table', column_count = 2}
+    filter_wrap.style.horizontal_spacing = 0
+    filter_wrap.style.vertical_spacing = 0
+    searchfilter_key[i] = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-key"},
+      state = g.search_settings[tree_names[i] ].key, name = 'searchfilter_key',
+    }
+    searchfilter_value[i] = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-value"},
+      state = g.search_settings[tree_names[i] ].value, name = 'searchfilter_value',
+    }
+    searchfilter_regexp[i] = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-regexp"},
+      state = g.search_settings[tree_names[i] ].regexp, name = 'searchfilter_regexp',
+    }
+    searchfilter_case[i] = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-case"},
+      state = g.search_settings[tree_names[i] ].case, name = 'searchfilter_case',
+    }
+    searchresult[i] = vwrap.add{type = 'list-box', name = 'sresult', style = 'list_box-transparent_gvv-mod'}
+    searchresult[i].style.horizontally_stretchable = true
+    g.gui['search_'..tree_names[i]..'_wrap'] = search_panels[i] -- 사용자 개체 등록
+    g.gui['search_'..tree_names[i]..'_input'] = searchinput[i] -- 사용자 개체 등록
+    g.gui['search_'..tree_names[i]..'_fkey'] = searchfilter_key[i] -- 사용자 개체 등록
+    g.gui['search_'..tree_names[i]..'_fvalue'] = searchfilter_value[i] -- 사용자 개체 등록
+    g.gui['search_'..tree_names[i]..'_fregexp'] = searchfilter_regexp[i] -- 사용자 개체 등록
+    g.gui['search_'..tree_names[i]..'_fcase'] = searchfilter_case[i] -- 사용자 개체 등록
+    g.gui['search_'..tree_names[i]..'_result'] = searchresult[i] -- 사용자 개체 등록
+  end
 
   local tab5 = tabpane.add{type = 'tab', name = 'tab5', caption = {"gvv-mod.help-tab"}}
   local cwrap5 = tabpane.add{type = 'flow', direction = 'vertical'}
@@ -480,10 +563,17 @@ Gui.change_tab = function(g, index)
   end
   if tab == 3 or tab == 4 then
     g.gui.chk_show_na.visible = true
+    g.gui.chk_show_nil.visible = true
     g.gui.chk_show_func.visible = true
   else
     g.gui.chk_show_na.visible = false
+    g.gui.chk_show_nil.visible = false
     g.gui.chk_show_func.visible = false
+  end
+  if tab > 1 and tab < 5 then
+    g.gui.search_btn.visible = true
+  else
+    g.gui.search_btn.visible = false
   end
 end
 

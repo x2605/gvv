@@ -8,6 +8,7 @@ local Tracking = require('modules.tracking')
 local Help_Menu = require('modules.help_menu')
 local Doctor = require('modules.doctor')
 local Copy_Code = require('modules.copy_code')
+local Search_Tree = require('modules.search_tree')
 
 local Gui_Event = {}
 
@@ -302,6 +303,11 @@ Gui_Event.on_gui_click = function(event)
           else
             data.object.parent.folder_sprite.sprite = 'gvv-mod_folder-closed'
           end
+          if category == '_G_glob' then
+            Search_Tree.refresh(g, 'glob')
+          else
+            Search_Tree.refresh(g, category)
+          end
         end
       end
     end
@@ -330,6 +336,7 @@ Gui_Event.on_gui_click = function(event)
       event.element.style = 'tracked-tree-item-luaobj_gvv-mod'
       if Tree.ignore_in_help_page(g, event.element) then return end
       Tree.register_object(g, event.element.parent['_gvv-mod_key_label'])
+      Search_Tree.refresh(g, 'prop')
     elseif event.element.style.name == 'tracked-tree-item-luaobj_gvv-mod' then
       event.element.style = 'tree-item-luaobj_gvv-mod'
     end
@@ -339,18 +346,22 @@ Gui_Event.on_gui_click = function(event)
     local index = event.element.name:match('^_gvv[-]mod_c_sub_obj_(%d+)$') + 0
     if event.button == defines.mouse_button_type.left then
       Tree.draw_proptree(g, index)
+      Search_Tree.refresh(g, 'prop')
     elseif event.button == defines.mouse_button_type.right then
       Tree.remove_prop_tree(g, index)
+      Search_Tree.refresh(g, 'prop')
     end
 
   --sub_modlist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_mod_%d+$') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_modlist_' then
     Tree.draw_globtree(g, event.element.caption)
+    Search_Tree.refresh(g, 'glob')
 
   --sub_gobjlist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_obj_%d+$') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_gobjlist_' then
     local index = event.element.name:match('^_gvv[-]mod_c_sub_obj_(%d+)$') + 0
     Tree.draw_gobjtree(g, event.element.caption)
+    Search_Tree.refresh(g, 'gobj')
 
   --sub_helplist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_help_/') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_helplist_' then
@@ -421,6 +432,31 @@ Gui_Event.on_gui_click = function(event)
   --tracking_panel 의 결과값을 우클릭할 때
   elseif event.element.name == '_gvv-mod_tracking_output_' and event.button == defines.mouse_button_type.right then
     Gui.copyable_tracking_code(g, event.element.caption)
+
+  --검색 보이기 버튼
+  elseif event.element == g.gui.search_btn then
+    if g.show_search then
+      g.show_search = false
+      g.gui.search_glob_wrap.visible = false
+      g.gui.search_prop_wrap.visible = false
+      g.gui.search_gobj_wrap.visible = false
+    else
+      local index = g.gui.tabpane.selected_tab_index
+      g.show_search = true
+      g.gui.search_glob_wrap.visible = true
+      g.gui.search_prop_wrap.visible = true
+      g.gui.search_gobj_wrap.visible = true
+      if index == 2 then
+        g.gui.search_glob_input.focus()
+      elseif index == 3 then
+        g.gui.search_prop_input.focus()
+      elseif index == 4 then
+        g.gui.search_gobj_input.focus()
+      end
+    end
+    Search_Tree.refresh(g, 'glob')
+    Search_Tree.refresh(g, 'prop')
+    Search_Tree.refresh(g, 'gobj')
 
   --tracking_panel 의 빈 공간을 우클릭할 때 (이 조건은 가능한한 뒤에)
   elseif g.gui.tracking_panel and g.gui.tabpane.selected_tab_index == 1 and Util.find_parent_gui(event.element, g.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.right then
@@ -545,10 +581,56 @@ Gui_Event.on_gui_checked_state_changed = function(event)
     g.show_na = event.element.state
     Tree.set_visible_item('na', g.gui.sub_proptree, g.show_na)
     Tree.set_visible_item('na', g.gui.sub_gobjtree, g.show_na)
+    Search_Tree.refresh(g, 'prop')
+    Search_Tree.refresh(g, 'gobj')
+  elseif event.element == g.gui.chk_show_nil then
+    g.show_nil = event.element.state
+    Tree.set_visible_item('nil', g.gui.sub_proptree, g.show_nil)
+    Tree.set_visible_item('nil', g.gui.sub_gobjtree, g.show_nil)
+    Search_Tree.refresh(g, 'prop')
+    Search_Tree.refresh(g, 'gobj')
   elseif event.element == g.gui.chk_show_func then
     g.show_func = event.element.state
     Tree.set_visible_item('func', g.gui.sub_proptree, g.show_func)
     Tree.set_visible_item('func', g.gui.sub_gobjtree, g.show_func)
+    Search_Tree.refresh(g, 'prop')
+    Search_Tree.refresh(g, 'gobj')
+  elseif event.element == g.gui.search_glob_fkey then
+    g.search_settings.glob.key = event.element.state
+    Search_Tree.refresh(g, 'glob')
+  elseif event.element == g.gui.search_glob_fvalue then
+    g.search_settings.glob.value = event.element.state
+    Search_Tree.refresh(g, 'glob')
+  elseif event.element == g.gui.search_glob_fregexp then
+    g.search_settings.glob.regexp = event.element.state
+    Search_Tree.refresh(g, 'glob')
+  elseif event.element == g.gui.search_glob_fcase then
+    g.search_settings.glob.case = event.element.state
+    Search_Tree.refresh(g, 'glob')
+  elseif event.element == g.gui.search_prop_fkey then
+    g.search_settings.prop.key = event.element.state
+    Search_Tree.refresh(g, 'prop')
+  elseif event.element == g.gui.search_prop_fvalue then
+    g.search_settings.prop.value = event.element.state
+    Search_Tree.refresh(g, 'prop')
+  elseif event.element == g.gui.search_prop_fregexp then
+    g.search_settings.prop.regexp = event.element.state
+    Search_Tree.refresh(g, 'prop')
+  elseif event.element == g.gui.search_prop_fcase then
+    g.search_settings.prop.case = event.element.state
+    Search_Tree.refresh(g, 'prop')
+  elseif event.element == g.gui.search_gobj_fkey then
+    g.search_settings.gobj.key = event.element.state
+    Search_Tree.refresh(g, 'gobj')
+  elseif event.element == g.gui.search_gobj_fvalue then
+    g.search_settings.gobj.value = event.element.state
+    Search_Tree.refresh(g, 'gobj')
+  elseif event.element == g.gui.search_gobj_fregexp then
+    g.search_settings.gobj.regexp = event.element.state
+    Search_Tree.refresh(g, 'gobj')
+  elseif event.element == g.gui.search_gobj_fcase then
+    g.search_settings.gobj.case = event.element.state
+    Search_Tree.refresh(g, 'gobj')
   end
 end
 
@@ -561,13 +643,29 @@ Gui_Event.on_gui_text_changed = function(event)
       event.element.text = event.element.parent['_gvv-mod_uneditable_text_buffer_'].caption
       event.element.select_all()
     end
-  elseif event.element.name == '_gvv-mod_anycode_code_' then
+    return
+  end
+  
+  if not global.players then return end
+  local g = global.players[event.player_index]
+  if not g or not g.gui.frame or not g.gui.frame.valid then return end
+
+  if event.element.name == '_gvv-mod_anycode_code_' then
     if event.element.text == '' then
       local player = game.players[event.player_index]
       if player.opened_gui_type == defines.gui_type.none then
         player.opened = Util.get_top_frame(event.element)
       end
     end
+  elseif event.element == g.gui.search_glob_input then
+    g.search_settings.glob.text = event.element.text
+    Search_Tree.refresh(g, 'glob')
+  elseif event.element == g.gui.search_prop_input then
+    g.search_settings.prop.text = event.element.text
+    Search_Tree.refresh(g, 'prop')
+  elseif event.element == g.gui.search_gobj_input then
+    g.search_settings.gobj.text = event.element.text
+    Search_Tree.refresh(g, 'gobj')
   end
 end
 
@@ -599,19 +697,44 @@ Gui_Event.on_gui_selection_state_changed = function(event)
     copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
     copybox['_gvv-mod_uneditable_text_'].focus()
     copybox['_gvv-mod_uneditable_text_'].select_all()
+    return
   elseif event.element.name == '_gvv-mod_help_copy_temp_enable_code_' then
     local copybox = event.element.parent['_gvv-mod_copyable_']
     copybox['_gvv-mod_uneditable_text_buffer_'].caption = Copy_Code.in_console_enable(event.element.items[event.element.selected_index])
     copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
     copybox['_gvv-mod_uneditable_text_'].focus()
     copybox['_gvv-mod_uneditable_text_'].select_all()
+    return
   elseif event.element.name == '_gvv-mod_help_copy_temp_disable_code_' then
     local copybox = event.element.parent['_gvv-mod_copyable_']
     copybox['_gvv-mod_uneditable_text_buffer_'].caption = Copy_Code.in_console_disable(event.element.items[event.element.selected_index])
     copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
     copybox['_gvv-mod_uneditable_text_'].focus()
     copybox['_gvv-mod_uneditable_text_'].select_all()
+    return
   end
+
+  if not global.players then return end
+  local g = global.players[event.player_index]
+  if not g or not g.gui.frame or not g.gui.frame.valid then return end
+
+  if event.element == g.gui.search_glob_result then
+    local index = event.element.selected_index
+    local data = g.data.search.glob[index]
+    g.gui.sub_globtree.scroll_to_element(data.elem, 'top-third')
+    event.element.selected_index = 0
+  elseif event.element == g.gui.search_prop_result then
+    local index = event.element.selected_index
+    local data = g.data.search.prop[index]
+    g.gui.sub_proptree.scroll_to_element(data.elem, 'top-third')
+    event.element.selected_index = 0
+  elseif event.element == g.gui.search_gobj_result then
+    local index = event.element.selected_index
+    local data = g.data.search.gobj[index]
+    g.gui.sub_gobjtree.scroll_to_element(data.elem, 'top-third')
+    event.element.selected_index = 0
+  end
+
 end
 
 Gui_Event['toggle-main-frame_gvv-mod'] = function(event)

@@ -26,7 +26,7 @@ parent_container
 --가지 그리기
 local draw_branch = function(wrapper, key, noicon)
   wrapper.style.vertically_stretchable = false
-  local label_container = wrapper.add{type = 'flow', name = 'label_container', direction = 'horizontal', style = 'hflow_gvv-mod'}
+  local label_container = wrapper.add{type = 'frame', name = 'label_container', direction = 'horizontal', style = 'transparent-frame_gvv-mod'}
   label_container.style.height = 20
 
   local vbar = label_container.add{type = 'flow', name = 'vbar', direction = 'vertical', style = 'vflow_gvv-mod'}
@@ -267,6 +267,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
 
     elseif t == 'table' and getmetatable(obj) == global.meta_data._nil_ then
       label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
+      if not g.show_nil then label_wrap.visible = false end
       label_container = draw_branch(label_wrap, k, true)
       last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = Table_to_str.to_richtext(k, true),
         style = 'tree-item_gvv-mod', mouse_button_filter = {'right'},
@@ -554,6 +555,7 @@ Tree.register_object = function(g, luaobj_elem)
 
   g.gui.tabpane.selected_tab_index = 3
   g.gui.chk_show_na.visible = true
+  g.gui.chk_show_nil.visible = true
   g.gui.chk_show_func.visible = true
 
   Tree.draw_proptree(g, index)
@@ -676,6 +678,8 @@ end
 Tree.set_visible_item = function(itemstyle, elem, state)
   if itemstyle == 'na' then
     Tree.set_visible_na(elem, state)
+  elseif itemstyle == 'nil' then
+    Tree.set_visible_nil(elem, state)
   elseif itemstyle == 'func' then
     Tree.set_visible_func(elem, state)
   end
@@ -693,6 +697,26 @@ Tree.set_visible_na = function(parent_container, state)
       end
       if container.content_container then
         Tree.set_visible_na(container.content_container.folder, state)
+      end
+    end
+  end
+end
+
+-- show_nil 감추거나 보이기
+local nil_richtext = Table_to_str.to_richtext(nil)
+Tree.set_visible_nil = function(parent_container, state)
+  for _, container in pairs(parent_container.children) do
+    if container.valid then
+      if container.label_container then
+        if container.label_container['_gvv-mod_key_label'].style.name == 'tree-item_gvv-mod'
+          and container.label_container['_gvv-mod_key_value']
+          and container.label_container['_gvv-mod_key_value'].caption == nil_richtext
+          then
+          container.visible = state
+        end
+      end
+      if container.content_container then
+        Tree.set_visible_nil(container.content_container.folder, state)
       end
     end
   end
