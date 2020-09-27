@@ -4,7 +4,8 @@ return function() return [[=function()
   local N={LuaGameScript=_,LuaBootstrap=_,LuaRemote=_,LuaCommandProcessor=_,LuaSettings=_,LuaRCON=_,LuaRendering=_,LuaLazyLoadedValue=_,}
   ]]--[[ G:_G, j:namespace count, s:returning table --]]..[[
   ]]--[[ B:_G blacklist, N:object blacklist --]]..[[
-  cp=function(o,a)
+  cp=function(o,p,a)
+    ]]--[[ o:object, p:parent_list, a:as key? --]]..[[
     local t,r=type(o)
     if t=='table' and type(o.__self)=='userdata' and o.object_name then
       if a or N[o.object_name] then
@@ -18,9 +19,27 @@ return function() return [[=function()
         j=j+1
         r='<table'..j..'>'
       else
-        r={}
-        for k,v in next,o,nil do
-          r[cp(k,true)]=cp(v)
+        local c
+        ]]--[[ c:recursive? --]]..[[
+        for k,v in pairs(p) do
+          if v==o then
+            c=true
+            break
+          end
+        end
+        if c then
+          r='<recursive table>'
+        else
+          r={}
+          local q={}
+          ]]--[[ q:copy of p(parent) --]]..[[
+          for k,v in pairs(p) do
+            q[k]=v
+          end
+          q[#q+1]=o
+          for k,v in next,o,nil do
+            r[cp(k,q,true)]=cp(v,q)
+          end
         end
       end
     elseif t=='function' or t=='userdata' or t=='thread' or t=='nil' then
@@ -37,7 +56,7 @@ return function() return [[=function()
   end
   for k,v in pairs(G) do
     if not B[k] then
-      s[cp(k,true)]=cp(v)
+      s[cp(k,{_G},true)]=cp(v,{_G})
     end
   end
   return s

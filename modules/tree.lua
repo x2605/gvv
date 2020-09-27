@@ -99,9 +99,17 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
   if tab == '_G_glob' then
     parent_container = g.gui.sub_globtree
     pc, tbl = pcall(function() return remote.call('__'..mod_name_OR_luaobj..'__gvv','_G') end)
+    if not pc then
+      tbl = {['<ERROR>'] = '<'..tbl:gsub('\n.*$',' ...')..'>'}
+      pc = true
+    end
   elseif tab == 'glob' then
     parent_container = g.gui.sub_globtree
     pc, tbl = pcall(function() return remote.call('__'..mod_name_OR_luaobj..'__gvv','global') end)
+    if not pc then
+      tbl = {['<ERROR>'] = '<'..tbl:gsub('\n.*$',' ...')..'>'}
+      pc = true
+    end
   elseif tab == 'prop' then
     parent_container = g.gui.sub_proptree
     pc, tbl = pcall(function() return mod_name_OR_luaobj end) --tbl은 prop에서 미사용

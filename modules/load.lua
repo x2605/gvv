@@ -29,6 +29,22 @@ if not _initiated_session_ then
   ------
 end
 
+local vless = function(str, a, b, c)
+  local A, B, C = str:match('^(%d+)%.(%d+)%.(%d+)$')
+  if A then A = A + 0 end
+  if B then B = B + 0 end
+  if C then C = C + 0 end
+  if not (A and B and C) then
+    return true
+  end
+  if (a == A and b == B and c >= C)
+    or (a == A and b > B)
+    or a > A
+    then
+    return true
+  end
+  return false
+end
 Load.on_configuration_changed = function(data)
   Load.register_meta_data()
   Load.register_volatiles()
@@ -36,8 +52,7 @@ Load.on_configuration_changed = function(data)
   if data.mod_changes then
     local thismod = data.mod_changes['gvv']
     if thismod then
-      --if thismod.old_version and thismod.old_version:match('^0%.[012]%.(%d+)$') then
-      if thismod.old_version and thismod.old_version:match('^0%.[0123]%.[012]$') then
+      if thismod.old_version and vless(thismod.old_version, 0, 3, 2) then
         if global.players then
           for index, g in pairs(global.players) do
             pcall(function()

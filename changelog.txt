@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.4
+Date: 2020-09-28
+
+  Changes:
+    - "global" tab now shows rest of "_G" or "global" contents even if one of both have error.
+
+  Fixes:
+    - Fixed remote.call("__<mod_name>__gvv","_G") pops stack overflow error when trying to bring recursive table from remote _G.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.3.3
 Date: 2020-09-23
 
