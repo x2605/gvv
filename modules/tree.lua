@@ -317,7 +317,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
         last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(obj)}
       end
 
-    elseif t == 'table' and type(obj.__self) ~= 'userdata' and not obj.object_name then
+    elseif t == 'table' and type(obj.__self) ~= 'userdata' then
       folder, label = draw_folder(tree_data, parent_container, parent_label, k, Table_to_str.to_richtext(k, true))
       if not opened_folder_tree or not opened_folder_tree[k] then
         parent_container.children[index].content_container.visible = false

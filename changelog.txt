@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.6
+Date: 2020-10-04
+
+  Fixes:
+    - Fixed a normal table having a child with a key "object_name" isn't shown properly in tree GUI.
+    - Blacklisted LuaCustomTable, LuaMapSettings, LuaDifficultySettings and LuaFlowStatistics at remote.call("__<mod_name>__gvv","_G").
+      To prove their existence in "_G" and to prevent game crash. (Still cannot be opened by tree GUI.)
+      Reason why is that they are not supported by remote.call().
+
+---------------------------------------------------------------------------------------------------
 Version: 0.3.5
 Date: 2020-10-04
 

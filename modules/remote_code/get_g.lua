@@ -1,14 +1,14 @@
 return function() return [[=function()
   local G,_,j,s,cp=_G,true,0,{}
   local B={_G=_,assert=_,collectgarbage=_,error=_,getmetatable=_,ipairs=_,load=_,loadstring=_,next=_,pairs=_,pcall=_,print=_,rawequal=_,rawlen=_,rawget=_,rawset=_,select=_,setmetatable=_,tonumber=_,tostring=_,type=_,xpcall=_,_VERSION=_,unpack=_,table=_,string=_,bit32=_,math=_,debug=_,serpent=_,log=_,localised_print=_,table_size=_,package=_,require=_,global=_,remote=_,commands=_,settings=_,rcon=_,rendering=_,script=_,defines=_,game=_,}
-  local N={LuaGameScript=_,LuaBootstrap=_,LuaRemote=_,LuaCommandProcessor=_,LuaSettings=_,LuaRCON=_,LuaRendering=_,LuaLazyLoadedValue=_,}
+  local N={LuaGameScript=_,LuaBootstrap=_,LuaRemote=_,LuaCommandProcessor=_,LuaSettings=_,LuaRCON=_,LuaRendering=_,LuaLazyLoadedValue=_,LuaCustomTable=_,LuaDifficultySettings=_,LuaFlowStatistics=_,}
   ]]--[[ G:_G, j:namespace count, s:returning table --]]..[[
   ]]--[[ B:_G blacklist, N:object blacklist --]]..[[
   cp=function(o,p,a)
     ]]--[[ o:object, p:parent_list, a:as key? --]]..[[
     local t,r=type(o)
     if t=='table' and type(o.__self)=='userdata' and o.object_name then
-      if a or N[o.object_name] then
+      if a or (N[o.object_name] or o.object_name:match('^LuaMapSettings')) then
         j=j+1
         r='<'..o.object_name..j..'>'
       else
