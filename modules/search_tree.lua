@@ -17,6 +17,7 @@ local tree_data = {}
 local remove_richkey = function(str)
   --local tstr = str:match('^.- %(%[color=[^%[]+]([^%[]+)%[/color]%)$') --LuaObject type string
   str = str:gsub('^(.-) %(%[color=[^%[]+][^%[]+%[/color]%)$', '%1')
+  str = str:gsub('^%[img=[^%[]+](.-)$', '%1')
   str = str:gsub('^%[color=[^%[]+](.-)%[/color]$', '%1')
   str = str:gsub('^%[(.-)]$', '%1')
   str = str:gsub('^%[color=[^%[]+](.-)%[/color]$', '%1')

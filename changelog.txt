@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.5
+Date: 2020-10-04
+
+  Changes:
+    - In tree GUI, if an entry is a prototype object and it has a sprite then, a sprite icon will be shown at left of key name.
+      Supported prototypes are listed here.
+      https://lua-api.factorio.com/1.0.0/Concepts.html#SpritePath
+
+---------------------------------------------------------------------------------------------------
 Version: 0.3.4
 Date: 2020-09-28
 

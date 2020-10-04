@@ -2,6 +2,7 @@
 
 local Table_to_str = require('modules.table_to_str')
 local Util = require('modules.util')
+local Sprite = require('modules.sprite')
 
 local Tree = {}
 
@@ -231,7 +232,8 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
     parent_container.add{type = 'flow', name = '_G:'} -- [2]
     parent_container['_G:'].visible = false
     if type(mod_name_OR_luaobj) == 'table' and type(mod_name_OR_luaobj.__self) == 'userdata' and mod_name_OR_luaobj.object_name then
-      folder, root = draw_folder(tree_data, parent_container, nil, root_name, root_name..' ([color=blue]'..mod_name_OR_luaobj.object_name..'[/color])')
+      local img = Sprite.img(mod_name_OR_luaobj)
+      folder, root = draw_folder(tree_data, parent_container, nil, root_name, root_name..' '..img..'([color=blue]'..mod_name_OR_luaobj.object_name..'[/color])')
     else
       folder, root = draw_folder(tree_data, parent_container, nil, root_name, root_name..' ([color=1,0.3,0.3,1]'..type(mod_name_OR_luaobj)..'[/color])')
     end
@@ -263,7 +265,8 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
 
 
     if prop_allowed and t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
-      folder, label = draw_folder(tree_data, parent_container, parent_label, k, Table_to_str.to_richtext(k, true)..' ([color=blue]'..obj.object_name..'[/color])')
+      local img = Sprite.img(obj)
+      folder, label = draw_folder(tree_data, parent_container, parent_label, k, img..Table_to_str.to_richtext(k, true)..' ([color=blue]'..obj.object_name..'[/color])')
       if not opened_folder_tree or not opened_folder_tree[k] then
         parent_container.children[index].content_container.visible = false
         label.parent.folder_sprite.sprite = 'gvv-mod_folder-closed'
@@ -333,7 +336,8 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
       tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
       label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
       if t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
-        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(obj),
+        local img = Sprite.img(obj)
+        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_value', caption = img..Table_to_str.to_richtext(obj),
           style = 'tree-item-luaobj_gvv-mod', mouse_button_filter = {'right'},
         }
       else
