@@ -23,6 +23,7 @@ script.on_event(defines.events.on_gui_checked_state_changed, pcwrap(Gui_Event.on
 script.on_event(defines.events.on_gui_text_changed, pcwrap(Gui_Event.on_gui_text_changed))
 script.on_event(defines.events.on_gui_selection_state_changed, pcwrap(Gui_Event.on_gui_selection_state_changed))
 script.on_event('toggle-main-frame_gvv-mod', Gui_Event['toggle-main-frame_gvv-mod'])
+script.on_event('refresh_gvv-mod', Gui_Event['refresh_gvv-mod'])
 script.on_event(defines.events.on_player_created, Load.on_player_created)
 script.on_event(defines.events.on_runtime_mod_setting_changed, Load.on_runtime_mod_setting_changed)
 

@@ -543,11 +543,13 @@ Tree.register_object = function(g, luaobj_elem)
     error(luaobj_elem.caption..'('..obj.object_name..') object is not there anymore.')
   end
   local already_exist = false
-  local index
+  local index, btn
   for k, v in pairs(g.data.docked_luaobj) do
     if Util.table_shallow_compare(tree_path, v.tree_path) then
+      local sub_objlist = g.gui.sub_objlist
       already_exist = true
       index = k
+      btn = sub_objlist['_gvv-mod_c_sub_obj_'..tostring(index)]
       break
     end
   end
@@ -562,7 +564,7 @@ Tree.register_object = function(g, luaobj_elem)
 
     local sub_objlist = g.gui.sub_objlist
     local caption = '('..tostring(index)..') '..Table_to_str.to_luaon(data.key, true)
-    local btn = sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"",{"gvv-mod.obj-list-tooltip"},'\n',Table_to_str.path_to_lua_prop_path(tree_path)}}
+    btn = sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"",{"gvv-mod.obj-list-tooltip"},'\n',Table_to_str.path_to_lua_prop_path(tree_path)}}
   end
 
   g.gui.tabpane.selected_tab_index = 3
@@ -571,6 +573,8 @@ Tree.register_object = function(g, luaobj_elem)
   g.gui.chk_show_func.visible = true
 
   Tree.draw_proptree(g, index)
+
+  return btn
 end
 
 local valid = function(obj)

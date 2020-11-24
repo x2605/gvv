@@ -71,6 +71,9 @@ Gui.open_main = function(player_index)
   if not g.data.search.prop then g.data.search.prop = {} end
   if not g.data.search.gobj then g.data.search.gobj = {} end
 
+  g.tabs = {} --탭에서 열었던 하위 guielement
+  -- tab2:last_sub_mod, tab3:last_sub_obj, tab4:last_sub_gobj
+
   frame.location = {0,0}
   frame.style.width = g.last_width
   frame.style.height = g.last_height
@@ -191,6 +194,12 @@ Gui.open_main = function(player_index)
   topspace.export_import_btn.style.height = 20
 
 
+  topspace.add{type = 'sprite-button', name = 'tree_refresh_btn', sprite = 'utility/reset_white',
+    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.tree-refresh"},
+  }
+  topspace.tree_refresh_btn.style.width = 20
+  topspace.tree_refresh_btn.style.height = 20
+  topspace.tree_refresh_btn.visible = false
   topspace.add{type = 'sprite-button', name = 'search_btn', sprite = 'utility/search_white',
     style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.search-btn"},
   }
@@ -219,6 +228,7 @@ Gui.open_main = function(player_index)
   g.gui.move_down_checked_btn = topspace.move_down_checked_btn -- 사용자 개체 등록
   g.gui.check_process_btn = topspace.check_process_btn -- 사용자 개체 등록
   g.gui.export_import_btn = topspace.export_import_btn -- 사용자 개체 등록
+  g.gui.tree_refresh_btn = topspace.tree_refresh_btn -- 사용자 개체 등록
   g.gui.search_btn = topspace.search_btn -- 사용자 개체 등록
   g.gui.chk_show_na = topspace.chk_show_na -- 사용자 개체 등록
   g.gui.chk_show_nil = topspace.chk_show_nil -- 사용자 개체 등록
@@ -571,8 +581,10 @@ Gui.change_tab = function(g, index)
     g.gui.chk_show_func.visible = false
   end
   if tab > 1 and tab < 5 then
+    g.gui.tree_refresh_btn.visible = true
     g.gui.search_btn.visible = true
   else
+    g.gui.tree_refresh_btn.visible = false
     g.gui.search_btn.visible = false
   end
 end

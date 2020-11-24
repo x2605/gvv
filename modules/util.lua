@@ -150,4 +150,13 @@ Util.push_checked = function(array, direction)
   return array
 end
 
+--caption으로 자식 gui얻기
+Util.get_guichild_by_caption = function(parent, caption)
+  for _, child in pairs(parent.children) do
+    if child.caption == caption then
+      return child
+    end
+  end
+end
+
 return Util

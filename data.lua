@@ -9,6 +9,11 @@ data:extend{
     key_sequence = 'CONTROL + SHIFT + V'
   },
   {
+    type = 'custom-input',
+    name = 'refresh'..suffix,
+    key_sequence = 'SHIFT + X'
+  },
+  {
     type = "sprite",
     name = "gvv-mod_folder-opened",
     filename = "__gvv__/icons/folder-opened.png",
@@ -122,14 +127,12 @@ local c
 default_gui['hflow'..suffix] = {
   type = "horizontal_flow_style",
   padding = 0,
-  vertical_spacing = 0,
   horizontal_spacing = 0,
 }
 default_gui['vflow'..suffix] = {
   type = "vertical_flow_style",
   padding = 0,
   vertical_spacing = 0,
-  horizontal_spacing = 0,
 }
 default_gui['transparent-frame'..suffix] = {
   type = "frame_style",
@@ -155,8 +158,6 @@ c.top_padding = 0
 c.right_padding = 0
 c.bottom_padding = 0
 c.left_padding = 0
-c.vertical_spacing = 0
-c.horizontal_spacing = 0
 c.horizontal_flow_style = default_gui['hflow'..suffix]
 c.vertical_flow_style = default_gui['vflow'..suffix]
 
@@ -176,8 +177,6 @@ c.top_padding = 0
 c.right_padding = 0
 c.bottom_padding = 0
 c.left_padding = 0
-c.vertical_spacing = 0
-c.horizontal_spacing = 0
 c.graphical_set.base.center = {position = {25, 8}, size = {1, 1}}
 c.graphical_set.base.bottom = nil
 

@@ -228,7 +228,7 @@ Gui_Event.on_gui_click = function(event)
   elseif event.element == g.gui.track_inter_show and event.button == defines.mouse_button_type.left then
     g.gui.track_inter_show.visible = false
     g.gui.track_inter_edit.visible = true
-    g.gui.track_inter_edit.text = g.track_interval_tick
+    g.gui.track_inter_edit.text = g.track_interval_tick .. ''
     g.gui.track_inter_edit.focus()
     g.gui.track_inter_edit.select_all()
 
@@ -333,10 +333,12 @@ Gui_Event.on_gui_click = function(event)
   --트리 항목 값을 우클릭으로 등록할 때
   elseif event.element.name == '_gvv-mod_key_value' and event.button == defines.mouse_button_type.right then
     if event.element.style.name == 'tree-item-luaobj_gvv-mod' then
+      local btn
       event.element.style = 'tracked-tree-item-luaobj_gvv-mod'
       if Tree.ignore_in_help_page(g, event.element) then return end
-      Tree.register_object(g, event.element.parent['_gvv-mod_key_label'])
+      btn = Tree.register_object(g, event.element.parent['_gvv-mod_key_label'])
       Search_Tree.refresh(g, 'prop')
+      g.tabs.last_sub_obj = btn.caption
     elseif event.element.style.name == 'tracked-tree-item-luaobj_gvv-mod' then
       event.element.style = 'tree-item-luaobj_gvv-mod'
     end
@@ -347,21 +349,27 @@ Gui_Event.on_gui_click = function(event)
     if event.button == defines.mouse_button_type.left then
       Tree.draw_proptree(g, index)
       Search_Tree.refresh(g, 'prop')
+      g.tabs.last_sub_obj = event.element.caption
     elseif event.button == defines.mouse_button_type.right then
       Tree.remove_prop_tree(g, index)
       Search_Tree.refresh(g, 'prop')
+      if g.tabs.last_sub_obj == event.element then
+        g.tabs.last_sub_obj = nil
+      end
     end
 
   --sub_modlist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_mod_%d+$') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_modlist_' then
     Tree.draw_globtree(g, event.element.caption)
     Search_Tree.refresh(g, 'glob')
+    g.tabs.last_sub_mod = event.element.caption
 
   --sub_gobjlist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_obj_%d+$') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_gobjlist_' then
     local index = event.element.name:match('^_gvv[-]mod_c_sub_obj_(%d+)$') + 0
     Tree.draw_gobjtree(g, event.element.caption)
     Search_Tree.refresh(g, 'gobj')
+    g.tabs.last_sub_gobj = event.element.caption
 
   --sub_helplist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_help_/') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_helplist_' then
@@ -432,6 +440,35 @@ Gui_Event.on_gui_click = function(event)
   --tracking_panel 의 결과값을 우클릭할 때
   elseif event.element.name == '_gvv-mod_tracking_output_' and event.button == defines.mouse_button_type.right then
     Gui.copyable_tracking_code(g, event.element.caption)
+
+  --트리 갱신 버튼
+  elseif event.element == g.gui.tree_refresh_btn then
+    local pane = g.gui.tabpane
+    local tab = pane.selected_tab_index
+    local subelem = nil
+    if tab == 2 then
+      if g.tabs.last_sub_mod then
+        subelem = Util.get_guichild_by_caption(g.gui.sub_modlist, g.tabs.last_sub_mod)
+      end
+    elseif tab == 3 then
+      if g.tabs.last_sub_obj then
+        subelem = Util.get_guichild_by_caption(g.gui.sub_objlist, g.tabs.last_sub_obj)
+      end
+    elseif tab == 4 then
+      if g.tabs.last_sub_gobj then
+        subelem = Util.get_guichild_by_caption(g.gui.sub_gobjlist, g.tabs.last_sub_gobj)
+      end
+    end
+    if subelem then
+      Gui_Event.on_gui_click{
+        element = subelem,
+        player_index = event.player_index,
+        button = defines.mouse_button_type.left,
+        alt = false,
+        control = false,
+        shift = false
+      }
+    end
 
   --검색 보이기 버튼
   elseif event.element == g.gui.search_btn then
@@ -741,6 +778,36 @@ Gui_Event['toggle-main-frame_gvv-mod'] = function(event)
   local player = game.players[event.player_index]
   if not player.admin and game.is_multiplayer() then return end
   if player then Gui.open_main(event.player_index) end
+end
+
+Gui_Event['refresh_gvv-mod'] = function(event)
+  local player = game.players[event.player_index]
+  if not player.admin and game.is_multiplayer() then return end
+  if not global.players then return end
+  local g = global.players[event.player_index]
+  if g and g.gui and g.gui.tabpane and g.gui.tabpane.valid then
+    local pane = g.gui.tabpane
+    local tab = pane.selected_tab_index
+    if tab == 1 then
+      Gui_Event.on_gui_click{
+        element = g.gui.track_refresh_btn,
+        player_index = event.player_index,
+        button = defines.mouse_button_type.left,
+        alt = false,
+        control = false,
+        shift = false
+      }
+    elseif tab > 1 and tab < 5 then
+      Gui_Event.on_gui_click{
+        element = g.gui.tree_refresh_btn,
+        player_index = event.player_index,
+        button = defines.mouse_button_type.left,
+        alt = false,
+        control = false,
+        shift = false
+      }
+    end
+  end
 end
 
 return Gui_Event
