@@ -3,12 +3,12 @@ Version: 0.4.1
 Date: 2020-11-25
 
   Changes:
-    - * Changes from 0.3.6
+    - * Changes from 0.3.6, 0.4.0.
     - Added refresh button at tree tabs.
     - Added refresh hotkey (default : SHIFT+X) usable at tracking variables tab and tree tabs.
 
   Fixes:
-    - * Fixes from 0.3.6
+    - * Fixes from 0.3.6, 0.4.0.
     - Fixed error shown when trying to edit tracking interval number.
     - Cleared misinputs of flow/frame guistyle properties.
 
