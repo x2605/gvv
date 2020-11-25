@@ -21,7 +21,7 @@ Date: 2020-11-24
     - Removed dodging codes for some bugs/crashes fixed in Factorio 1.1
 
 ---------------------------------------------------------------------------------------------------
-Version: 0.3.7
+Version: 0.3.8
 Date: 2020-11-25
 
   Changes:
