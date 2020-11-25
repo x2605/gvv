@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.4.1
+Version: 0.3.7
 Date: 2020-11-25
 
   Changes:
@@ -7,16 +7,7 @@ Date: 2020-11-25
     - Added refresh hotkey (default : SHIFT+X) usable at tracking variables tab and tree tabs.
 
   Fixes:
-    - Fixed error shown when trying to edit tracking interval number.
     - Cleared misinputs of flow/frame guistyle properties.
-
----------------------------------------------------------------------------------------------------
-Version: 0.4.0
-Date: 2020-11-24
-
-  Changes:
-    - Quick adaptation to Factorio 1.1
-    - Removed dodging codes for some bugs/crashes fixed in Factorio 1.1
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.6

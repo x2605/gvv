@@ -29,14 +29,14 @@ local crash_condition
       크래시를 일으키는 프로퍼티가 안전한 것을 확인해주는 프로퍼티 (or logic)
 --]]
 
---local crash_condition = {
-  --LuaItemStack = {
-  --  blueprint_icons = {
-  --    'is_blueprint',
-  --    'is_blueprint_book',
-  --  },
-  --},
---}
+local crash_condition = {
+  LuaItemStack = {
+    blueprint_icons = {
+      'is_blueprint',
+      'is_blueprint_book',
+    },
+  },
+}
 
 -- 값을 함께 리턴할 경우 add_value에 true
 return function(obj, add_value)
@@ -61,7 +61,7 @@ return function(obj, add_value)
   end
   local r, list = true, {}
   local c, prop = 0, ''
-  --local skip = false --크래시 스킵
+  local skip = false --크래시 스킵
   local logic = true
 
   if name == 'LuaCustomTable' then
@@ -107,34 +107,41 @@ return function(obj, add_value)
   end
 
   while r do
-    --skip = false
+    skip = false
     prop = help_str:match('[%a_][%a%d_]* [[]R')
     if not prop then break end
     prop = prop:gsub(' [[]R','')
     help_str, c = help_str:gsub('[%a_][%a%d_]* [[]R','',1)
     if c == 0 then r = false break end
 
-    --if crash_condition[name] and crash_condition[name][prop] then
-    --  logic = false
-    --  for _, v in pairs(crash_condition[name][prop]) do
-    --    logic = logic or obj[v]
-    --  end
-    --  skip = not logic
-    --end
+    if crash_condition[name] and crash_condition[name][prop] then
+      logic = false
+      for _, v in pairs(crash_condition[name][prop]) do
+        logic = logic or obj[v]
+      end
+      skip = not logic
+    end
 
-    --if not skip then
-    pc, rv = pcall(function(a, b) return a[b] end, obj, prop)
-    if pc then
-      if add_value then
-        if rv == nil then
-          local n = {}
-          setmetatable(n, global.meta_data._nil_)
-          list[prop] = n
+    if not skip then
+      pc, rv = pcall(function(a, b) return a[b] end, obj, prop)
+      if pc then
+        if add_value then
+          if rv == nil then
+            local n = {}
+            setmetatable(n, global.meta_data._nil_)
+            list[prop] = n
+          else
+            list[prop] = rv
+          end
         else
-          list[prop] = rv
+          list[prop] = true
         end
       else
-        list[prop] = true
+        if add_value and include_na then
+          local n = {}
+          setmetatable(n, global.meta_data._na_)
+          list[prop] = n
+        end
       end
     else
       if add_value and include_na then
@@ -143,19 +150,12 @@ return function(obj, add_value)
         list[prop] = n
       end
     end
-    --else
-    --  if add_value and include_na then
-    --    local n = {}
-    --    setmetatable(n, global.meta_data._na_)
-    --    list[prop] = n
-    --  end
-    --end
   end
   if add_value then
     local func = ''
     r = true
     while r do
-      --skip = false
+      skip = false
       func = help_str:match('[%a_][%a%d_]*[(]')
       if not func then break end
       func = func:gsub('[(]','')

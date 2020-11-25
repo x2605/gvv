@@ -52,7 +52,7 @@ Load.on_configuration_changed = function(data)
   if data.mod_changes then
     local thismod = data.mod_changes['gvv']
     if thismod then
-      if thismod.old_version and vless(thismod.old_version, 0, 4, 0) then
+      if thismod.old_version and vless(thismod.old_version, 0, 3, 6) then
         if global.players then
           for index, g in pairs(global.players) do
             pcall(function()
