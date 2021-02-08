@@ -36,10 +36,7 @@ local draw_branch = function(wrapper, key, noicon)
   vbar.style.vertically_stretchable = true
   vbar.add{type = 'empty-widget', name = 'part_top', style = 'branch_gvv-mod'}
   vbar.part_top.style.width = 2
-  vbar.part_top.style.vertically_stretchable = true
-  vbar.add{type = 'empty-widget', name = 'part_bottom', style = 'branch_gvv-mod'}
-  vbar.part_bottom.style.width = 2
-  vbar.part_bottom.style.vertically_stretchable = true
+  vbar.part_top.style.height = 20
   local hbar = label_container.add{type = 'flow', name = 'hbar', direction = 'horizontal', style = 'hflow_gvv-mod'}
   if noicon then
     hbar.style.width = 30
@@ -762,9 +759,12 @@ Tree.revision_line = function(parent_container)
       if container.label_container then
         if container.visible then
           last_visible_index = index
-          container.label_container.vbar.part_bottom.style = 'branch_gvv-mod'
+          container.label_container.vbar.part_top.style.height = 20
           if container.content_container then
             container.content_container.extbar.part.style = 'branch_gvv-mod'
+            container.content_container.extbar.part.style.left_margin = 9
+            container.content_container.extbar.part.style.width = 2
+            container.content_container.extbar.part.style.vertically_stretchable = true
             Tree.revision_line(container.content_container.folder)
           end
         end
@@ -773,9 +773,12 @@ Tree.revision_line = function(parent_container)
   end
   if last_visible_index > 0 then
     local last_container = parent_container.children[last_visible_index]
-    last_container.label_container.vbar.part_bottom.style = 'branch-hide_gvv-mod'
+    last_container.label_container.vbar.part_top.style.height = 11
     if last_container.content_container then
       last_container.content_container.extbar.part.style = 'branch-hide_gvv-mod'
+      last_container.content_container.extbar.part.style.left_margin = 9
+      last_container.content_container.extbar.part.style.width = 2
+      last_container.content_container.extbar.part.style.vertically_stretchable = true
     end
   end
 end
