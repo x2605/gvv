@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.3
+Date: 2021-02-13
+
+  Changes:
+    - Added limiter for tree loading to prevent to render too much entries in single folder at once.
+
+  Info:
+    - Default limit is 500 entries per folder, and this can be changed by following command,
+      /c __gvv__ global.meta_data.treelimit=1234
+      If number of entries to load in single folder at once exceeds the limit, an alternative entry to click is generated for continue to load manually.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.4.2
 Date: 2021-02-08
 

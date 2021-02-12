@@ -13,7 +13,7 @@ parent_container
    ┠ label_container
    ┃ ┠ vbar
    ┃ ┠ hbar
-   ┃ ┠ folder_sprite (폴더인 경우만 존재)
+   ┃ ┠ folder_sprite (폴더인 경우만 존재) / other_sprite
    ┃ ┠ _gvv-mod_key_label (tree_data의 object또는 parent)
    ┃ ┠ equal_sign (값인 경우만 존재)
    ┃ ┖ _gvv-mod_key_value (값인 경우만 존재)
@@ -249,99 +249,119 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
 end
 
 --재귀 그리기
-Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, parent_label, prop_allowed)
+Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, parent_label, prop_allowed, draw_from)
   local s = {}
   local index = 0
   local table_keys = {}
   local item_name = ''
   local last_item, label_wrap, label_container, folder, label
+  local drawn = 0
   if not opened_folder_tree then return end
+  if not draw_from then draw_from = 0 end
+  if not global.meta_data.treelimit then global.meta_data.treelimit = 500 end
   for k, obj in pairs(tbl) do
     local t = type(obj)
     index = index + 1
+    if index > draw_from then
+      drawn = drawn + 1
 
-
-    if prop_allowed and t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
-      local img = Sprite.img(obj)
-      folder, label = draw_folder(tree_data, parent_container, parent_label, k, img..Table_to_str.to_richtext(k, true)..' ([color=blue]'..obj.object_name..'[/color])')
-      if not opened_folder_tree or not opened_folder_tree[k] then
-        parent_container.children[index].content_container.visible = false
-        label.parent.folder_sprite.sprite = 'gvv-mod_folder-closed'
-      else
-        local props = Util.get_property_list(obj, true)
-        Tree.draw(g, tree_data, opened_folder_tree[k], props, folder, label, prop_allowed)
-      end
-      table_keys[k] = true
-
-    elseif t == 'table' and getmetatable(obj) == global.meta_data._nil_ then
-      label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
-      if not g.show_nil then label_wrap.visible = false end
-      label_container = draw_branch(label_wrap, k, true)
-      last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = Table_to_str.to_richtext(k, true),
-        style = 'tree-item_gvv-mod', mouse_button_filter = {'right'},
-      }
-      tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
-      label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
-      last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(nil)}
-
-    elseif t == 'table' and getmetatable(obj) == global.meta_data._na_ then
-      label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
-      if not g.show_na then label_wrap.visible = false end
-      label_container = draw_branch(label_wrap, k, true)
-      last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = '[color=0.5,0.5,0.5,0.5]'..Table_to_str.to_richtext(k, true)..'[/color]',
-        style = 'tree-item-na_gvv-mod', mouse_button_filter = {'right'},
-      }
-      tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
-      label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
-      last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = '[color=0.5,0,0,0.5]n/a[/color]'}
-
-    elseif t == 'function' or t == 'table' and getmetatable(obj) == global.meta_data._function_ then
-      label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
-      if prop_allowed then
-        if not g.show_func then label_wrap.visible = false end
-        label_container = draw_branch(label_wrap, k, true)
-        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = '[color=0.5,0.5,0.5,0.5]'..Table_to_str.to_richtext(k, true)..'(...)[/color]',
-          style = 'tree-item-func_gvv-mod', mouse_button_filter = {'right'},
+      if drawn > global.meta_data.treelimit then
+        label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
+        label_container = draw_branch(label_wrap, k, false)
+        local sprite = label_container.add{type = 'sprite', name = 'other_sprite', sprite = 'gvv-mod_load-cont'}
+        sprite.style.width = 20
+        sprite.style.height = 20
+        sprite.style.stretch_image_to_widget_size = true
+        sprite.resize_to_sprite = false
+        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = {"gvv-mod.load_cont", table_size(tbl) - index + 1},
+          style = 'load-cont_gvv-mod', mouse_button_filter = {'left'},
         }
-        tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
-      else
+        tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false, cont_from = index - 1}
+        break
+      end
+
+      if prop_allowed and t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+        local img = Sprite.img(obj)
+        folder, label = draw_folder(tree_data, parent_container, parent_label, k, img..Table_to_str.to_richtext(k, true)..' ([color=blue]'..obj.object_name..'[/color])')
+        if not opened_folder_tree or not opened_folder_tree[k] then
+          parent_container.children[index].content_container.visible = false
+          label.parent.folder_sprite.sprite = 'gvv-mod_folder-closed'
+        else
+          local props = Util.get_property_list(obj, true)
+          Tree.draw(g, tree_data, opened_folder_tree[k], props, folder, label, prop_allowed)
+        end
+        table_keys[k] = true
+
+      elseif t == 'table' and getmetatable(obj) == global.meta_data._nil_ then
+        label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
+        if not g.show_nil then label_wrap.visible = false end
         label_container = draw_branch(label_wrap, k, true)
         last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = Table_to_str.to_richtext(k, true),
           style = 'tree-item_gvv-mod', mouse_button_filter = {'right'},
         }
         tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
         label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
-        last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(obj)}
-      end
+        last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(nil)}
 
-    elseif t == 'table' and type(obj.__self) ~= 'userdata' then
-      folder, label = draw_folder(tree_data, parent_container, parent_label, k, Table_to_str.to_richtext(k, true))
-      if not opened_folder_tree or not opened_folder_tree[k] then
-        parent_container.children[index].content_container.visible = false
-        label.parent.folder_sprite.sprite = 'gvv-mod_folder-closed'
-      else
-        Tree.draw(g, tree_data, opened_folder_tree[k], tbl[k], folder, label, prop_allowed)
-      end
-      table_keys[k] = true
-
-    else
-      label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
-      label_container = draw_branch(label_wrap, k, true)
-      last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = Table_to_str.to_richtext(k, true),
-        style = 'tree-item_gvv-mod', mouse_button_filter = {'right'},
-      }
-      tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
-      label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
-      if t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
-        local img = Sprite.img(obj)
-        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_value', caption = img..Table_to_str.to_richtext(obj),
-          style = 'tree-item-luaobj_gvv-mod', mouse_button_filter = {'right'},
+      elseif t == 'table' and getmetatable(obj) == global.meta_data._na_ then
+        label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
+        if not g.show_na then label_wrap.visible = false end
+        label_container = draw_branch(label_wrap, k, true)
+        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = '[color=0.5,0.5,0.5,0.5]'..Table_to_str.to_richtext(k, true)..'[/color]',
+          style = 'tree-item-na_gvv-mod', mouse_button_filter = {'right'},
         }
-      else
-        last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(obj)}
-      end
-    end
+        tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
+        label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
+        last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = '[color=0.5,0,0,0.5]n/a[/color]'}
 
+      elseif t == 'function' or t == 'table' and getmetatable(obj) == global.meta_data._function_ then
+        label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
+        if prop_allowed then
+          if not g.show_func then label_wrap.visible = false end
+          label_container = draw_branch(label_wrap, k, true)
+          last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = '[color=0.5,0.5,0.5,0.5]'..Table_to_str.to_richtext(k, true)..'(...)[/color]',
+            style = 'tree-item-func_gvv-mod', mouse_button_filter = {'right'},
+          }
+          tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
+        else
+          label_container = draw_branch(label_wrap, k, true)
+          last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = Table_to_str.to_richtext(k, true),
+            style = 'tree-item_gvv-mod', mouse_button_filter = {'right'},
+          }
+          tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
+          label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
+          last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(obj)}
+        end
+
+      elseif t == 'table' and type(obj.__self) ~= 'userdata' then
+        folder, label = draw_folder(tree_data, parent_container, parent_label, k, Table_to_str.to_richtext(k, true))
+        if not opened_folder_tree or not opened_folder_tree[k] then
+          parent_container.children[index].content_container.visible = false
+          label.parent.folder_sprite.sprite = 'gvv-mod_folder-closed'
+        else
+          Tree.draw(g, tree_data, opened_folder_tree[k], tbl[k], folder, label, prop_allowed)
+        end
+        table_keys[k] = true
+
+      else
+        label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
+        label_container = draw_branch(label_wrap, k, true)
+        last_item = label_container.add{type = 'button', name = '_gvv-mod_key_label', caption = Table_to_str.to_richtext(k, true),
+          style = 'tree-item_gvv-mod', mouse_button_filter = {'right'},
+        }
+        tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
+        label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
+        if t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+          local img = Sprite.img(obj)
+          last_item = label_container.add{type = 'button', name = '_gvv-mod_key_value', caption = img..Table_to_str.to_richtext(obj),
+            style = 'tree-item-luaobj_gvv-mod', mouse_button_filter = {'right'},
+          }
+        else
+          last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(obj)}
+        end
+      end
+
+    end
 
   end
   if opened_folder_tree then
@@ -354,8 +374,8 @@ end
 
 --데이터에서 라벨개체의 트리정보 찾기
 Tree.get_tree_data = function(tree_data, elem)
-  for _, v in pairs(tree_data) do
-    if v.object == elem then return v end
+  for i, v in ipairs(tree_data) do
+    if v.object == elem then return v, i end
   end
   return nil
 end

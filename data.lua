@@ -111,6 +111,17 @@ data:extend{
     tint = {r=0, g=1, b=0, a=1},
     scale = 0.5
   },
+  {
+    type = "sprite",
+    name = "gvv-mod_load-cont",
+    filename = "__gvv__/icons/load-cont.png",
+    priority = "extra-high-no-scale",
+    width = 32,
+    height = 32,
+    flags = {"gui-icon"},
+    mipmap_count = 1,
+    scale = 0.5
+  },
 }
 
 local default_gui = data.raw['gui-style'].default
@@ -301,6 +312,10 @@ c.hovered_graphical_set.glow = table.deepcopy(default_gui.green_button.hovered_g
 c.clicked_graphical_set.glow = table.deepcopy(default_gui.green_button.hovered_graphical_set.glow)
 c.selected_hovered_graphical_set.glow = table.deepcopy(default_gui.green_button.hovered_graphical_set.glow)
 c.selected_clicked_graphical_set.glow = table.deepcopy(default_gui.green_button.hovered_graphical_set.glow)
+
+c = copytbl('load-cont'..suffix, default_gui['tree-item'..suffix])
+c.hovered_graphical_set.glow = table.deepcopy(default_gui.red_button.hovered_graphical_set.glow)
+c.clicked_graphical_set.glow = table.deepcopy(default_gui.red_button.hovered_graphical_set.glow)
 
 c = copytbl('tracked-tree-item'..suffix, default_gui['tree-item'..suffix])
 local a, b = 337, 56

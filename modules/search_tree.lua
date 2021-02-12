@@ -147,7 +147,7 @@ Search_Tree.scan = function(parent_container)
   for index, container in ipairs(parent_container.children) do
     if container.valid then
       if container.label_container then
-        if container.visible then
+        if container.visible and type(container.label_container['_gvv-mod_key_label'].caption) == 'string' then
           local key = remove_richkey(container.label_container['_gvv-mod_key_label'].caption)
           if not fcase then key = key:lower() end
           local value = nil

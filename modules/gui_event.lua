@@ -248,6 +248,63 @@ Gui_Event.on_gui_click = function(event)
     end
     local succ, tree_path = Tree.track_path(tree_data, event.element, {})
     if succ then
+      --clicking Continue to load. 계속 로딩하기 클릭시.
+      if event.element.style.name == 'load-cont_gvv-mod' then
+        local data, index
+        data, index = Tree.get_tree_data(tree_data, event.element)
+        local parentlabel = data.parent
+        local cont_from = data.cont_from
+        table.remove(tree_path, #tree_path)
+        table.remove(tree_data, index)
+        -- tree_data keys : {parent, object, key, is_folder, is_root, cont_from}
+        local folder = parentlabel.parent.parent.content_container.folder
+        event.element.parent.parent.destroy()
+        if category == '_G_glob' then
+          local tbl = Tree.get_global(parentlabel)
+          for i = 2, #tree_path do
+            tbl = tbl[tree_path[i]]
+          end
+          Tree.draw(g, tree_data, {}, tbl, folder, parentlabel, false, cont_from)
+        elseif category == 'glob' then
+          local tbl = Tree.get_global(parentlabel)
+          for i = 2, #tree_path do
+            tbl = tbl[tree_path[i]]
+          end
+          Tree.draw(g, tree_data, {}, tbl, folder, parentlabel, false, cont_from)
+        elseif category == 'prop' then
+          local top = Tree.get_top_parent(parentlabel)
+          local obj_index = top.caption:match('^[(](%d+)[)] ') + 0
+          local obj = g.data.docked_luaobj[obj_index].luaobj
+          for i = 2, #tree_path do
+            obj = obj[tree_path[i]]
+          end
+          if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+            local props = Util.get_property_list(obj, true)
+            Tree.draw(g, tree_data, {}, props, folder, parentlabel, true, cont_from)
+          else
+            Tree.draw(g, tree_data, {}, obj, folder, parentlabel, true, cont_from)
+          end
+        elseif category == 'gobj' then
+          local top = Tree.get_top_parent(parentlabel)
+          local gobj_name = top.caption:match('^[%a_][%a%d_]*')
+          local obj = assert(loadstring('return '..gobj_name))()
+          for i = 2, #tree_path do
+            obj = obj[tree_path[i]]
+          end
+          if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+            local props = Util.get_property_list(obj, true)
+            Tree.draw(g, tree_data, {}, props, folder, parentlabel, true, cont_from)
+          else
+            Tree.draw(g, tree_data, {}, obj, folder, parentlabel, true, cont_from)
+          end
+        end
+        if category == '_G_glob' then
+          Search_Tree.refresh(g, 'glob')
+        else
+          Search_Tree.refresh(g, category)
+        end
+        return
+      end --continue to load end
       local data
       data = Tree.get_tree_data(tree_data, event.element)
       -- tree_data keys : {parent, object, key, is_folder, is_root}
