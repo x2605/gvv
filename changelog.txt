@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.4
+Date: 2021-07-29
+
+  Changes:
+    - For remote "_G" function, errors are handled per element instead of denying to load entire _G tree.
+    - Removed error message shortening in tree view. Now full error message is shown like as variable value.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.4.3
 Date: 2021-02-13
 
