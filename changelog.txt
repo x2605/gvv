@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.5
+Date: 2021-07-29
+
+  Changes:
+    - In remote "_G" function, table inspecting method for Factorio stock objects(LuaBlabla...) is slightly changed to avoid(hopefully) blinded invoking metamethod of tables with custom metatable.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.4.4
 Date: 2021-07-29
 

@@ -12,7 +12,7 @@ return function() return [[=function()
   wr=function(o,p,a)
     ]]--[[ o:object, p:parent_list, a:as key? --]]..[[
     local t,r=type(o)
-    if t=='table' and type(o.__self)=='userdata' and o.object_name then
+    if t=='table' and getmetatable(o)=='private' and type(o.__self)=='userdata' and o.object_name then
       if a or (N[o.object_name] or o.object_name:match('^LuaMapSettings')) then
         j=j+1
         r='<'..o.object_name..j..'>'
@@ -59,7 +59,7 @@ return function() return [[=function()
     end
     return r
   end
-  for k,v in pairs(G) do
+  for k,v in next,G,nil do
     if not B[k] then
       s[cp(k,{_G},true)]=cp(v,{_G})
     end
