@@ -135,7 +135,7 @@ return function(nilstr) return [[=function()
           return it(v,nil,true)
         elseif getmetatable(v) then
           mt[#mt+1]=du(pth,k) l=l+1
-          it(v,du(pth,k))
+          ]]..--[[it(v,du(pth,k))]][[
         else
           it(v,du(pth,k)) c=c+1
         end

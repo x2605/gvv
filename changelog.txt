@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.0
+Date: 2022-03-16
+
+  Changes:
+    - Tried afforts to avoid metatable related errors.
+    - "global" table bringer will now work like "_G" table bringer, not simple copy anymore. This may be worse for performance, but you can explore function and metatable statements inside of global table.
+    - "global" diagnostic in trouble shooter will not iterate inside metatable.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.4.5
 Date: 2021-07-29
 
