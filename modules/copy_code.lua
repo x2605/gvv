@@ -5,7 +5,7 @@ local Copy_Code = {}
 local codes = {}
 
 local version_code = function() return [[=function()
-  return '6'
+  return '7'
 end,
 ]] end
 

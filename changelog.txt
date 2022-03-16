@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.1
+Date: 2022-03-16
+
+  Changes:
+    - Tried "global" diagnostic in trouble shooter to do not iterate inside metatables and recursive tables.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.5.0
 Date: 2022-03-16
 

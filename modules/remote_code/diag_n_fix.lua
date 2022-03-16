@@ -21,10 +21,10 @@ return function(nilstr) return [[=function()
   local u={LuaGameScript=true,LuaBootstrap=true,LuaRemote=true,LuaCommandProcessor=true,LuaSettings=true,LuaRCON=true,LuaRendering=true,LuaLazyLoadedValue=true}
   ]]--[[ blacklisted --]]..[[
 
-  it=function(b,pth,o)
+  it=function(b,pth,pa,o)
     ]]--[[ iterator --]]..[[
-    ]]--[[ b = table, pth = path table, o = table as key deep search mode boolean --]]..[[
-    local t, y
+    ]]--[[ b = table, pth = path table, pa = parent table, o = table as key deep search mode boolean --]]..[[
+    local t, y, pc
     for k,v in pairs(b) do
       t=type(k)
       y=type(v)
@@ -48,7 +48,7 @@ return function(nilstr) return [[=function()
             else return false
             end
           elseif y=='table' then
-            return it(v,nil,true)
+            return it(v,nil,pa,true)
           end
         else
           j=j+1
@@ -71,11 +71,11 @@ return function(nilstr) return [[=function()
               j=j+1
               po[#po+1]=du(pth,k.object_name..j) p=p+1
               mt[#mt+1]=du(pth,k.object_name..j) l=l+1
-              it(v,du(pth,k.object_name..j))
+              ]]..--[[it(v,du(pth,k.object_name..j),pa)]][[
             elseif y=='table' then
               j=j+1
               po[#po+1]=du(pth,k.object_name..j) p=p+1
-              it(v,du(pth,k.object_name..j))
+              it(v,du(pth,k.object_name..j),pa)
             else
               j=j+1
               po[#po+1]=du(pth,k.object_name..j) p=p+1
@@ -90,9 +90,9 @@ return function(nilstr) return [[=function()
         end
       elseif t=='table' then
         if o then
-          return it(k,nil,true)
+          return it(k,nil,pa,true)
         else
-          if it(k,nil,true) then
+          if it(k,nil,pa,true) then
             j=j+1
             rm[#rm+1]=du(pth,t..j) ]]..nilstr..[[ e=e+1
           else
@@ -108,11 +108,11 @@ return function(nilstr) return [[=function()
               j=j+1
               po[#po+1]=du(pth,t..j) p=p+1
               mt[#mt+1]=du(pth,t..j) l=l+1
-              it(v,du(pth,t..j))
+              ]]..--[[it(v,du(pth,t..j),pa)]][[
             elseif y=='table' then
               j=j+1
               po[#po+1]=du(pth,t..j) p=p+1
-              it(v,du(pth,t..j))
+              it(v,du(pth,t..j),pa)
             else
               j=j+1
               po[#po+1]=du(pth,t..j) p=p+1
@@ -132,12 +132,28 @@ return function(nilstr) return [[=function()
         end
       elseif y=='table' then
         if o then
-          return it(v,nil,true)
+          return it(v,nil,pa,true)
         elseif getmetatable(v) then
           mt[#mt+1]=du(pth,k) l=l+1
-          ]]..--[[it(v,du(pth,k))]][[
+          ]]..--[[it(v,du(pth,pa,k))]][[
         else
-          it(v,du(pth,k)) c=c+1
+          for k2,v2 in pairs(pa) do
+            if v2==v then
+              pc=true
+              break
+            end
+          end
+          if pc then
+            c=c+1
+          else
+            local q={}
+            ]]--[[ q:copy of p(parent) --]]..[[
+            for k2,v2 in pairs(pa) do
+              q[k2]=v2
+            end
+            q[#q+1]=v
+            it(v,du(pth,k),q) c=c+1
+          end
         end
       elseif o then
       else
@@ -146,7 +162,7 @@ return function(nilstr) return [[=function()
     end
   end
 
-  it(global,{})
+  it(global,{},{global})
 
   return {trouble=rm,meta=mt,m_count=l,n_count=c,e_count=e,potential=po,p_count=p}
 end,
