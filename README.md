@@ -44,7 +44,7 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
   If no <mod_name> is given, level(current map) will be used.  
 
 ### LuaRemote interfaces added by this mod  
-- **remote.call("__<mod_name>__gvv","global")** : Returns global table of the mod.  
+- **remote.call("__<mod_name>__gvv","storage")** : Returns global table of the mod. (storage was global before Factorio 2.0)  
 - **remote.call("__<mod_name>__gvv","_G")** : Returns _G table of the mod. Some data types can not be brought.  
 - **remote.call("__<mod_name>__gvv","diag")** : Need to be used only internally. Performs diagnosis of global table of the mod and returns problematic paths as table.  
 - **remote.call("__<mod_name>__gvv","fix")** : Need to be used only internally. Performs diagnosis and kills entries that LuaRemote cannot handle in global table of the mod.  
