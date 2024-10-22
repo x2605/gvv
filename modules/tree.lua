@@ -103,7 +103,7 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
     end
   elseif tab == 'glob' then
     parent_container = g.gui.sub_globtree
-    pc, tbl = pcall(function() return remote.call('__'..mod_name_OR_luaobj..'__gvv','global') end)
+    pc, tbl = pcall(function() return remote.call('__'..mod_name_OR_luaobj..'__gvv','storage') end)
     if not pc then
       tbl = {['<ERROR>'] = '<'..tbl..'>'}
       pc = true
@@ -220,7 +220,7 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
     parent_container.add{type = 'flow', name = 'header'} -- [1]
     parent_container.header.visible = false
     Tree.draw_init(g, '_G_glob', mod_name_OR_luaobj, root_name) -- [2]
-    folder, root = draw_folder(tree_data, parent_container, nil, mod_name_OR_luaobj, 'remote.call("__[font=default-bold][color=green]'..mod_name_OR_luaobj..'[/color][/font]__gvv","[font=default-bold][color=yellow]global[/color][/font]")')
+    folder, root = draw_folder(tree_data, parent_container, nil, mod_name_OR_luaobj, 'remote.call("__[font=default-bold][color=green]'..mod_name_OR_luaobj..'[/color][/font]__gvv","[font=default-bold][color=yellow]storage[/color][/font]")')
     Tree.draw(g, tree_data, opened_folder_tree, tbl, folder, root, false) -- [3]
   elseif tab == 'prop' or tab == 'gobj' then
     local props = Util.get_property_list(mod_name_OR_luaobj, true)
@@ -228,7 +228,7 @@ Tree.draw_init = function(g, tab, mod_name_OR_luaobj, root_name)
     parent_container.header.visible = false
     parent_container.add{type = 'flow', name = '_G:'} -- [2]
     parent_container['_G:'].visible = false
-    if type(mod_name_OR_luaobj) == 'table' and type(mod_name_OR_luaobj.__self) == 'userdata' and mod_name_OR_luaobj.object_name then
+    if type(mod_name_OR_luaobj) == 'userdata' and mod_name_OR_luaobj.object_name then
       local img = Sprite.img(mod_name_OR_luaobj)
       folder, root = draw_folder(tree_data, parent_container, nil, root_name, root_name..' '..img..'([color=blue]'..mod_name_OR_luaobj.object_name..'[/color])')
     else
@@ -258,14 +258,14 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
   local drawn = 0
   if not opened_folder_tree then return end
   if not draw_from then draw_from = 0 end
-  if not global.meta_data.treelimit then global.meta_data.treelimit = 500 end
+  if not storage.meta_data.treelimit then storage.meta_data.treelimit = 500 end
   for k, obj in pairs(tbl) do
     local t = type(obj)
     index = index + 1
     if index > draw_from then
       drawn = drawn + 1
 
-      if drawn > global.meta_data.treelimit then
+      if drawn > storage.meta_data.treelimit then
         label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
         label_container = draw_branch(label_wrap, k, false)
         local sprite = label_container.add{type = 'sprite', name = 'other_sprite', sprite = 'gvv-mod_load-cont'}
@@ -280,7 +280,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
         break
       end
 
-      if prop_allowed and t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+      if prop_allowed and t == 'userdata' and obj.object_name then
         local img = Sprite.img(obj)
         folder, label = draw_folder(tree_data, parent_container, parent_label, k, img..Table_to_str.to_richtext(k, true)..' ([color=blue]'..obj.object_name..'[/color])')
         if not opened_folder_tree or not opened_folder_tree[k] then
@@ -292,7 +292,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
         end
         table_keys[k] = true
 
-      elseif t == 'table' and getmetatable(obj) == global.meta_data._nil_ then
+      elseif t == 'table' and getmetatable(obj) == storage.meta_data._nil_ then
         label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
         if not g.show_nil then label_wrap.visible = false end
         label_container = draw_branch(label_wrap, k, true)
@@ -303,7 +303,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
         label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
         last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(nil)}
 
-      elseif t == 'table' and getmetatable(obj) == global.meta_data._na_ then
+      elseif t == 'table' and getmetatable(obj) == storage.meta_data._na_ then
         label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
         if not g.show_na then label_wrap.visible = false end
         label_container = draw_branch(label_wrap, k, true)
@@ -314,7 +314,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
         label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
         last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = '[color=0.5,0,0,0.5]n/a[/color]'}
 
-      elseif t == 'function' or t == 'table' and getmetatable(obj) == global.meta_data._function_ then
+      elseif t == 'function' or t == 'table' and getmetatable(obj) == storage.meta_data._function_ then
         label_wrap = parent_container.add{type = 'flow', direction = 'vertical', style = 'vflow_gvv-mod'}
         if prop_allowed then
           if not g.show_func then label_wrap.visible = false end
@@ -333,7 +333,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
           last_item = label_container.add{type = 'label', name = '_gvv-mod_key_value', caption = Table_to_str.to_richtext(obj)}
         end
 
-      elseif t == 'table' and type(obj.__self) ~= 'userdata' then
+      elseif t == 'table' then
         folder, label = draw_folder(tree_data, parent_container, parent_label, k, Table_to_str.to_richtext(k, true))
         if not opened_folder_tree or not opened_folder_tree[k] then
           parent_container.children[index].content_container.visible = false
@@ -351,7 +351,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
         }
         tree_data[#tree_data + 1] = {parent = parent_label, object = last_item, key = k, is_folder = false}
         label_container.add{type = 'label', name = 'equal_sign', caption = ' = '}
-        if t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+        if t == 'userdata' and obj.object_name then
           local img = Sprite.img(obj)
           last_item = label_container.add{type = 'button', name = '_gvv-mod_key_value', caption = img..Table_to_str.to_richtext(obj),
             style = 'tree-item-luaobj_gvv-mod', mouse_button_filter = {'right'},
@@ -438,14 +438,14 @@ get_root_container = function(elem, last_child)
 end
 
 --아이템의 글로벌 변수찾기
-Tree.get_global = function(elem)
+Tree.get_storage = function(elem)
   local root_container, root_child = get_root_container(elem)
   if root_container then
     if root_child.name:match('^_G:') then
       local name = root_child.name:match('^_G:(.*)')
       return remote.call('__'..name..'__gvv','_G')
     else
-      return remote.call('__'..root_child.name..'__gvv','global')
+      return remote.call('__'..root_child.name..'__gvv','storage')
     end
   end
   return error('no root_container')
@@ -501,7 +501,7 @@ Tree.get_tree_value = function(tree_path)
       value = tree_path[1]:match('^_G:(.*)')..''
       value = remote.call('__'..value..'__gvv','_G')
     else
-      value = remote.call('__'..tree_path[1]..'__gvv','global')
+      value = remote.call('__'..tree_path[1]..'__gvv','storage')
     end
   end
   for i = 2, #tree_path do
@@ -551,7 +551,7 @@ Tree.register_object = function(g, luaobj_elem)
   if not succ then
     error('Tree.track_path failed in Tree.register_object')
   end
-  if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+  if type(obj) == 'userdata' and obj.object_name then
     local pc, ret = pcall(function() return obj.valid end)
     if pc and not ret then
       error(luaobj_elem.caption..'('..obj.object_name..') object is not there anymore.')
@@ -611,7 +611,7 @@ Tree.draw_proptree = function(g, dock_index)
   local data = g.data.docked_luaobj[dock_index]
 
   local obj = Tree.get_tree_value(data.tree_path)
-  if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name and valid(obj) then
+  if type(obj) == 'userdata' and obj.object_name and valid(obj) then
   else
     local name = obj.object_name
     if not name then name = 'LuaObject' end

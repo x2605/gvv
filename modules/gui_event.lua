@@ -37,8 +37,8 @@ Gui_Event.on_gui_click = function(event)
     return
   end
 
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if not g or not g.gui.frame or not g.gui.frame.valid then return end
 
   --트래킹 간격 편집하다가 딴거 누를 때
@@ -219,10 +219,10 @@ Gui_Event.on_gui_click = function(event)
     local mod_name = event.element.parent.parent['_gvv-mod_fix_mod_name_input_'].text
     Doctor.take_a_look(g, mod_name, 'fix')
 
-  --global.report 비우기
+  --storage.report 비우기
   elseif event.element.name == '_gvv-mod_fix_clear_report_btn_' then
-    global.report = {}
-    player.print('(gvv) global.report is cleared.')
+    storage.report = {}
+    player.print('(gvv) storage.report is cleared.')
 
   --추적 간격 숫자 누를때
   elseif event.element == g.gui.track_inter_show and event.button == defines.mouse_button_type.left then
@@ -260,13 +260,13 @@ Gui_Event.on_gui_click = function(event)
         local folder = parentlabel.parent.parent.content_container.folder
         event.element.parent.parent.destroy()
         if category == '_G_glob' then
-          local tbl = Tree.get_global(parentlabel)
+          local tbl = Tree.get_storage(parentlabel)
           for i = 2, #tree_path do
             tbl = tbl[tree_path[i]]
           end
           Tree.draw(g, tree_data, {}, tbl, folder, parentlabel, false, cont_from)
         elseif category == 'glob' then
-          local tbl = Tree.get_global(parentlabel)
+          local tbl = Tree.get_storage(parentlabel)
           for i = 2, #tree_path do
             tbl = tbl[tree_path[i]]
           end
@@ -278,7 +278,7 @@ Gui_Event.on_gui_click = function(event)
           for i = 2, #tree_path do
             obj = obj[tree_path[i]]
           end
-          if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+          if type(obj) == 'userdata' and obj.object_name then
             local props = Util.get_property_list(obj, true)
             Tree.draw(g, tree_data, {}, props, folder, parentlabel, true, cont_from)
           else
@@ -291,7 +291,7 @@ Gui_Event.on_gui_click = function(event)
           for i = 2, #tree_path do
             obj = obj[tree_path[i]]
           end
-          if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+          if type(obj) == 'userdata' and obj.object_name then
             local props = Util.get_property_list(obj, true)
             Tree.draw(g, tree_data, {}, props, folder, parentlabel, true, cont_from)
           else
@@ -316,13 +316,13 @@ Gui_Event.on_gui_click = function(event)
           local folder = event.element.parent.parent.content_container.folder
           if table_size(folder.children) == 0 then
             if category == '_G_glob' then
-              local tbl = Tree.get_global(event.element)
+              local tbl = Tree.get_storage(event.element)
               for i = 2, #tree_path do
                 tbl = tbl[tree_path[i]]
               end
               Tree.draw(g, tree_data, {}, tbl, folder, event.element, false)
             elseif category == 'glob' then
-              local tbl = Tree.get_global(event.element)
+              local tbl = Tree.get_storage(event.element)
               for i = 2, #tree_path do
                 tbl = tbl[tree_path[i]]
               end
@@ -334,7 +334,7 @@ Gui_Event.on_gui_click = function(event)
               for i = 2, #tree_path do
                 obj = obj[tree_path[i]]
               end
-              if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+              if type(obj) == 'userdata' and obj.object_name then
                 local props = Util.get_property_list(obj, true)
                 Tree.draw(g, tree_data, {}, props, folder, event.element, true)
               else
@@ -347,7 +347,7 @@ Gui_Event.on_gui_click = function(event)
               for i = 2, #tree_path do
                 obj = obj[tree_path[i]]
               end
-              if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+              if type(obj) == 'userdata' and obj.object_name then
                 local props = Util.get_property_list(obj, true)
                 Tree.draw(g, tree_data, {}, props, folder, event.element, true)
               else
@@ -604,16 +604,16 @@ Gui_Event.on_gui_closed = function(event)
     end
   end
 
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if not g or not g.gui.frame or not g.gui.frame.valid then return end
 end
 
 Gui_Event.on_gui_value_changed = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if not g or not g.gui.frame or not g.gui.frame.valid then return end
   if event.element == g.gui.xresize then
     g.last_width = g.gui.xresize.slider_value
@@ -630,8 +630,8 @@ end
 Gui_Event.on_gui_confirmed = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if not g or not g.gui.frame or not g.gui.frame.valid then return end
   local player = game.players[event.player_index]
 
@@ -655,8 +655,8 @@ end
 Gui_Event.on_gui_selected_tab_changed = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if not g or not g.gui.frame or not g.gui.frame.valid then return end
 
   if event.element == g.gui.tabpane then
@@ -667,8 +667,8 @@ end
 Gui_Event.on_gui_checked_state_changed = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if not g or not g.gui.frame or not g.gui.frame.valid then return end
 
   if event.element == g.gui.chk_show_na then
@@ -740,8 +740,8 @@ Gui_Event.on_gui_text_changed = function(event)
     return
   end
   
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if not g or not g.gui.frame or not g.gui.frame.valid then return end
 
   if event.element.name == '_gvv-mod_anycode_code_' then
@@ -781,8 +781,8 @@ Gui_Event.on_gui_selection_state_changed = function(event)
     local copybox = modbox.parent['_gvv-mod_copyable_']
     if option == '__<mod_name>__' then
       copybox['_gvv-mod_uneditable_text_buffer_'].caption = '__'..modbox.items[modbox.selected_index]..'__'
-    elseif option == 'remote.call..."global")' then
-      copybox['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..modbox.items[modbox.selected_index]..'__gvv","global")'
+    elseif option == 'remote.call..."storage")' then
+      copybox['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..modbox.items[modbox.selected_index]..'__gvv","storage")'
     elseif option == 'remote.call..."c",)' then
       copybox['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..modbox.items[modbox.selected_index]..'__gvv","c",)'
     else
@@ -808,8 +808,8 @@ Gui_Event.on_gui_selection_state_changed = function(event)
     return
   end
 
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if not g or not g.gui.frame or not g.gui.frame.valid then return end
 
   if event.element == g.gui.search_glob_result then
@@ -840,8 +840,8 @@ end
 Gui_Event['refresh_gvv-mod'] = function(event)
   local player = game.players[event.player_index]
   if not player.admin and game.is_multiplayer() then return end
-  if not global.players then return end
-  local g = global.players[event.player_index]
+  if not storage.players then return end
+  local g = storage.players[event.player_index]
   if g and g.gui and g.gui.tabpane and g.gui.tabpane.valid then
     local pane = g.gui.tabpane
     local tab = pane.selected_tab_index

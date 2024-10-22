@@ -50,7 +50,7 @@ Commands.gdump = function(data, lang)
   if not data.parameter or data.parameter == '' or data.parameter:gsub('^%s*(.-)%s*$', '%1')..'' == 'level' then
     local pc = nil
     mod_name = 'level'
-    pc, rmt_glob = pcall(function() return remote.call('__level__gvv','global') end)
+    pc, rmt_glob = pcall(function() return remote.call('__level__gvv','storage') end)
     if not pc then
       rmt_glob = nil
       if player then
@@ -66,7 +66,7 @@ Commands.gdump = function(data, lang)
       if mod_name == name then
         found = true
         local pc
-        pc, rmt_glob = pcall(function() return remote.call('__'..name..'__gvv','global') end)
+        pc, rmt_glob = pcall(function() return remote.call('__'..name..'__gvv','storage') end)
         if not pc then
           rmt_glob = nil
           if player then
@@ -100,14 +100,14 @@ Commands.gmods = function(data)
   local s = {}
   local rmt_glob_str = {}
   local rmt_glob_cnt = 0
-  if pcall(function() return remote.interfaces['__level__gvv']['global'] end) then
+  if pcall(function() return remote.interfaces['__level__gvv']['storage'] end) then
     rmt_glob_str[#rmt_glob_str + 1] = 'level'
     rmt_glob_cnt = rmt_glob_cnt + 1
   end
   for name, ver in pairs(script.active_mods) do
     if #s > 0 then s[#s + 1] = ', ' end
     s[#s + 1] = name..'_'..ver
-    if pcall(function() return remote.interfaces['__'..name..'__gvv']['global'] end) then
+    if pcall(function() return remote.interfaces['__'..name..'__gvv']['storage'] end) then
       if #rmt_glob_str > 0 then rmt_glob_str[#rmt_glob_str + 1] = ', ' end
       rmt_glob_str[#rmt_glob_str + 1] = name
       rmt_glob_cnt = rmt_glob_cnt + 1
@@ -131,9 +131,9 @@ end
 Commands.when_change_mod_settings = function(event)
   if not changeable_setting_list[event.setting] then return end
   local setting_name = event.setting:match('^gvv%-mod_(.*)')
-  if not global.meta_data then global.meta_data = {} end
+  if not storage.meta_data then storage.meta_data = {} end
   if event.setting_type == 'runtime-global' then
-    local value = settings.global[event.setting].value
+    local value = settings.storage[event.setting].value
     local message
     if event.player_index then
       message = {"",'(gvv) Player ',game.players[event.player_index].name,' changed "',setting_name,'" mod-setting to "',value,'"'}
@@ -157,10 +157,10 @@ Commands.when_change_mod_settings = function(event)
       local g
       if value then
         script.on_event(defines.events.on_tick, _on_tick_function_)
-        global.meta_data['enable-on-tick'] = true
-        if global.players then
+        storage.meta_data['enable-on-tick'] = true
+        if storage.players then
           for _, player in pairs(game.players) do
-            g = global.players[player.index]
+            g = storage.players[player.index]
             if g and g.gui and g.gui.track_inter_show and g.gui.track_inter_show.valid then
               g.gui.track_inter_show.style.font_color = {1,1,1}
               g.gui.track_inter_show.tooltip = {"gvv-mod.track-interval-control"}
@@ -169,10 +169,10 @@ Commands.when_change_mod_settings = function(event)
         end
       else
         script.on_event(defines.events.on_tick, nil)
-        global.meta_data['enable-on-tick'] = false
-        if global.players then
+        storage.meta_data['enable-on-tick'] = false
+        if storage.players then
           for _, player in pairs(game.players) do
-            g = global.players[player.index]
+            g = storage.players[player.index]
             if g and g.gui and g.gui.track_inter_show and g.gui.track_inter_show.valid then
               g.gui.track_inter_show.style.font_color = {1,0.25,0.25}
               g.gui.track_inter_show.tooltip = {"gvv-mod.track-interval-control-off"}

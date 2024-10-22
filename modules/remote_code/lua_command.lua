@@ -1,10 +1,10 @@
 return function() return [[=function(t,...)
-  local i=#global+1
-  global[i]=table.pack(...)
-  local m=setmetatable({},global[i])
-  local pc,ret=pcall(function() assert(loadstring('local arg=global['..i..'] global['..i..']=nil '..t))() end)
+  local i=#storage+1
+  storage[i]=table.pack(...)
+  local m=setmetatable({},storage[i])
+  local pc,ret=pcall(function() assert(loadstring('local arg=storage['..i..'] storage['..i..']=nil '..t))() end)
   if not pc then
-    if getmetatable(m)==global[i] then global[i]=nil end
+    if getmetatable(m)==storage[i] then storage[i]=nil end
   end
   return pc,ret
 end,

@@ -1,11 +1,11 @@
 {
   "name": "gvv",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "title": "Lua API global Variable Viewer (gvv)",
   "author": "x2605",
   "contact": "",
   "homepage": "https://github.com/x2605/gvv",
-  "factorio_version": "1.1",
+  "factorio_version": "2.0",
   "dependencies": [],
   "description": "This is a debugging tool. This mod adds commands /gvv and others and a hotkey(Ctrl+Shift+V) to allow you to check _G and global table of map or each mods. Only admins can use command if it is multiplay game.\n\nYou have to input some code for temporary accessibility or have to edit \"control.lua\" of other mod or map to access global table of the mod or map. See \"Helper\" tab for instructions."
 }

@@ -26,7 +26,7 @@ end
 Table_to_str.to_json = function(obj, as_key)
   local s = {}
   local t = type(obj)
-  if t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+  if t == 'userdata' and obj.object_name then
     return '"'..obj.object_name..'"'
   elseif t == 'table' and not as_key then
     s[#s + 1] = '{'
@@ -58,7 +58,7 @@ end
 Table_to_str.to_luaon = function(obj, as_key)
   local s = {}
   local t = type(obj)
-  if t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+  if t == 'userdata' and obj.object_name then
     if as_key then return '["'..obj.object_name..'"]' end
     return '"'..obj.object_name..'"'
   elseif t == 'table' then
@@ -94,7 +94,7 @@ end
 Table_to_str.to_key_raw_string = function(obj)
   local s = {}
   local t = type(obj)
-  if t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+  if t == 'userdata' and obj.object_name then
     return obj.object_name
   elseif t == 'table' then
     s[#s + 1] = '{'
@@ -122,7 +122,7 @@ end
 Table_to_str.to_richtext = function(obj, as_key)
   local s = {}
   local t = type(obj)
-  if t == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+  if t == 'userdata' and obj.object_name then
     if as_key then return '[[color=blue]'..obj.object_name..'[/color]]' end
     return '[color=blue]'..obj.object_name..'[/color]'
   elseif t == 'table' then
@@ -166,7 +166,7 @@ Table_to_str.path_to_lua_prop_path = function(path_tbl, front_to_remote_call)
       elseif v:match('^_G:()') then
         s[#s + 1] = 'remote.call("__'..v:match('^_G:(.*)')..'__gvv","_G")'
       else
-        s[#s + 1] = 'remote.call("__'..v..'__gvv","global")'
+        s[#s + 1] = 'remote.call("__'..v..'__gvv","storage")'
       end
     else
       t = type(v)
@@ -224,7 +224,7 @@ local table_part_value_to_str = function(v)
 end
 Table_to_str.value_to_str = function(v)
   local t = type(v)
-  if t == 'table' and type(v.__self) == 'userdata' and v.object_name then
+  if t == 'userdata' and v.object_name then
     local name = v.object_name
     if name == 'LuaCustomTable' then
       return name..' #'..tostring(#v)..' '..table_part_value_to_str(v)

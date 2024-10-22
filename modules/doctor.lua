@@ -29,15 +29,15 @@ Doctor.take_a_look = function(g, mod_name, action)
     '\nPotentially problematic entries : ',r.p_count,
     '\nMetatable entries : ',r.m_count,
   },{1,1,0.15,1})
-  if not global.report then global.report = {} end
+  if not storage.report then storage.report = {} end
   local root, root_name
   if action == 'diag' then
     root_name = '__'..mod_name..'__diagnose'
   elseif action == 'fix' then
     root_name = '__'..mod_name..'__clean_up'
   end
-  if not global.report[root_name] then global.report[root_name] = {} end
-  root = global.report[root_name]
+  if not storage.report[root_name] then storage.report[root_name] = {} end
+  root = storage.report[root_name]
 
   local id = #root + 1
   root[id] = {}

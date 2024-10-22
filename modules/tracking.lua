@@ -94,10 +94,10 @@ Tracking.refresh_value = function(g)
 end
 
 Tracking.on_tick = function()
-  if not global.players then return end
+  if not storage.players then return end
   local g
   for _, player in pairs(game.connected_players) do
-    g = global.players[player.index]
+    g = storage.players[player.index]
     if g and game.tick % g.track_interval_tick == 0
       and g.gui.frame
       and g.gui.frame.valid

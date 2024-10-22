@@ -8,7 +8,7 @@ local Gui = require('modules.gui')
 local Load = {}
 
 Load.example_load = function()
-  global.example = {
+  storage.example = {
     forces = {
       player_force = game.forces.player,
       biter_force = game.forces['enemy'],
@@ -21,7 +21,7 @@ end
 --중복해서 require('modules.load') 호출해도 한번만 실행되도록
 --run single time if called require('modules.load') multiple times
 if not _initiated_session_ then
-  -- session global variables not inside of global table
+  -- session global variables not inside of storage table
   _on_tick_function_ = Tracking.on_tick --constant
   _one_of_three_volatiles_executed_ = false
   _initiated_on_tick_ = false
@@ -53,8 +53,8 @@ Load.on_configuration_changed = function(data)
     local thismod = data.mod_changes['gvv']
     if thismod then
       if thismod.old_version and vless(thismod.old_version, 0, 4, 0) then
-        if global.players then
-          for index, g in pairs(global.players) do
+        if storage.players then
+          for index, g in pairs(storage.players) do
             pcall(function()
               if g.gui and g.gui.frame and g.gui.frame.valid then
                 Gui.close_main(g, true)
@@ -78,24 +78,24 @@ Load.on_load = function()
 end
 
 Load.register_meta_data = function()
-  if not global.meta_data then global.meta_data = {} end
+  if not storage.meta_data then storage.meta_data = {} end
   local version = script.active_mods['gvv']
-  global.meta_data.version = version
-  if not global.meta_data._nil_ then global.meta_data._nil_ = {Used_for_categorizing=''} end
-  if not global.meta_data._function_ then global.meta_data._function_ = {Used_for_categorizing=''} end
-  if not global.meta_data._na_ then global.meta_data._na_ = {Used_for_categorizing=''} end
-  if global.meta_data['enable-on-tick'] == nil then
-    global.meta_data['enable-on-tick'] = settings.global['gvv-mod_enable-on-tick'].value
-    if not _initiated_on_tick_ and global.meta_data['enable-on-tick'] then
+  storage.meta_data.version = version
+  if not storage.meta_data._nil_ then storage.meta_data._nil_ = {Used_for_categorizing=''} end
+  if not storage.meta_data._function_ then storage.meta_data._function_ = {Used_for_categorizing=''} end
+  if not storage.meta_data._na_ then storage.meta_data._na_ = {Used_for_categorizing=''} end
+  if storage.meta_data['enable-on-tick'] == nil then
+    storage.meta_data['enable-on-tick'] = settings.global['gvv-mod_enable-on-tick'].value
+    if not _initiated_on_tick_ and storage.meta_data['enable-on-tick'] then
       script.on_event(defines.events.on_tick, _on_tick_function_)
       _initiated_on_tick_ = true
-    elseif not _initiated_on_tick_ and not global.meta_data['enable-on-tick'] then
+    elseif not _initiated_on_tick_ and not storage.meta_data['enable-on-tick'] then
       script.on_event(defines.events.on_tick, nil)
       _initiated_on_tick_ = true
     end
   end
-  if not global.meta_data.initiated then
-    global.meta_data.initiated = true
+  if not storage.meta_data.initiated then
+    storage.meta_data.initiated = true
 
     if settings.global['gvv-mod_on_start'].value then
       local raw = settings.global['gvv-mod_preinput_code'].value
@@ -114,9 +114,9 @@ Load.register_meta_data = function()
         codes[i] = v:gsub('^%s*(.-)%s*$', '%1')
         if codes[i] ~= '' then final_codes[#final_codes + 1] = codes[i] end
       end
-      global.meta_data.default_tracking_list = {}
+      storage.meta_data.default_tracking_list = {}
       for _, v in pairs(final_codes) do
-        global.meta_data.default_tracking_list[v] = v
+        storage.meta_data.default_tracking_list[v] = v
       end
     end
 
@@ -125,10 +125,10 @@ end
 
 Load.register_volatiles = function()
   if not _one_of_three_volatiles_executed_ then
-    if not _initiated_on_tick_ and global.meta_data and global.meta_data['enable-on-tick'] then
+    if not _initiated_on_tick_ and storage.meta_data and storage.meta_data['enable-on-tick'] then
       script.on_event(defines.events.on_tick, _on_tick_function_)
       _initiated_on_tick_ = true
-    elseif not _initiated_on_tick_ and global.meta_data and global.meta_data['enable-on-tick'] == false then
+    elseif not _initiated_on_tick_ and storage.meta_data and storage.meta_data['enable-on-tick'] == false then
       script.on_event(defines.events.on_tick, nil)
       _initiated_on_tick_ = true
     end
@@ -155,8 +155,8 @@ end
 -- 플레이어를 삭제한 후 삭제한 플레이어 인덱스에 새 플레이어가 올 경우
 -- for when new player comes at empty index where player removed
 Load.on_player_created = function(event)
-  if global.players then
-    global.players[event.player_index] = nil
+  if storage.players then
+    storage.players[event.player_index] = nil
   end
 end
 

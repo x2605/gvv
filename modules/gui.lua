@@ -21,13 +21,13 @@ local other_frames_to_close_when_closing_main = {
 Gui.open_main = function(player_index)
   local player = game.players[player_index]
   local first_time = false
-  if not global.players then global.players = {} end
-  if not global.players[player_index] then
-    global.players[player_index] = {}
+  if not storage.players then storage.players = {} end
+  if not storage.players[player_index] then
+    storage.players[player_index] = {}
     first_time = true
   end
 
-  local g = global.players[player_index]
+  local g = storage.players[player_index]
   g.index = player_index
 
   local frame = player.gui.screen['_gvv-mod_frame_']
@@ -84,7 +84,7 @@ Gui.open_main = function(player_index)
   top.add{type = 'flow', name = 'header', direction = 'horizontal'}
   top.header.drag_target = frame
   top.header.style.vertically_stretchable = false
-  top.header.add{type = 'label', name = 'title', caption = {"",{"gvv-mod.title"},' - gvv ',global.meta_data.version}, style = 'frame_title'}
+  top.header.add{type = 'label', name = 'title', caption = {"",{"gvv-mod.title"},' - gvv ',storage.meta_data.version}, style = 'frame_title'}
   top.header.title.drag_target = frame
   local drag = top.header.add{type = 'empty-widget', name = 'dragspace', style = 'draggable_space_header'}
   drag.drag_target = frame
@@ -92,7 +92,7 @@ Gui.open_main = function(player_index)
   drag.style.height = 24
   drag.style.horizontally_stretchable = true
   drag.style.vertically_stretchable = true
-  local closebtn = top.header.add{type = 'sprite-button', name = 'closebtn', sprite = 'utility/close_white', style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.close-main-tooltip"}}
+  local closebtn = top.header.add{type = 'sprite-button', name = 'closebtn', sprite = 'utility/close', style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.close-main-tooltip"}}
   g.gui.closebtn = closebtn -- 사용자 개체 등록
 
   local middle = frame.add{type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod'}
@@ -200,7 +200,7 @@ Gui.open_main = function(player_index)
   topspace.tree_refresh_btn.style.width = 20
   topspace.tree_refresh_btn.style.height = 20
   topspace.tree_refresh_btn.visible = false
-  topspace.add{type = 'sprite-button', name = 'search_btn', sprite = 'utility/search_white',
+  topspace.add{type = 'sprite-button', name = 'search_btn', sprite = 'utility/search',
     style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.search-btn"},
   }
   topspace.search_btn.style.right_margin = 8
@@ -257,7 +257,7 @@ Gui.open_main = function(player_index)
 
   tabpane.selected_tab_index = 1
 
-  local tab2 = tabpane.add{type = 'tab', name = 'tab2', caption = 'global'}
+  local tab2 = tabpane.add{type = 'tab', name = 'tab2', caption = 'storage'}
   local cwrap2 = tabpane.add{type = 'flow', direction = 'vertical'}
   cwrap2.style.horizontally_stretchable = true
   cwrap2.style.vertically_stretchable = true
@@ -427,10 +427,10 @@ Gui.open_main = function(player_index)
   end
 
   if first_time then
-    if global.meta_data.default_tracking_list then
+    if storage.meta_data.default_tracking_list then
       local pc, ret
       local panel = g.gui.tracking_panel
-      g.data.tracking_list = Util.deepcopytbl(global.meta_data.default_tracking_list)
+      g.data.tracking_list = Util.deepcopytbl(storage.meta_data.default_tracking_list)
       for k, v in pairs(g.data.tracking_list) do
         pc, ret = pcall(function() Tracking.draw(panel, k, v) end)
         if not pc then

@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.2
+Date: 2024-10-22
+
+  Changes:
+    - Changed version string to Factorio 2.0
+    - Changed a few reserved words in source code to make compatible to 2.0
+
+---------------------------------------------------------------------------------------------------
 Version: 0.5.1
 Date: 2022-03-16
 

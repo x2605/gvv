@@ -15,7 +15,7 @@ Util.create_frame_w_closebtn = function(player, frame_name, title)
   drag.style.right_margin = 8
   drag.style.height = 24
   drag.style.horizontally_stretchable = true
-  local closebtn = frame.header.add{type = 'sprite-button', name = 'closebtn', sprite = 'utility/close_white', style = 'frame_action_button', mouse_button_filter = {'left'}}
+  local closebtn = frame.header.add{type = 'sprite-button', name = 'closebtn', sprite = 'utility/close', style = 'frame_action_button', mouse_button_filter = {'left'}}
   local innerframe = frame.add{type = 'flow', name = 'innerframe', direction = 'vertical'}
   frame.auto_center = true
   return frame, closebtn, innerframe
@@ -48,12 +48,12 @@ end
 Util.get_accessible_mod_list = function()
   local list = {}
   local pc, ret
-  pc, ret = pcall(function() return remote.interfaces['__level__gvv']['global'] end)
+  pc, ret = pcall(function() return remote.interfaces['__level__gvv']['storage'] end)
   if pc and ret then
     list[#list + 1] = 'level'
   end
   for name, ver in pairs(script.active_mods) do
-    pc, ret = pcall(function() return remote.interfaces['__'..name..'__gvv']['global'] end)
+    pc, ret = pcall(function() return remote.interfaces['__'..name..'__gvv']['storage'] end)
     if pc and ret then
       list[#list + 1] = name
     end
@@ -88,7 +88,7 @@ end
 Util.deepcopytbl = function(ori)
   local t = type(ori)
   local ret
-  if t == 'table' and type(ori.__self) == 'userdata' and ori.object_name then
+  if t == 'userdata' and ori.object_name then
     ret = ori
   elseif t == 'table' then
     ret = {}

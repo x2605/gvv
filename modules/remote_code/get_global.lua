@@ -1,5 +1,5 @@
 return function() return [[=function()
-  local G,_,j,s,cp,wr=global,true,0,{}
+  local G,_,j,s,cp,wr=storage,true,0,{}
   local B={}
   local N={LuaGameScript=_,LuaBootstrap=_,LuaRemote=_,LuaCommandProcessor=_,LuaSettings=_,LuaRCON=_,LuaRendering=_,LuaLazyLoadedValue=_,LuaCustomTable=_,LuaDifficultySettings=_,LuaFlowStatistics=_,}
   ]]--[[ G:_G, j:namespace count, s:returning table --]]..[[
@@ -12,7 +12,7 @@ return function() return [[=function()
   wr=function(o,p,a)
     ]]--[[ o:object, p:parent_list, a:as key? --]]..[[
     local t,r=type(o)
-    if t=='table' and getmetatable(o)=='private' and type(o.__self)=='userdata' and o.object_name then
+    if t=='userdata' and getmetatable(o)=='private' and o.object_name then
       if a or (N[o.object_name] or o.object_name:match('^LuaMapSettings')) then
         j=j+1
         r='<'..o.object_name..j..'>'
@@ -61,11 +61,11 @@ return function() return [[=function()
   end
   for k,v in next,G,nil do
     if not B[k] then
-      s[cp(k,{global},true)]=cp(v,{global})
+      s[cp(k,{storage},true)]=cp(v,{storage})
     end
   end
   return s
 end,
 ]] end
 
--- global variable copy code, global 변수 복사 코드
+-- storage variable copy code, storage 변수 복사 코드

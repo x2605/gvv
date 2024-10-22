@@ -41,7 +41,7 @@ local crash_condition
 -- 값을 함께 리턴할 경우 add_value에 true
 return function(obj, add_value)
   local pc, rv, help_str
-  if type(obj) == 'table' and type(obj.__self) == 'userdata' and obj.object_name then
+  if type(obj) == 'userdata' and obj.object_name then
   elseif type(obj) == 'table' then
     return normal_table(obj, add_value)
   else
@@ -128,7 +128,7 @@ return function(obj, add_value)
       if add_value then
         if rv == nil then
           local n = {}
-          setmetatable(n, global.meta_data._nil_)
+          setmetatable(n, storage.meta_data._nil_)
           list[prop] = n
         else
           list[prop] = rv
@@ -139,14 +139,14 @@ return function(obj, add_value)
     else
       if add_value and include_na then
         local n = {}
-        setmetatable(n, global.meta_data._na_)
+        setmetatable(n, storage.meta_data._na_)
         list[prop] = n
       end
     end
     --else
     --  if add_value and include_na then
     --    local n = {}
-    --    setmetatable(n, global.meta_data._na_)
+    --    setmetatable(n, storage.meta_data._na_)
     --    list[prop] = n
     --  end
     --end
@@ -165,7 +165,7 @@ return function(obj, add_value)
       pc, rv = pcall(function(a, b) return a[b] end, obj, func)
       if pc then
         local n = {}
-        setmetatable(n, global.meta_data._function_)
+        setmetatable(n, storage.meta_data._function_)
         list[func] = n
       end
     end

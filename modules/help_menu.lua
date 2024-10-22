@@ -62,7 +62,7 @@ local function text(locstr, tooltip)
 end
 
 local function head(locstr)
-  local u = p.pointer.add{type = 'label', caption = locstr, style = 'heading_1_label'}
+  local u = p.pointer.add{type = 'label', caption = locstr, style = 'frame_title'}
   u.style.horizontally_stretchable = true
   u.style.single_line = false
   this = u
@@ -199,7 +199,7 @@ head{x..'1'}
 text{x..'2'} this.style.single_line = true
 hpo() do
   p.pointer.style.vertical_align = 'top'
-  local options = {'<mod_name>', '__<mod_name>__', 'remote.call..."global")', 'remote.call..."c",)'}
+  local options = {'<mod_name>', '__<mod_name>__', 'remote.call..."storage")', 'remote.call..."c",)'}
   local sel1 = p.pointer.add{type = 'list-box', name = '_gvv-mod_help_copy_option_mod_string_',
     items = options, selected_index = 3, style = 'list_box-transparent_gvv-mod',
   }
@@ -216,7 +216,7 @@ hpo() do
       items = modlist, selected_index = 1, style = 'list_box-transparent_gvv-mod',
     }
     sel.style.vertically_stretchable = true
-    copy.parent['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..sel.items[sel.selected_index]..'__gvv","global")'
+    copy.parent['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..sel.items[sel.selected_index]..'__gvv","storage")'
     copy.text = copy.parent['_gvv-mod_uneditable_text_buffer_'].caption
   px() end
 px() end
@@ -231,7 +231,7 @@ content_writer['how_to_use_gui'] = function()
 head{x..'1'}
 text{x..'2'}
 text{x..'3', {"",' [font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}}
-text{x..'4', ' [font=default-bold]global[/font]'}
+text{x..'4', ' [font=default-bold]storage[/font]'}
 text{x..'5', ' [font=default-bold]property[/font]'}
 text{x..'6', ' [font=default-bold]LuaObject[/font]'}
 text{x..'7', {"",' [font=default-bold]',{"gvv-mod.help-tab"},'[/font]'}}
@@ -296,7 +296,7 @@ px() end
 text{x..'5', {"",'[font=default-bold]',
   {"gvv-mod-helpui.diagnose"},'[/font]'},
   {"",'[font=default-bold]',{"gvv-mod-helpui.fix"},'[/font]'},
-  'global.report',
+  'storage.report',
 }
 text{x..'6', {"",'[font=default-bold]',{"gvv-mod-helpui.fix"},'[/font]'}}
 vpo() do
@@ -321,7 +321,7 @@ px() end
 text{x..'7', {"",'[font=default-bold]',{"gvv-mod-helpui.fix"},'[/font]'},'.error'}
 hpo() do
   p.pointer.style.vertical_align = 'center'
-  text{x..'8','global.report'} this.style.right_margin = 5 this.style.left_margin = 5
+  text{x..'8','storage.report'} this.style.right_margin = 5 this.style.left_margin = 5
   local btn = p.pointer.add{type = 'button', name = '_gvv-mod_fix_clear_report_btn_', caption = {"gvv-mod-helpui.clear-report"}, style = 'c_sub_mod_gvv-mod', mouse_button_filter = {'left'}}
   btn.style.horizontally_stretchable = false
   btn.style.horizontal_align = 'center'
@@ -340,15 +340,15 @@ head2{x..'2'}
 text{x..'3'}
 text{x..'3-0', {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}}
 text{x..'3-1'}
-copyable('/c __gvv__ if not global.memo then global.memo={} end global.memo["'..game.players[looking_player_index].name..'"]={}')
+copyable('/c __gvv__ if not storage.memo then storage.memo={} end storage.memo["'..game.players[looking_player_index].name..'"]={}')
   this.style.bottom_margin = 5
 text{x..'3-2'}
-local memo_prefix = '/sc __gvv__ local MEMO=global.memo["'..game.players[looking_player_index].name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
+local memo_prefix = '/sc __gvv__ local MEMO=storage.memo["'..game.players[looking_player_index].name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
 copyable(memo_prefix..'game.player.selected') this.style.bottom_margin = 5
 text{x..'3-3'}
 copyable(memo_prefix) this.style.bottom_margin = 5
 text({x..'3-4', '[font=default-semibold][color=128, 206, 240]Enter[/color][/font]'}, {x..'3-4'..'-tooltip'})
-copyable('/sc __gvv__ local t=setmetatable({},{__newindex=function(a,b,c) global.memo["'..game.players[looking_player_index].name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
+copyable('/sc __gvv__ local t=setmetatable({},{__newindex=function(a,b,c) storage.memo["'..game.players[looking_player_index].name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
   this.style.bottom_margin = 5
 text{x..'3-5'}
 text(' ')

@@ -102,7 +102,7 @@ data:extend{
   {
     type = "sprite",
     name = "gvv-mod_green-close",
-    filename = "__core__/graphics/icons/close-white.png",
+    filename = "__core__/graphics/icons/close.png",
     priority = "extra-high-no-scale",
     width = 32,
     height = 32,

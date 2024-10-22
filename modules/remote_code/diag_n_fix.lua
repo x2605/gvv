@@ -162,7 +162,7 @@ return function(nilstr) return [[=function()
     end
   end
 
-  it(global,{},{global})
+  it(storage,{},{storage})
 
   return {trouble=rm,meta=mt,m_count=l,n_count=c,e_count=e,potential=po,p_count=p}
 end,
