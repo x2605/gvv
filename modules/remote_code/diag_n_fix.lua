@@ -28,12 +28,12 @@ return function(nilstr) return [[=function()
     for k,v in pairs(b) do
       t=type(k)
       y=type(v)
-      if t=='function' or t=='userdata' or t=='thread' or y=='function' or y=='userdata' or y=='thread' then
+      if t=='function' or t=='userdata' or t=='thread' or y=='function' or y=='thread' then
         if o then return true
         else
           if t=='string' or t=='number' or t=='boolean' then
             rm[#rm+1]=du(pth,k) ]]..nilstr..[[ e=e+1
-          elseif t=='table' and getmetatable(k)=='private' and k.object_name then
+          elseif t=='userdata' and getmetatable(k)=='private' and k.object_name then
             j=j+1
             rm[#rm+1]=du(pth,k.object_name..j) ]]..nilstr..[[ e=e+1
           else
@@ -43,7 +43,7 @@ return function(nilstr) return [[=function()
         end
       elseif t=='nil' then
         if o then
-          if y=='table' and getmetatable(v)=='private' and v.object_name then
+          if y=='userdata' and getmetatable(v)=='private' and v.object_name then
             if u[v.object_name] then return true
             else return false
             end
@@ -54,12 +54,12 @@ return function(nilstr) return [[=function()
           j=j+1
           rm[#rm+1]=du(pth,t..j) ]]..nilstr..[[ e=e+1
         end
-      elseif t=='table' and getmetatable(k)=='private' and k.object_name then
+      elseif t=='userdata' and getmetatable(k)=='private' and k.object_name then
         if o then
           if u[k.object_name] then return true end
         else
           if va(k) and not u[k.object_name] then
-            if y=='table' and getmetatable(v)=='private' and v.object_name then
+            if y=='userdata' and getmetatable(v)=='private' and v.object_name then
               if u[v.object_name] then
                 j=j+1
                 rm[#rm+1]=du(pth,k.object_name..j) ]]..nilstr..[[ e=e+1
@@ -96,7 +96,7 @@ return function(nilstr) return [[=function()
             j=j+1
             rm[#rm+1]=du(pth,t..j) ]]..nilstr..[[ e=e+1
           else
-            if y=='table' and getmetatable(v)=='private' and v.object_name then
+            if y=='userdata' and getmetatable(v)=='private' and v.object_name then
               if u[v.object_name] then
                 j=j+1
                 rm[#rm+1]=du(pth,t..j) ]]..nilstr..[[ e=e+1
@@ -119,7 +119,7 @@ return function(nilstr) return [[=function()
             end
           end
         end
-      elseif y=='table' and getmetatable(v)=='private' and v.object_name then
+      elseif y=='userdata' and getmetatable(v)=='private' and v.object_name then
         if u[v.object_name] then
           if o then
             return true

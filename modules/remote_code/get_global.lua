@@ -1,7 +1,7 @@
 return function() return [[=function()
   local G,_,j,s,cp,wr=storage,true,0,{}
   local B={}
-  local N={LuaGameScript=_,LuaBootstrap=_,LuaRemote=_,LuaCommandProcessor=_,LuaSettings=_,LuaRCON=_,LuaRendering=_,LuaLazyLoadedValue=_,LuaCustomTable=_,LuaDifficultySettings=_,LuaFlowStatistics=_,}
+  local N={LuaGameScript=_,LuaBootstrap=_,LuaRemote=_,LuaCommandProcessor=_,LuaSettings=_,LuaRCON=_,LuaRendering=_,LuaLazyLoadedValue=_,LuaCustomTable=_,LuaDifficultySettings=_,LuaFlowStatistics=_,LuaPrototypes=_,LuaHelpers=_,}
   ]]--[[ G:_G, j:namespace count, s:returning table --]]..[[
   ]]--[[ B:_G blacklist, N:object blacklist --]]..[[
   cp=function(o,p,a)
