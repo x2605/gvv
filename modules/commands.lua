@@ -133,7 +133,7 @@ Commands.when_change_mod_settings = function(event)
   local setting_name = event.setting:match('^gvv%-mod_(.*)')
   if not storage.meta_data then storage.meta_data = {} end
   if event.setting_type == 'runtime-global' then
-    local value = settings.storage[event.setting].value
+    local value = settings.global[event.setting].value
     local message
     if event.player_index then
       message = {"",'(gvv) Player ',game.players[event.player_index].name,' changed "',setting_name,'" mod-setting to "',value,'"'}
