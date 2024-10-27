@@ -33,10 +33,12 @@ local alt_prop = function(obj, add_value)
   for k, v in pairs(cl.methods) do tbl[k] = obj[k] end
 
   if cl.operators.call then tbl["<callable>"] = true end
-  if cl.operators.length then tbl["<iterable>"] = true end
+  if cl.operators.length then tbl.__len = #cl.operators end
   if cl.operators.index then
-    tbl["<indexable>"] = true
-    for k, v in pairs(obj) do tbl[k] = v end
+    tbl.__index = function() end
+    pcall(function()
+      for k, v in pairs(obj) do tbl[k] = obj[k] end
+    end)
   end
   return tbl -- 지금은 아무것도 없음. nothing now.
 end
