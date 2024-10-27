@@ -1,6 +1,7 @@
 -- Util.get_property_list 함수
 
 local manual_api_list = require('modules.manual_api_list')
+local runtime_api = require('generated.runtime-api')
 
 local normal_table = function(obj, add_value)
   if add_value then
@@ -16,8 +17,26 @@ end
 
 local alt_prop = function(obj, add_value)
   local tbl = {}
-  for k, v in pairs(obj) do
-    tbl[k] = v
+
+  -- get class definition
+  local cl = runtime_api.classes[obj.object_name]
+  if not cl then return { ["<unknown>"] = true } end
+
+  -- add attributes if it's accessible
+  for k, v in pairs(cl.attributes) do
+    pc, value = pcall(function() return obj[k] end)
+    tbl[k] = "<unknown>"
+    if pc then tbl[k] = value end
+  end
+
+  -- add methods
+  for k, v in pairs(cl.methods) do tbl[k] = obj[k] end
+
+  if cl.operators.call then tbl["<callable>"] = true end
+  if cl.operators.length then tbl["<iterable>"] = true end
+  if cl.operators.index then
+    tbl["<indexable>"] = true
+    for k, v in pairs(obj) do tbl[k] = v end
   end
   return tbl -- 지금은 아무것도 없음. nothing now.
 end
@@ -30,145 +49,22 @@ local crash_condition
 --]]
 
 --local crash_condition = {
-  --LuaItemStack = {
-  --  blueprint_icons = {
-  --    'is_blueprint',
-  --    'is_blueprint_book',
-  --  },
-  --},
+--LuaItemStack = {
+--  blueprint_icons = {
+--    'is_blueprint',
+--    'is_blueprint_book',
+--  },
+--},
 --}
 
 -- 값을 함께 리턴할 경우 add_value에 true
 return function(obj, add_value)
   local pc, rv, help_str
   if type(obj) == 'userdata' and obj.object_name then
+    return alt_prop(obj, add_value)
   elseif type(obj) == 'table' then
     return normal_table(obj, add_value)
   else
     return error('given value is not even table.')
   end
-  local name = obj.object_name
-  pc, help_str = pcall(function() return obj.help() end)
-  local no_help = not pc
-  local include_na = true
-  if no_help then
-    if name == 'LuaMapSettings' or name:match('^LuaMapSettings[.]') then
-      name = 'LuaMapSettings'
-      include_na = false
-    end
-    help_str = manual_api_list(name)
-    if not help_str then return alt_prop(obj, add_value) end
-  end
-  local r, list = true, {}
-  local c, prop = 0, ''
-  --local skip = false --크래시 스킵
-  local logic = true
-
-  if name == 'LuaCustomTable' then
-    if add_value then
-      for k, v in pairs(obj) do
-        list[k] = v
-      end
-    else
-      for k, v in pairs(obj) do
-        list[k] = true
-      end
-    end
-  elseif name == 'LuaGuiElement' then
-    if add_value then
-      for i, v in ipairs(obj.children_names) do
-        if v == '' then
-          list[i] = 'use .children['..i..'] instead.'
-        else
-          list[v] = obj[v]
-        end
-      end
-    else
-      for i, v in ipairs(obj.children_names) do
-        if v == '' then
-          list[i] = true
-        else
-          list[v] = true
-        end
-      end
-    end
-  elseif name == 'LuaFluidBox' or name == 'LuaInventory' or name == 'LuaTransportLine' then
-    if add_value then
-      for i = 1, #obj do
-        list[i] = obj[i]
-      end
-    else
-      for i = 1, #obj do
-        list[i] = true
-      end
-    end
-  elseif name == 'LuaMapSettings' then
-    include_na = false
-  end
-
-  while r do
-    --skip = false
-    prop = help_str:match('[%a_][%a%d_]* [[]R')
-    if not prop then break end
-    prop = prop:gsub(' [[]R','')
-    help_str, c = help_str:gsub('[%a_][%a%d_]* [[]R','',1)
-    if c == 0 then r = false break end
-
-    --if crash_condition[name] and crash_condition[name][prop] then
-    --  logic = false
-    --  for _, v in pairs(crash_condition[name][prop]) do
-    --    logic = logic or obj[v]
-    --  end
-    --  skip = not logic
-    --end
-
-    --if not skip then
-    pc, rv = pcall(function(a, b) return a[b] end, obj, prop)
-    if pc then
-      if add_value then
-        if rv == nil then
-          local n = {}
-          setmetatable(n, storage.meta_data._nil_)
-          list[prop] = n
-        else
-          list[prop] = rv
-        end
-      else
-        list[prop] = true
-      end
-    else
-      if add_value and include_na then
-        local n = {}
-        setmetatable(n, storage.meta_data._na_)
-        list[prop] = n
-      end
-    end
-    --else
-    --  if add_value and include_na then
-    --    local n = {}
-    --    setmetatable(n, storage.meta_data._na_)
-    --    list[prop] = n
-    --  end
-    --end
-  end
-  if add_value then
-    local func = ''
-    r = true
-    while r do
-      --skip = false
-      func = help_str:match('[%a_][%a%d_]*[(]')
-      if not func then break end
-      func = func:gsub('[(]','')
-      help_str, c = help_str:gsub('[%a_][%a%d_]*[(]','',1)
-      if c == 0 then r = false break end
-
-      pc, rv = pcall(function(a, b) return a[b] end, obj, func)
-      if pc then
-        local n = {}
-        setmetatable(n, storage.meta_data._function_)
-        list[func] = n
-      end
-    end
-  end
-  return list
 end
