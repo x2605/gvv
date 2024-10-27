@@ -4543,6 +4543,35 @@ return {
         wire_type=true
       },
       operators={}
+    },
+    LuaDifficultySettings={
+      methods={},
+      attributes={
+        spoil_time_modifier=true,
+        technology_price_multiplier=true
+      },
+      operators={}
+    },
+    LuaGameViewSettings={
+      methods={},
+      attributes={
+        show_alert_gui=true,
+        show_controller_gui=true,
+        show_crafting_queue=true,
+        show_entity_info=true,
+        show_entity_tooltip=true,
+        show_hotkey_suggestions=true,
+        show_map_view_options=true,
+        show_minimap=true,
+        show_quickbar=true,
+        show_rail_block_visualisation=true,
+        show_research_info=true,
+        show_shortcut_bar=true,
+        show_side_menu=true,
+        show_tool_bar=true,
+        update_entity_selection=true
+      },
+      operators={}
     }
   }
 }
