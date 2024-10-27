@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.4
+Date: 2024-10-27
+
+  Adds:
+    - converter runtime-api.json to runtime-api.lua compatible for gvv (thanks Thaui).
+    - LuaObject add: LuaPrototypes and LuaHelpers.
+  Fixes:
+    - fixed "is_valid_sprite_path". using helpers instead of game now.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.5.3
 Date: 2024-10-25
 

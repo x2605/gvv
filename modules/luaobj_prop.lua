@@ -33,7 +33,7 @@ local alt_prop = function(obj, add_value)
   for k, v in pairs(cl.methods) do tbl[k] = obj[k] end
 
   if cl.operators.call then tbl["<callable>"] = true end
-  if cl.operators.length then tbl.__len = #cl.operators end
+  if cl.operators.length then --[[ nothing now.]] end
   if cl.operators.index then
     tbl.__index = function() end
     pcall(function()

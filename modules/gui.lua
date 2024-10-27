@@ -8,7 +8,7 @@ local Help_Menu = require('modules.help_menu')
 
 local Gui = {}
 
-local gobjlist = {'game', 'script', 'remote', 'commands', 'settings', 'rcon', 'rendering', 'defines'}
+local gobjlist = {'game', 'script', 'remote', 'commands', 'settings', 'prototypes', 'rcon', 'rendering', 'helpers', 'defines'}
 local other_frames_to_close_when_closing_main = {
   ['_gvv-mod_anycode_frame_'] = true,
   ['_gvv-mod_copy_tracking_code_frame_'] = true,
@@ -439,7 +439,7 @@ Gui.open_main = function(player_index)
       end
     else -- Example
       pcall(function()
-      Tracking.add(g, {'gvv','example','forces','biter_force','evolution_factor'})
+      --Tracking.add(g, {'gvv','example','forces','biter_force','evolution_factor'})
       Tracking.add(g, '1+1 .. "   " .. tostring(game.tick) .. "   " .. util.formattime(game.ticks_played) --see __core__/lualib/util.lua for informations')
       Tracking.add(g, '-- arithmetic sequence --\nassert(function()\n  local a = 0\n  for i = 0, 10 do\n    a = a + i\n  end\n  return a\nend)()')
       end)
