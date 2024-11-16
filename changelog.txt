@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.5
+Date: 2024-11-16
+
+  Fixes:
+    - fixed : "enable_tip_triggers_in_custom_scenarios=true" removed from runtime-api.lua.
+    - fixed : The example of tracking for the evolution factor has been updated.
+  Published:
+    - Ritn
+
+---------------------------------------------------------------------------------------------------
 Version: 0.5.4
 Date: 2024-10-27
 
@@ -7,6 +17,8 @@ Date: 2024-10-27
     - LuaObject add: LuaPrototypes and LuaHelpers.
   Fixes:
     - fixed "is_valid_sprite_path". using helpers instead of game now.
+  Published:
+    - Ritn
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.3
@@ -14,6 +26,8 @@ Date: 2024-10-25
 
   Fixes:
     - Fixed crash when "on_runtime_mod_setting_changed" occurs. (changing gvv mod settings while playing game.)
+  Published:
+    - x2605
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.2
@@ -22,6 +36,8 @@ Date: 2024-10-22
   Changes:
     - Changed version string to Factorio 2.0
     - Changed a few reserved words in source code to make compatible to 2.0
+  Published:
+    - x2605
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.1

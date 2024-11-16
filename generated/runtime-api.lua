@@ -1881,7 +1881,6 @@ return {
         create_surface=true,
         delete_surface=true,
         disable_replay=true,
-        enable_tip_triggers_in_custom_scenarios=true,
         force_crc=true,
         get_entity_by_tag=true,
         get_entity_by_unit_number=true,

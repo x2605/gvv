@@ -439,7 +439,7 @@ Gui.open_main = function(player_index)
       end
     else -- Example
       pcall(function()
-      --Tracking.add(g, {'gvv','example','forces','biter_force','evolution_factor'})
+      Tracking.add(g, '-- evolution factor --\nassert(function()\n  return game.forces.enemy.get_evolution_factor()\nend)()')
       Tracking.add(g, '1+1 .. "   " .. tostring(game.tick) .. "   " .. util.formattime(game.ticks_played) --see __core__/lualib/util.lua for informations')
       Tracking.add(g, '-- arithmetic sequence --\nassert(function()\n  local a = 0\n  for i = 0, 10 do\n    a = a + i\n  end\n  return a\nend)()')
       end)
