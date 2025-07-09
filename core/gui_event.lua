@@ -1,13 +1,13 @@
 -- GUI 이벤트
 
-local Util = require('modules.util')
+local Util = require('core.utils.util')
 local Gui = require('modules.gui')
 local Tree = require('modules.tree')
-local Table_to_str = require('modules.table_to_str')
-local Tracking = require('modules.tracking')
+local Table_to_str = require('core.utils.table_to_str')
+local Tracking = require('core.utils.tracking')
 local Help_Menu = require('modules.help_menu')
-local Doctor = require('modules.doctor')
-local Copy_Code = require('modules.copy_code')
+local Doctor = require('core.doctor')
+local Copy_Code = require('core.utils.copy_code')
 local Search_Tree = require('modules.search_tree')
 
 local Gui_Event = {}

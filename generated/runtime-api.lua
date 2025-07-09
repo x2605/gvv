@@ -1,6 +1,6 @@
 return {
   application="factorio",
-  application_version="2.0.11",
+  application_version="2.0.31",
   api_version=6,
   stage="runtime",
   classes={
@@ -10,8 +10,10 @@ return {
         allow_destroy_when_commands_fail=true,
         allow_try_return_to_spawner=true,
         do_separation=true,
+        join_attacks=true,
         object_name=true,
         path_resolution_modifier=true,
+        size_in_group=true,
         valid=true
       },
       operators={}
@@ -137,6 +139,7 @@ return {
       attributes={
         affects_evolution=true,
         chart_color=true,
+        localised_name_with_amount_key=true,
         object_name=true,
         valid=true,
         group=true,
@@ -216,6 +219,8 @@ return {
         circuit_recipe_finished_signal=true,
         circuit_set_recipe=true,
         circuit_working_signal=true,
+        include_fuel=true,
+        include_in_crafting=true,
         object_name=true,
         valid=true,
         circuit_condition=true,
@@ -231,7 +236,6 @@ return {
     LuaAsteroidChunkPrototype={
       methods={},
       attributes={
-        collision_box=true,
         hide_from_signal_gui=true,
         item_signal_alias=true,
         mineable_properties=true,
@@ -255,6 +259,7 @@ return {
         get_circuit_network=true
       },
       attributes={
+        include_hands=true,
         object_name=true,
         read_content=true,
         set_filter=true,
@@ -295,6 +300,7 @@ return {
         generate_event_name=true,
         get_event_filter=true,
         get_event_handler=true,
+        get_event_id=true,
         get_event_order=true,
         on_configuration_changed=true,
         on_event=true,
@@ -349,6 +355,8 @@ return {
         emissions_per_joule=true,
         fuel_categories=true,
         fuel_inventory_size=true,
+        initial_fuel=true,
+        initial_fuel_percent=true,
         light_flicker=true,
         object_name=true,
         render_no_network_icon=true,
@@ -548,12 +556,14 @@ return {
         mine_tile=true,
         open_technology_gui=true,
         remove_item=true,
+        set_driving=true,
         set_gui_arrow=true,
         teleport=true,
         update_selected_entity=true
       },
       attributes={
         build_distance=true,
+        cargo_pod=true,
         character_additional_mining_categories=true,
         character_build_distance_bonus=true,
         character_crafting_speed_modifier=true,
@@ -582,6 +592,7 @@ return {
         following_robots=true,
         force=true,
         force_index=true,
+        hub=true,
         in_combat=true,
         item_pickup_distance=true,
         loot_pickup_distance=true,
@@ -633,6 +644,7 @@ return {
     LuaCustomEventPrototype={
       methods={},
       attributes={
+        event_id=true,
         object_name=true,
         valid=true,
         group=true,
@@ -659,6 +671,7 @@ return {
         enabled=true,
         enabled_while_in_cutscene=true,
         enabled_while_spectating=true,
+        event_id=true,
         include_selected_prototype=true,
         item_to_spawn=true,
         key_sequence=true,
@@ -842,6 +855,7 @@ return {
         get_item_insert_specification=true,
         get_line_item_position=true,
         get_logistic_point=true,
+        get_logistic_sections=true,
         get_market_items=true,
         get_max_transport_line_index=true,
         get_module_inventory=true,
@@ -941,6 +955,7 @@ return {
         mine_tile=true,
         open_technology_gui=true,
         remove_item=true,
+        set_driving=true,
         set_gui_arrow=true,
         teleport=true,
         update_selected_entity=true
@@ -967,7 +982,6 @@ return {
         bonus_progress=true,
         bounding_box=true,
         burner=true,
-        cargo_pod=true,
         chain_signal_state=true,
         character_corpse_death_cause=true,
         character_corpse_player_index=true,
@@ -994,6 +1008,9 @@ return {
         damage_dealt=true,
         destructible=true,
         direction=true,
+        disabled_by_control_behavior=true,
+        disabled_by_recipe=true,
+        disabled_by_script=true,
         draw_data=true,
         driver_is_gunner=true,
         drop_position=true,
@@ -1016,6 +1033,7 @@ return {
         follow_offset=true,
         follow_target=true,
         friction_modifier=true,
+        frozen=true,
         ghost_localised_description=true,
         ghost_localised_name=true,
         ghost_name=true,
@@ -1035,12 +1053,15 @@ return {
         initial_amount=true,
         insert_plan=true,
         inserter_filter_mode=true,
+        inserter_spoil_priority=true,
         inserter_stack_size_override=true,
         inserter_target_pickup_count=true,
         is_entity_with_health=true,
         is_entity_with_owner=true,
+        is_freezable=true,
         is_headed_to_trains_front=true,
         is_military_target=true,
+        is_updatable=true,
         item_requests=true,
         kills=true,
         last_user=true,
@@ -1048,6 +1069,7 @@ return {
         linked_belt_neighbour=true,
         linked_belt_type=true,
         loader_container=true,
+        loader_filter_mode=true,
         loader_type=true,
         localised_description=true,
         localised_name=true,
@@ -1055,6 +1077,7 @@ return {
         logistic_network=true,
         max_health=true,
         minable=true,
+        minable_flag=true,
         mining_drill_filter_mode=true,
         mining_progress=true,
         mining_target=true,
@@ -1146,6 +1169,7 @@ return {
         valid=true,
         vehicle_automatic_targeting_parameters=true,
         build_distance=true,
+        cargo_pod=true,
         character_additional_mining_categories=true,
         character_build_distance_bonus=true,
         character_crafting_speed_modifier=true,
@@ -1174,6 +1198,7 @@ return {
         following_robots=true,
         force=true,
         force_index=true,
+        hub=true,
         in_combat=true,
         item_pickup_distance=true,
         loot_pickup_distance=true,
@@ -1198,6 +1223,7 @@ return {
     LuaEntityPrototype={
       methods={
         get_crafting_speed=true,
+        get_fluid_usage_per_tick=true,
         get_inserter_extension_speed=true,
         get_inserter_rotation_speed=true,
         get_inventory_size=true,
@@ -1208,6 +1234,7 @@ return {
         get_max_energy_production=true,
         get_max_energy_usage=true,
         get_max_health=true,
+        get_max_power_output=true,
         get_max_wire_distance=true,
         get_researching_speed=true,
         get_supply_area_distance=true,
@@ -1236,6 +1263,7 @@ return {
         animation_speed_coefficient=true,
         attack_parameters=true,
         attack_result=true,
+        auto_setup_collision_box=true,
         automated_ammo_count=true,
         automatic_weapon_cycling=true,
         autoplace_specification=true,
@@ -1320,6 +1348,7 @@ return {
         healing_per_tick=true,
         heat_buffer_prototype=true,
         heat_energy_source_prototype=true,
+        heating_energy=true,
         height=true,
         indexed_guns=true,
         infinite_depletion_resource_amount=true,
@@ -1349,8 +1378,10 @@ return {
         manual_range_modifier=true,
         map_color=true,
         map_generator_bounding_box=true,
+        max_count_of_owned_defensive_units=true,
         max_count_of_owned_units=true,
         max_darkness_to_spawn=true,
+        max_defensive_friends_around_to_spawn=true,
         max_friends_around_to_spawn=true,
         max_payload_size=true,
         max_polyphony=true,
@@ -1374,6 +1405,7 @@ return {
         next_upgrade=true,
         normal_resource_amount=true,
         object_name=true,
+        per_lane_filters=true,
         profile=true,
         protected_from_tile_building=true,
         pumping_speed=true,
@@ -1399,6 +1431,7 @@ return {
         rotation_speed=true,
         running_speed=true,
         scale_fluid_usage=true,
+        science_pack_drain_rate_percent=true,
         secondary_collision_box=true,
         selectable_in_game=true,
         selection_box=true,
@@ -1461,6 +1494,7 @@ return {
         ghost_name=true,
         ghost_prototype=true,
         ghost_type=true,
+        inventory_bonus=true,
         max_energy=true,
         max_shield=true,
         max_solar_power=true,
@@ -1520,8 +1554,10 @@ return {
         equipment=true,
         height=true,
         inhibit_movement_bonus=true,
+        inventory_bonus=true,
         max_shield=true,
         max_solar_energy=true,
+        movement_bonus=true,
         object_name=true,
         player_owner=true,
         prototype=true,
@@ -1557,6 +1593,7 @@ return {
     LuaEquipmentPrototype={
       methods={
         get_energy_consumption=true,
+        get_inventory_bonus=true,
         get_movement_bonus=true,
         get_shield=true
       },
@@ -1611,31 +1648,26 @@ return {
       operators={}
     },
     LuaFluidBox={
-      methods={
-        add_linked_connection=true,
-        flush=true,
-        get_capacity=true,
-        get_connections=true,
-        get_filter=true,
-        get_fluid_segment_contents=true,
-        get_fluid_segment_id=true,
-        get_linked_connection=true,
-        get_linked_connections=true,
-        get_locked_fluid=true,
-        get_pipe_connections=true,
-        get_prototype=true,
-        remove_linked_connection=true,
-        set_filter=true
-      },
+      methods={},
       attributes={
-        object_name=true,
-        owner=true,
-        valid=true
+        show_alert_gui=true,
+        show_controller_gui=true,
+        show_crafting_queue=true,
+        show_entity_info=true,
+        show_entity_tooltip=true,
+        show_hotkey_suggestions=true,
+        show_map_view_options=true,
+        show_minimap=true,
+        show_quickbar=true,
+        show_rail_block_visualisation=true,
+        show_research_info=true,
+        show_shortcut_bar=true,
+        show_side_menu=true,
+        show_surface_list=true,
+        show_tool_bar=true,
+        update_entity_selection=true
       },
-      operators={
-        index=true,
-        length=true
-      }
+      operators={}
     },
     LuaFluidBoxPrototype={
       methods={},
@@ -1811,6 +1843,8 @@ return {
         character_resource_reach_distance_bonus=true,
         character_running_speed_modifier=true,
         character_trash_slot_count=true,
+        circuit_network_enabled=true,
+        cliff_deconstruction_enabled=true,
         color=true,
         connected_players=true,
         create_ghost_on_entity_death=true,
@@ -1831,11 +1865,14 @@ return {
         max_successful_attempts_per_tick_per_construction_queue=true,
         maximum_following_robot_count=true,
         mining_drill_productivity_bonus=true,
+        mining_with_fluid=true,
         name=true,
         object_name=true,
         platforms=true,
         players=true,
         previous_research=true,
+        rail_planner_allow_elevated_rails=true,
+        rail_support_on_deep_oil_ocean=true,
         recipes=true,
         research_enabled=true,
         research_progress=true,
@@ -1845,6 +1882,7 @@ return {
         technologies=true,
         train_braking_force_bonus=true,
         valid=true,
+        vehicle_logistics=true,
         worker_robots_battery_modifier=true,
         worker_robots_speed_modifier=true,
         worker_robots_storage_bonus=true
@@ -1917,6 +1955,7 @@ return {
         unmute_player=true
       },
       attributes={
+        allow_tip_activation=true,
         autosave_enabled=true,
         backer_names=true,
         blueprints=true,
@@ -2420,6 +2459,7 @@ return {
         durability_description_value=true,
         entity_filter_slots=true,
         equipment_grid=true,
+        factoriopedia_durability_description_key=true,
         filter_mode=true,
         flags=true,
         fuel_acceleration_multiplier=true,
@@ -2760,6 +2800,20 @@ return {
       },
       operators={}
     },
+    LuaLogisticSections={
+      methods={
+        add_section=true,
+        get_section=true,
+        remove_section=true
+      },
+      attributes={
+        object_name=true,
+        sections=true,
+        sections_count=true,
+        valid=true
+      },
+      operators={}
+    },
     LuaMiningDrillControlBehavior={
       methods={
         get_circuit_network=true
@@ -2952,6 +3006,7 @@ return {
         clear_cursor=true,
         clear_inventory_highlights=true,
         clear_local_flying_texts=true,
+        clear_recipe_notification=true,
         clear_recipe_notifications=true,
         clear_selection=true,
         connect_to_server=true,
@@ -3028,6 +3083,7 @@ return {
         mine_tile=true,
         open_technology_gui=true,
         remove_item=true,
+        set_driving=true,
         set_gui_arrow=true,
         teleport=true,
         update_selected_entity=true
@@ -3067,6 +3123,7 @@ return {
         online_time=true,
         opened_self=true,
         permission_group=true,
+        physical_controller_type=true,
         physical_position=true,
         physical_surface=true,
         physical_surface_index=true,
@@ -3083,6 +3140,7 @@ return {
         valid=true,
         zoom=true,
         build_distance=true,
+        cargo_pod=true,
         character_additional_mining_categories=true,
         character_build_distance_bonus=true,
         character_crafting_speed_modifier=true,
@@ -3111,6 +3169,7 @@ return {
         following_robots=true,
         force=true,
         force_index=true,
+        hub=true,
         in_combat=true,
         item_pickup_distance=true,
         loot_pickup_distance=true,
@@ -3306,6 +3365,7 @@ return {
       methods={},
       attributes={
         beacon_power_usage_multiplier=true,
+        color=true,
         draw_sprite_by_default=true,
         level=true,
         mining_drill_resource_drain_multiplier=true,
@@ -3532,6 +3592,7 @@ return {
         clear_upgrade_data=true,
         create_blueprint=true,
         deconstruct_area=true,
+        get_active_index=true,
         get_blueprint_entities=true,
         get_blueprint_entity_count=true,
         get_blueprint_entity_tag=true,
@@ -3767,9 +3828,36 @@ return {
       operators={}
     },
     LuaSimulation={
-      methods={},
+      methods={
+        activate_rail_planner=true,
+        control_down=true,
+        control_press=true,
+        control_up=true,
+        create_test_player=true,
+        deactivate_rail_planner=true,
+        get_slot_position=true,
+        get_widget_position=true,
+        mouse_click=true,
+        mouse_down=true,
+        mouse_up=true,
+        move_cursor=true,
+        scroll_clipboard_backwards=true,
+        scroll_clipboard_forwards=true,
+        write=true
+      },
       attributes={
+        active_quickbars=true,
+        camera_alt_info=true,
+        camera_player=true,
+        camera_player_cursor_direction=true,
+        camera_player_cursor_position=true,
+        camera_position=true,
+        camera_surface_index=true,
+        camera_zoom=true,
+        gui_tooltip_interval=true,
+        hide_cursor=true,
         object_name=true,
+        smart_belt_building=true,
         valid=true
       },
       operators={}
@@ -3841,8 +3929,10 @@ return {
         force=true,
         hub=true,
         index=true,
+        last_visited_space_location=true,
         name=true,
         object_name=true,
+        paused=true,
         schedule=true,
         scheduled_for_deletion=true,
         space_location=true,
@@ -4063,6 +4153,7 @@ return {
         generate_with_lab_tiles=true,
         global_effect=true,
         has_global_electric_network=true,
+        ignore_surface_conditions=true,
         index=true,
         localised_name=true,
         map_gen_settings=true,
@@ -4567,6 +4658,7 @@ return {
         show_research_info=true,
         show_shortcut_bar=true,
         show_side_menu=true,
+        show_surface_list=true,
         show_tool_bar=true,
         update_entity_selection=true
       },

@@ -1,7 +1,7 @@
---이벤트 등록
+--Event Registration | 이벤트 등록
 
-local Load = require('modules.load')
-local Gui_Event = require('modules.gui_event')
+local Load = require('core.load')
+local Gui_Event = require('core.gui_event')
 
 local pcwrap = function(f)
   return function(e)

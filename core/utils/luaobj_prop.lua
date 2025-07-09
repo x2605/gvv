@@ -1,6 +1,6 @@
 -- Util.get_property_list 함수
 
-local manual_api_list = require('modules.manual_api_list')
+local manual_api_list = require('core.datas.manual_api_list')
 local runtime_api = require('generated.runtime-api')
 
 local normal_table = function(obj, add_value)

@@ -71,7 +71,7 @@ Util.get_all_mod_list = function(blacklist)
 end
 
 --LuaObject의 읽을 수 있는 프로퍼티 목록 가져오기
-Util.get_property_list = require('modules.luaobj_prop')
+Util.get_property_list = require('core.utils.luaobj_prop')
 
 --table 얕은 비교
 Util.table_shallow_compare = function(tbl1, tbl2)

@@ -1,9 +1,9 @@
 -- 그래픽 유저 인터페이스
 
-local Util = require('modules.util')
+local Util = require('core.utils.util')
 local Tree = require('modules.tree')
-local Table_to_str = require('modules.table_to_str')
-local Tracking = require('modules.tracking')
+local Table_to_str = require('core.utils.table_to_str')
+local Tracking = require('core.utils.tracking')
 local Help_Menu = require('modules.help_menu')
 
 local Gui = {}

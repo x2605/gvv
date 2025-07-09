@@ -1,8 +1,9 @@
 --로드
 
+local Util = require('core.utils.util')
+local Tracking = require('core.utils.tracking')
+-- modules
 local Commands = require('modules.commands')
-local Util = require('modules.util')
-local Tracking = require('modules.tracking')
 local Gui = require('modules.gui')
 
 local Load = {}
