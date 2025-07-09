@@ -1,7 +1,13 @@
 -- Util.get_property_list 함수
 
 local manual_api_list = require('modules.manual_api_list')
-local runtime_api = require('generated.runtime-api')
+local runtime_api_stable = {}
+if (script.active_mods.base == "2.0.55") then 
+runtime_api = require('generated.runtime-api-stable')
+else
+runtime_api = require('generated.runtime-api-latest')
+end
+
 
 local normal_table = function(obj, add_value)
   if add_value then
