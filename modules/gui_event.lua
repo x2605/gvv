@@ -152,9 +152,9 @@ Gui_Event.on_gui_click = function(event)
     local panel = player_data.gui.tracking_panel
     local list = player_data.data.tracking_list
     if event.button == defines.mouse_button_type.left then
-      Gui.export_window(g)
+      Gui.export_window(player_data)
     elseif event.button == defines.mouse_button_type.right then
-      Gui.import_window(g)
+      Gui.import_window(player_data)
     end
 
   --추적 항목 가져오기 버튼 - 가져오기
@@ -211,7 +211,7 @@ Gui_Event.on_gui_click = function(event)
 
   --추적 갱신
   elseif event.element == player_data.gui.track_refresh_btn then
-    Trackinplayer_data.refresh_value(g)
+    Trackinplayer_data.refresh_value(player_data)
 
   --진단
   elseif event.element.name == '_gvv-mod_fix_diagnose_btn_' then
@@ -562,7 +562,7 @@ Gui_Event.on_gui_click = function(event)
 
   --tracking_panel 의 빈 공간을 우클릭할 때 (이 조건은 가능한한 뒤에)
   elseif player_data.gui.tracking_panel and player_data.gui.tabpane.selected_tab_index == 1 and Util.find_parent_gui(event.element, player_data.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.right then
-    local succ = Gui.put_anycode_in_tracking(g)
+    local succ = Gui.put_anycode_in_tracking(player_data)
 
   --tracking_panel 의 빈 공간을 휠클릭할 때 (이 조건은 가능한한 뒤에)
   elseif player_data.gui.tracking_panel and player_data.gui.tabpane.selected_tab_index == 1 and Util.find_parent_gui(event.element, player_data.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.middle then
