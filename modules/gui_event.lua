@@ -117,7 +117,7 @@ Gui_Event.on_gui_click = function(event)
       elem.destroy()
     end
     for index, v in ipairs(array) do
-      Trackinplayer_data.draw(panel, value.path_str, value.full_path, value.preinput)
+      Tracking.draw(panel, value.path_str, value.full_path, value.preinput)
     end
 
   --추적 항목 체크 조정 버튼
@@ -195,7 +195,7 @@ Gui_Event.on_gui_click = function(event)
         end
       end
       if not duplicate then
-        Trackinplayer_data.add(player_data, import_codes[i])
+        Tracking.add(player_data, import_codes[i])
         new_count = new_count + 1
       end
     end
@@ -211,7 +211,7 @@ Gui_Event.on_gui_click = function(event)
 
   --추적 갱신
   elseif event.element == player_data.gui.track_refresh_btn then
-    Trackinplayer_data.refresh_value(player_data)
+    Tracking.refresh_value(player_data)
 
   --진단
   elseif event.element.name == '_gvv-mod_fix_diagnose_btn_' then
@@ -383,14 +383,14 @@ Gui_Event.on_gui_click = function(event)
       event.element.style = 'tracked-tree-item_gvv-mod'
       if Tree.ignore_in_help_page(player_data, event.element) then return end
       local full_path = Tree.track_full_path(player_data, event.element)
-      Trackinplayer_data.add(player_data, full_path)
+      Tracking.add(player_data, full_path)
     elseif event.element.style.name == 'tracked-tree-item_gvv-mod' then
       event.element.style = 'tree-item_gvv-mod'
     elseif event.element.style.name == 'tree-item-folder_gvv-mod' then
       event.element.style = 'tracked-tree-item-folder_gvv-mod'
       if Tree.ignore_in_help_page(player_data, event.element) then return end
       local full_path = Tree.track_full_path(player_data, event.element)
-      Trackinplayer_data.add(player_data, full_path)
+      Tracking.add(player_data, full_path)
     elseif event.element.style.name == 'tracked-tree-item-folder_gvv-mod' then
       event.element.style = 'tree-item-folder_gvv-mod'
     end
@@ -444,7 +444,7 @@ Gui_Event.on_gui_click = function(event)
   -- _gvv-mod_anycode_frame_ 의 입력버튼을 클릭할 때
   elseif player_data.gui.icconf and player_data.gui.icconf.valid and event.element == player_data.gui.icconf then
     local code = event.element.parent.parent['_gvv-mod_anycode_code_']
-    Trackinplayer_data.add(player_data, code.text)
+    Tracking.add(player_data, code.text)
     local top = Util.get_top_frame(event.element)
     if top and top.valid then
       top.destroy()
@@ -488,9 +488,9 @@ Gui_Event.on_gui_click = function(event)
         start_adding_buffer = true
       end
     end
-    Trackinplayer_data.add(player_data, code)
+    Tracking.add(player_data, code)
     for index, v in ipairs(buffer) do
-      Trackinplayer_data.draw(panel, value.path_str, value.full_path, value.preinput)
+      Tracking.draw(panel, value.path_str, value.full_path, value.preinput)
     end
     local top = Util.get_top_frame(event.element)
     if top and top.valid then
@@ -651,7 +651,7 @@ Gui_Event.on_gui_confirmed = function(event)
     player_data.gui.track_inter_show.caption = player_data.track_interval_tick
     player_data.gui.track_inter_slider.slider_value = player_data.track_interval_tick
   --elseif event.element.name == '_gvv-mod_anycode_code_' then
-    --Trackinplayer_data.add(player_data, event.element.text)
+    --Tracking.add(player_data, event.element.text)
     --local top = Util.get_top_frame(event.element)
     --if top and top.valid then
     --  top.destroy()
