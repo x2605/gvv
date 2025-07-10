@@ -1,4 +1,20 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.9
+Date: 2025-07-11
+
+  Fixes:
+    - Fixed major issues with `_G()` and `storage` remote call returns in gvv.lua.
+    - Restored original logic for `_G()` to ensure correct copying of global tables without errors on `wrap_object`.
+    - Excluded additional keys (`prototypes`, `helpers`, `copy_object`) to prevent unwanted entries in global dump.
+
+  Changes:
+    - Improved code readability by adding clear French/English comments for each recursive and object wrapping function in gvv.lua.
+    - Refactored variable names for clarity and context (Factorio-specific).
+
+  Published:
+    - Ritn
+
+---------------------------------------------------------------------------------------------------
 Version: 0.5.8
 Date: 2025-07-10
 
