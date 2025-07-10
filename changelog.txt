@@ -1,4 +1,26 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.8
+Date: 2025-07-10
+
+  Adds:
+    - Support for all LuaMapSettings sub-classes (e.g., asteroids, enemy_evolution, enemy_expansion, etc.) 
+      with automatic concept detection and correct object_name injection.
+    - New file: attribute_type_map.lua, containing mappings of parent classes to their sub-class attributes 
+      (e.g., LuaMapSettings → AsteroidMapSettings), to improve type resolution.
+    - New file: concept_fields.lua, defining fields for Factorio concepts to allow safe introspection even when runtime_api is missing.
+
+  Changes:
+    - Fixed major issues with recursive concept parsing to prevent "Unknown class for object_name" errors.
+    - Improved handling of inaccessible attributes ("<cannot read>") for SteeringMapSetting and similar concepts.
+    - Refactored luaobj_prop.lua for better stability and compatibility with Factorio 2.0.59.
+    - Completely rewrote gui_event.lua to be more explicit and readable (less minified), resulting in a cleaner and 
+      easier-to-maintain codebase.
+    - Similarly, fully refactored gvv.lua to improve clarity and maintainability, matching the new style used in gui_event.lua.
+
+  Published:
+    - Ritn
+
+---------------------------------------------------------------------------------------------------
 Version: 0.5.7
 Date: 2025-07-09
 

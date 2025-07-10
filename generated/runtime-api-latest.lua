@@ -1794,26 +1794,31 @@ return {
       operators={}
     },
     LuaFluidBox={
-      methods={},
-      attributes={
-        show_alert_gui=true,
-        show_controller_gui=true,
-        show_crafting_queue=true,
-        show_entity_info=true,
-        show_entity_tooltip=true,
-        show_hotkey_suggestions=true,
-        show_map_view_options=true,
-        show_minimap=true,
-        show_quickbar=true,
-        show_rail_block_visualisation=true,
-        show_research_info=true,
-        show_shortcut_bar=true,
-        show_side_menu=true,
-        show_surface_list=true,
-        show_tool_bar=true,
-        update_entity_selection=true
+      methods={
+        add_linked_connection=true,
+        flush=true,
+        get_capacity=true,
+        get_connections=true,
+        get_filter=true,
+        get_fluid_segment_contents=true,
+        get_fluid_segment_id=true,
+        get_linked_connection=true,
+        get_linked_connections=true,
+        get_locked_fluid=true,
+        get_pipe_connections=true,
+        get_prototype=true,
+        remove_linked_connection=true,
+        set_filter=true
       },
-      operators={}
+      attributes={
+        object_name=true,
+        owner=true,
+        valid=true
+      },
+      operators={
+        index=true,
+        length=true
+      }
     },
     LuaFluidBoxPrototype={
       methods={},
@@ -5031,6 +5036,20 @@ return {
         show_surface_list=true,
         show_tool_bar=true,
         update_entity_selection=true
+      },
+      operators={}
+    },
+    LuaMapSettings={
+      methods={},
+      attributes={
+        asteroids=true,
+        enemy_evolution=true,
+        enemy_expansion=true,
+        max_failed_behavior_count=true,
+        path_finder=true,
+        pollution=true,
+        steering=true,
+        unit_group=true
       },
       operators={}
     }

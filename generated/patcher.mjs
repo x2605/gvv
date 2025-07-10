@@ -1,7 +1,7 @@
 export default function (obj) {
   conceptToClasses(obj, "DifficultySettings", "LuaDifficultySettings")
   conceptToClasses(obj, "GameViewSettings", "LuaGameViewSettings")
-  conceptToClasses(obj, "GameViewSettings", "LuaFluidBox")
+  conceptToClasses(obj, "MapSettings", "LuaMapSettings")
 
   return obj
 }

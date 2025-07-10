@@ -2,6 +2,14 @@
 
 local Util = {}
 
+-- mode debug
+local debug = false
+Util.debug = debug 
+
+-- Logging helper
+Util.logger =  function(msg)
+    if debug then log("[gvv.logger] " .. msg)  end
+end
 
 --닫기 버튼이 있는 프레임 만들기
 Util.create_frame_w_closebtn = function(player, frame_name, title)
