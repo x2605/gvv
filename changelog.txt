@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.12
+Date: 2025-07-14
+
+  Fixes:
+    - Fixed a critical bug causing errors when using `remote.call("__mod__gvv", "storage")` or `_G` with mods that lock the global environment (`_ENV`).
+    - `copy_object` function is now properly declared as local to avoid conflicts with global scope.
+
+  Published:
+    - Ritn
+---------------------------------------------------------------------------------------------------
 Version: 0.5.11
 Date: 2025-07-10
 

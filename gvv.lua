@@ -94,9 +94,7 @@ return function()
         return representation
       end
 
-      -- Fonction d'encapsulation avec pcall pour sécuriser
-      -- Helper function using pcall to secure access
-      function copy_object(o, parents, is_key)
+      local function copy_object(o, parents, is_key)
         local success, res = pcall(function() return wrap_object(o, parents, is_key) end)
         if success then
           return res
@@ -196,7 +194,7 @@ return function()
         return representation
       end
 
-      function copy_object(o, parents, is_key)
+      local function copy_object(o, parents, is_key)
         local success, res = pcall(function() return wrap_object(o, parents, is_key) end)
         if success then
           return res
@@ -222,4 +220,3 @@ return function()
     end
   })
 end
-
