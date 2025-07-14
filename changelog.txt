@@ -1,4 +1,18 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.13
+Date: 2025-07-14
+
+  Fixes:
+    - Fixed global copy logic to avoid "Forbidden global read" errors when mods use strict _ENV protection (e.g., Vehicle Wagon 2 or autodrive).
+    - Improved recursive object wrapping to safely handle all sub-keys without triggering global lock errors.
+
+  Changes:
+    - Added detailed comments and cleaned up `gvv.lua` for better readability and maintenance.
+    - Minor adjustments to internal copy_object logic for better compatibility.
+
+  Published:
+    - Ritn
+---------------------------------------------------------------------------------------------------
 Version: 0.5.12
 Date: 2025-07-14
 

@@ -1,3 +1,112 @@
+--[[
+  gvv.lua - Global Variable Viewer Remote Interface
+
+  Ce fichier définit une interface remote pour inspecter et copier en toute sécurité 
+  les variables globales et le storage d'un mod Factorio via remote.call.
+
+  This file defines a remote interface to safely inspect and copy
+  global variables and storage of a Factorio mod via remote.call.
+
+  Compatible avec la protection stricte des globals (_ENV) utilisée dans certains mods.
+  Compatible with strict global (_ENV) protections used in some mods.
+
+  Version: 0.5.12+
+  Auteur original : x2605, maintenu par Ritn
+  Original author: x2605, maintained by Ritn
+]]
+
+local wrap_object -- forward declaration
+
+-- copy_object :
+-- FR : Fonction qui encapsule la copie d'un objet en utilisant pcall pour éviter les erreurs.
+--      Elle appelle wrap_object et capture toute erreur éventuelle.
+-- EN : Function that wraps object copying using pcall to avoid runtime errors.
+--      It calls wrap_object and safely catches any possible errors.
+local function copy_object(o, parents, is_key)
+  local success, res = pcall(function() return wrap_object(o, parents, is_key) end)
+  if success then
+    return res
+  else
+    return { ["<ERROR>"] = "<" .. res .. ">" }
+  end
+end
+
+-- wrap_object :
+-- FR : Fonction principale qui crée une copie sûre d'un objet Lua.
+--      - Évite les cycles en vérifiant la récursivité (parents).
+--      - Remplace les clés ou valeurs non copiables (function, userdata, thread, nil) par une représentation texte.
+--      - Pour les userdata Factorio, si c’est une clé ou une classe exclue, remplace par un tag.
+-- EN : Main function that creates a safe copy of a Lua object.
+--      - Avoids cycles by checking recursion (parents).
+--      - Replaces non-copyable keys or values (function, userdata, thread, nil) with text representation.
+--      - For Factorio userdata, if it's a key or an excluded class, replaces it with a tag.
+function wrap_object(obj, parents, is_key)
+  local obj_type = type(obj)
+  local representation
+
+  if obj_type == "userdata" and getmetatable(obj) == "private" and obj.object_name then
+    -- FR : Si clé ou classe exclue, on simplifie.
+    -- EN : If key or excluded class, simplify.
+    if is_key or (exclude_classes[obj.object_name] or obj.object_name:match('^LuaMapSettings')) then
+      counter = counter + 1
+      representation = "<" .. obj.object_name .. counter .. ">"
+    else
+      representation = obj
+    end
+
+  elseif obj_type == "table" then
+    if is_key then
+      -- FR : Simplification pour les clés qui sont des tables.
+      -- EN : Simplify table keys.
+      counter = counter + 1
+      representation = "<table" .. counter .. ">"
+    else
+      -- FR : Vérifie la récursivité pour éviter les boucles infinies.
+      -- EN : Check recursion to avoid infinite loops.
+      local is_recursive = false
+      for _, v in ipairs(parents) do
+        if v == obj then
+          is_recursive = true
+          break
+        end
+      end
+      if is_recursive then
+        representation = "<recursive table>"
+      else
+        representation = {}
+        local new_parents = {}
+        for i, v in ipairs(parents) do
+          new_parents[i] = v
+        end
+        table.insert(new_parents, obj)
+        for k, v in next, obj, nil do
+          representation[copy_object(k, new_parents, true)] = copy_object(v, new_parents, false)
+        end
+      end
+    end
+
+  elseif obj_type == "function" or obj_type == "thread" or obj_type == "userdata" or obj_type == "nil" then
+    -- FR : Remplace les types non copiables.
+    -- EN : Replace non-copyable types.
+    if is_key then
+      counter = counter + 1
+      representation = "<" .. obj_type .. counter .. ">"
+    else
+      representation = "<" .. obj_type .. ">"
+    end
+
+  else
+    -- FR : Valeurs simples copiées directement.
+    -- EN : Simple values copied directly.
+    representation = obj
+  end
+
+  return representation
+end
+
+
+
+
 return function()
 -- contents of following line is came from the Helper tab of the mod's GUI.
 -- source at __gvv__/modules/copy_code.lua
@@ -27,81 +136,6 @@ return function()
         LuaDifficultySettings = true, LuaFlowStatistics = true, LuaPrototypes = true,
         LuaHelpers = true,
       }
-
-      -- Fonction qui crée une copie sûre de l'objet (évite les récursions infinies, remplace userdata/fonctions)
-      -- Function that safely copies objects (avoids infinite recursion, replaces userdata/functions)
-      local function wrap_object(obj, parents, is_key)
-        local obj_type = type(obj)
-        local representation
-
-        if obj_type == "userdata" and getmetatable(obj) == "private" and obj.object_name then
-          -- Pour les clés ou si explicitement demandé, on met une représentation simplifiée
-          -- For keys or explicit cases, use simplified representation
-          if is_key or (exclude_classes[obj.object_name] or obj.object_name:match('^LuaMapSettings')) then
-            counter = counter + 1
-            representation = "<" .. obj.object_name .. counter .. ">"
-          else
-            representation = obj
-          end
-
-        elseif obj_type == "table" then
-          if is_key then
-            -- Pour les clés tables, on simplifie
-            -- Simplify table keys
-            counter = counter + 1
-            representation = "<table" .. counter .. ">"
-          else
-            -- Vérifie la récursivité
-            -- Check for recursion
-            local is_recursive = false
-            for _, v in ipairs(parents) do
-              if v == obj then
-                is_recursive = true
-                break
-              end
-            end
-            if is_recursive then
-              representation = "<recursive table>"
-            else
-              representation = {}
-              local new_parents = {}
-              for i, v in ipairs(parents) do
-                new_parents[i] = v
-              end
-              table.insert(new_parents, obj)
-              for k, v in next, obj, nil do
-                representation[copy_object(k, new_parents, true)] = copy_object(v, new_parents, false)
-              end
-            end
-          end
-
-        elseif obj_type == "function" or obj_type == "thread" or obj_type == "userdata" or obj_type == "nil" then
-          -- Remplacement des types non copiables
-          -- Replace non-copyable types
-          if is_key then
-            counter = counter + 1
-            representation = "<" .. obj_type .. counter .. ">"
-          else
-            representation = "<" .. obj_type .. ">"
-          end
-
-        else
-          -- Copie directe des valeurs simples
-          -- Direct copy for primitive values
-          representation = obj
-        end
-
-        return representation
-      end
-
-      local function copy_object(o, parents, is_key)
-        local success, res = pcall(function() return wrap_object(o, parents, is_key) end)
-        if success then
-          return res
-        else
-          return { ["<ERROR>"] = "<" .. res .. ">" }
-        end
-      end
 
       -- Parcours de storage
       -- Iterate over storage
@@ -139,69 +173,6 @@ return function()
         LuaDifficultySettings = true, LuaFlowStatistics = true, LuaPrototypes = true,
         LuaHelpers = true,
       }
-
-      local function wrap_object(obj, parents, is_key)
-        local obj_type = type(obj)
-        local representation
-
-        if obj_type == "userdata" and getmetatable(obj) == "private" and obj.object_name then
-          if is_key or (exclude_classes[obj.object_name] or obj.object_name:match('^LuaMapSettings')) then
-            counter = counter + 1
-            representation = "<" .. obj.object_name .. counter .. ">"
-          else
-            representation = obj
-          end
-
-        elseif obj_type == "table" then
-          if is_key then
-            counter = counter + 1
-            representation = "<table" .. counter .. ">"
-          else
-            local is_recursive = false
-            for _, v in ipairs(parents) do
-              if v == obj then
-                is_recursive = true
-                break
-              end
-            end
-            if is_recursive then
-              representation = "<recursive table>"
-            else
-              representation = {}
-              local new_parents = {}
-              for i, v in ipairs(parents) do
-                new_parents[i] = v
-              end
-              table.insert(new_parents, obj)
-              for k, v in next, obj, nil do
-                representation[copy_object(k, new_parents, true)] = copy_object(v, new_parents, false)
-              end
-            end
-          end
-
-        elseif obj_type == "function" or obj_type == "thread" or obj_type == "userdata" or obj_type == "nil" then
-          if is_key then
-            counter = counter + 1
-            representation = "<" .. obj_type .. counter .. ">"
-          else
-            representation = "<" .. obj_type .. ">"
-          end
-
-        else
-          representation = obj
-        end
-
-        return representation
-      end
-
-      local function copy_object(o, parents, is_key)
-        local success, res = pcall(function() return wrap_object(o, parents, is_key) end)
-        if success then
-          return res
-        else
-          return { ["<ERROR>"] = "<" .. res .. ">" }
-        end
-      end
 
       -- Parcours de _G
       -- Iterate over _G
