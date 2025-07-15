@@ -17,13 +17,25 @@
 
 local wrap_object -- forward declaration
 
+
+-- Classes à exclure du wrapping complet
+-- Classes to exclude from full wrapping
+local exclude_classes = {
+  LuaGameScript = true, LuaBootstrap = true, LuaRemote = true,
+  LuaCommandProcessor = true, LuaSettings = true, LuaRCON = true,
+  LuaRendering = true, LuaLazyLoadedValue = true, LuaCustomTable = true,
+  LuaDifficultySettings = true, LuaFlowStatistics = true, LuaPrototypes = true,
+  LuaHelpers = true,
+}
+
+
 -- copy_object :
 -- FR : Fonction qui encapsule la copie d'un objet en utilisant pcall pour éviter les erreurs.
 --      Elle appelle wrap_object et capture toute erreur éventuelle.
 -- EN : Function that wraps object copying using pcall to avoid runtime errors.
 --      It calls wrap_object and safely catches any possible errors.
-local function copy_object(o, parents, is_key)
-  local success, res = pcall(function() return wrap_object(o, parents, is_key) end)
+local function copy_object(o, parents, is_key, counter)
+  local success, res = pcall(function() return wrap_object(o, parents, is_key, counter) end)
   if success then
     return res
   else
@@ -40,7 +52,7 @@ end
 --      - Avoids cycles by checking recursion (parents).
 --      - Replaces non-copyable keys or values (function, userdata, thread, nil) with text representation.
 --      - For Factorio userdata, if it's a key or an excluded class, replaces it with a tag.
-function wrap_object(obj, parents, is_key)
+function wrap_object(obj, parents, is_key, counter)
   local obj_type = type(obj)
   local representation
 
@@ -127,21 +139,11 @@ return function()
       local counter = 0
       local result = {}
 
-      -- Classes à exclure du wrapping complet
-      -- Classes to exclude from full wrapping
-      local exclude_classes = {
-        LuaGameScript = true, LuaBootstrap = true, LuaRemote = true,
-        LuaCommandProcessor = true, LuaSettings = true, LuaRCON = true,
-        LuaRendering = true, LuaLazyLoadedValue = true, LuaCustomTable = true,
-        LuaDifficultySettings = true, LuaFlowStatistics = true, LuaPrototypes = true,
-        LuaHelpers = true,
-      }
-
       -- Parcours de storage
       -- Iterate over storage
       for key, value in next, root, nil do
         if not exclude_keys[key] then
-          result[copy_object(key, { root }, true)] = copy_object(value, { root }, false)
+          result[copy_object(key, { root }, true, counter)] = copy_object(value, { root }, false, counter)
         end
       end
 
@@ -166,19 +168,11 @@ return function()
       local counter = 0
       local result = {}
 
-      local exclude_classes = {
-        LuaGameScript = true, LuaBootstrap = true, LuaRemote = true,
-        LuaCommandProcessor = true, LuaSettings = true, LuaRCON = true,
-        LuaRendering = true, LuaLazyLoadedValue = true, LuaCustomTable = true,
-        LuaDifficultySettings = true, LuaFlowStatistics = true, LuaPrototypes = true,
-        LuaHelpers = true,
-      }
-
       -- Parcours de _G
       -- Iterate over _G
       for key, value in next, root, nil do
         if not exclude_keys[key] then
-          result[copy_object(key, { root }, true)] = copy_object(value, { root }, false)
+          result[copy_object(key, { root }, true, counter)] = copy_object(value, { root }, false, counter)
         end
       end
 
