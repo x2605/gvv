@@ -14,12 +14,14 @@ local debug = false
 
 -- Charger runtime_api stable ou latest en fonction de la version de base
 -- Load runtime_api stable or latest depending on base version
-local runtime_api = {}
-if (script.active_mods.base == "2.0.55") then 
+local runtime_api = require('generated.runtime-api-stable')
+--[[ 
+if (script.active_mods.base == "2.0.60") then 
     runtime_api = require('generated.runtime-api-stable')
 else
     runtime_api = require('generated.runtime-api-latest')
-end
+end 
+]]
 
 -- Charger les modules de mapping
 -- Load mapping modules
