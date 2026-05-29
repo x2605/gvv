@@ -14,7 +14,7 @@ local changeable_setting_list = {
 Commands.gvv = function(data)
   local player
   if data.player_index then
-    player = game.players[data.player_index]
+    player = game.get_player(data.player_index)
     if not player.admin and game.is_multiplayer() then
       player.print{"",'gvv : ',{"gvv-mod-command-help.only-admin"}}
       return
@@ -41,7 +41,7 @@ end
 Commands.gdump = function(data, lang)
   local rmt_glob, player, mod_name
   if data.player_index then
-    player = game.players[data.player_index]
+    player = game.get_player(data.player_index)
     if not player.admin and game.is_multiplayer() then
       player.print{"",data.name,' : ',{"gvv-mod-command-help.only-admin"}}
       return
@@ -114,7 +114,7 @@ Commands.gmods = function(data)
     end
   end
   if data.player_index then
-    local player = game.players[data.player_index]
+    local player = game.get_player(data.player_index)
     if not player.admin and game.is_multiplayer() then
       player.print{"",'Loaded mod list (',table_size(script.active_mods),'):\n',table.concat(s)}
     else
@@ -136,7 +136,7 @@ Commands.when_change_mod_settings = function(event)
     local value = settings.global[event.setting].value
     local message
     if event.player_index then
-      message = {"",'(gvv) Player ',game.players[event.player_index].name,' changed "',setting_name,'" mod-setting to "',value,'"'}
+      message = {"",'(gvv) Player ',game.get_player(event.player_index).name,' changed "',setting_name,'" mod-setting to "',value,'"'}
     else
       message = {"",'(gvv) "',setting_name,'" mod-setting is changed to "',value,'"'}
     end

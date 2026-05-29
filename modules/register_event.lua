@@ -8,7 +8,7 @@ local pcwrap = function(f)
     local s, m = pcall(f,e)
     if not s then
       if e.player_index then
-        game.players[e.player_index].print('[font=var-outline-gvv-mod]'..m..'[/font]',{1,0.85,0.7,1})
+        game.get_player(e.player_index).print('[font=var-outline-gvv-mod]'..m..'[/font]',{1,0.85,0.7,1})
       end
     end
   end

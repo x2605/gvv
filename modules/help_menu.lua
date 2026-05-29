@@ -340,15 +340,15 @@ head2{x..'2'}
 text{x..'3'}
 text{x..'3-0', {"",'[font=default-bold]',{"gvv-mod.tab-filtered-view"},'[/font]'}}
 text{x..'3-1'}
-copyable('/c __gvv__ if not storage.memo then storage.memo={} end storage.memo["'..game.players[looking_player_index].name..'"]={}')
+copyable('/c __gvv__ if not storage.memo then storage.memo={} end storage.memo["'..game.get_player(looking_player_index).name..'"]={}')
   this.style.bottom_margin = 5
 text{x..'3-2'}
-local memo_prefix = '/sc __gvv__ local MEMO=storage.memo["'..game.players[looking_player_index].name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
+local memo_prefix = '/sc __gvv__ local MEMO=storage.memo["'..game.get_player(looking_player_index).name..'"] game.player.print("MEMO#"..#MEMO+1) MEMO[#MEMO+1]= '
 copyable(memo_prefix..'game.player.selected') this.style.bottom_margin = 5
 text{x..'3-3'}
 copyable(memo_prefix) this.style.bottom_margin = 5
 text({x..'3-4', '[font=default-semibold][color=128, 206, 240]Enter[/color][/font]'}, {x..'3-4'..'-tooltip'})
-copyable('/sc __gvv__ local t=setmetatable({},{__newindex=function(a,b,c) storage.memo["'..game.players[looking_player_index].name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
+copyable('/sc __gvv__ local t=setmetatable({},{__newindex=function(a,b,c) storage.memo["'..game.get_player(looking_player_index).name..'"][c]=nil game.player.print("MEMO#"..c.."=nil") end}) t[1]= ')
   this.style.bottom_margin = 5
 text{x..'3-5'}
 text(' ')

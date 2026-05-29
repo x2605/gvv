@@ -14,7 +14,7 @@ Load.example_load = function()
       biter_force = game.forces['enemy'],
       tree_force = game.forces[3],
     },
-    initial_surface = game.surfaces[1],
+    initial_surface = game.get_surface(1),
   }
 end
 

@@ -34,7 +34,7 @@ local other_frames_to_close_when_focusing_main = {
 Gui_Event.on_gui_click = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
-  local player = game.players[event.player_index]
+  local player = game.get_player(event.player_index)
   local topframe = Util.get_top_frame(event.element)
   if event.element.name == 'closebtn' and topframe and simple_frame_names[topframe.name] then
     topframe.destroy()
@@ -207,7 +207,7 @@ Gui_Event.on_gui_click = function(event)
       top.destroy()
     end
     Gui.change_tab(player_data, 1)
-    game.players[player_data.index].print('(gvv) '..new_count..' new entries imported.  /  '..dup_count..' entries already exist.')
+    game.get_player(player_data.index).print('(gvv) '..new_count..' new entries imported.  /  '..dup_count..' entries already exist.')
 
   --추적 갱신
   elseif event.element == player_data.gui.track_refresh_btn then
@@ -641,7 +641,7 @@ Gui_Event.on_gui_confirmed = function(event)
   if not storage.players then return end
   local player_data = storage.players[event.player_index]
   if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
-  local player = game.players[event.player_index]
+  local player = game.get_player(event.player_index)
 
   if event.element == player_data.gui.track_inter_edit then
     if player_data.gui.track_inter_edit.text ~= '' then player_data.track_interval_tick = player_data.gui.track_inter_edit.text + 0 end
@@ -754,7 +754,7 @@ Gui_Event.on_gui_text_changed = function(event)
 
   if event.element.name == '_gvv-mod_anycode_code_' then
     if event.element.text == '' then
-      local player = game.players[event.player_index]
+      local player = game.get_player(event.player_index)
       if player.opened_gui_type == defines.gui_type.none then
         player.opened = Util.get_top_frame(event.element)
       end
@@ -840,13 +840,13 @@ Gui_Event.on_gui_selection_state_changed = function(event)
 end
 
 Gui_Event['toggle-main-frame_gvv-mod'] = function(event)
-  local player = game.players[event.player_index]
+  local player = game.get_player(event.player_index)
   if not player.admin and game.is_multiplayer() then return end
   if player then Gui.open_main(event.player_index) end
 end
 
 Gui_Event['refresh_gvv-mod'] = function(event)
-  local player = game.players[event.player_index]
+  local player = game.get_player(event.player_index)
   if not player.admin and game.is_multiplayer() then return end
   if not storage.players then return end
   local player_data = storage.players[event.player_index]

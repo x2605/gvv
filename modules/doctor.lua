@@ -22,7 +22,7 @@ Doctor.take_a_look = function(g, mod_name, action)
   local r = remote.call('__'..mod_name..'__gvv',action)
   
 
-  local player = game.players[g.index]
+  local player = game.get_player(g.index)
   player.print({"",'(gvv) "',mod_name,'" - "',m,'" finished.',
     '\nNormal entries : ',r.n_count,
     '\nError entries : ',r.e_count,

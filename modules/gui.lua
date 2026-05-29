@@ -19,7 +19,7 @@ local other_frames_to_close_when_closing_main = {
 
 -- 메인 윈도우
 Gui.open_main = function(player_index)
-  local player = game.players[player_index]
+  local player = game.get_player(player_index)
   local first_time = false
   if not storage.players then storage.players = {} end
   if not storage.players[player_index] then
@@ -454,7 +454,7 @@ end
 
 -- 메인 윈도우 닫기
 Gui.close_main = function(g, ignore_save)
-  local player = game.players[g.index]
+  local player = game.get_player(g.index)
   local pc, ret
   if not ignore_save then
     pc, ret = pcall(function(g) Tree.save_on_quit(g) end, g)
@@ -472,7 +472,7 @@ end
 
 -- 내용을 복사할 수 있는 미니 윈도우1
 Gui.copyable_dump = function(player_index, str, title)
-  local player = game.players[player_index]
+  local player = game.get_player(player_index)
   local frame = player.gui.screen['_gvv-mod_dump_frame_']
   local closebtn, innerframe
 
@@ -495,7 +495,7 @@ end
 
 -- 코드를 입력하는 미니 윈도우
 Gui.put_anycode_in_tracking = function(g)
-  local player = game.players[g.index]
+  local player = game.get_player(g.index)
   local frame = player.gui.screen['_gvv-mod_anycode_frame_']
   local closebtn, innerframe
 
@@ -591,7 +591,7 @@ end
 
 -- 내용을 복사할 수 있는 미니 윈도우2
 Gui.copyable_tracking_code = function(g, str, entry_name)
-  local player = game.players[g.index]
+  local player = game.get_player(g.index)
   local frame = player.gui.screen['_gvv-mod_copy_tracking_code_frame_']
   local closebtn, innerframe
 
@@ -651,7 +651,7 @@ end
 
 -- 코드를 편집하는 미니 윈도우
 Gui.edit_code_in_tracking = function(g, str, entry_name)
-  local player = game.players[g.index]
+  local player = game.get_player(g.index)
   local frame = player.gui.screen['_gvv-mod_edit_tracking_code_frame_']
   local closebtn, innerframe
 
@@ -695,7 +695,7 @@ end
 
 --내보내기 윈도우
 Gui.export_window = function(g)
-  local player = game.players[g.index]
+  local player = game.get_player(g.index)
   local frame = player.gui.screen['_gvv-mod_export_tracking_code_frame_']
   local closebtn, innerframe
 
@@ -723,7 +723,7 @@ end
 
 --가져오기 윈도우
 Gui.import_window = function(g)
-  local player = game.players[g.index]
+  local player = game.get_player(g.index)
   local frame = player.gui.screen['_gvv-mod_import_tracking_code_frame_']
   local closebtn, innerframe
 
