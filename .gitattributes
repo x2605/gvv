@@ -1,2 +1,12 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+.github export-ignore
+docs export-ignore
+tests export-ignore
+
+# excluded generated process runtime-api.lua
+generated/converter.mjs export-ignore
+generated/LUA.mjs export-ignore
+generated/patcher.mjs export-ignore
+generated/README.md export-ignore
+generated/shortener.mjs export-ignore

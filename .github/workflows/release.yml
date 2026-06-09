@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create source archive
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          REPO_NAME=${GITHUB_REPOSITORY#*/}
+
+          git archive \
+            --format=zip \
+            --prefix=${REPO_NAME}/ \
+            -o ${REPO_NAME}_${VERSION}.zip \
+            ${VERSION}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "*.zip"
