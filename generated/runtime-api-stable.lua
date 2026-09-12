@@ -1,6 +1,6 @@
 return {
   application="factorio",
-  application_version="2.1.9",
+  application_version="2.1.17",
   api_version=6,
   stage="runtime",
   classes={
@@ -353,6 +353,7 @@ return {
         get_event_filter=true,
         get_event_handler=true,
         get_event_id=true,
+        get_event_name=true,
         get_event_order=true,
         new_notification_queue=true,
         on_configuration_changed=true,
@@ -405,11 +406,13 @@ return {
       methods={},
       attributes={
         auto_refuel=true,
+        burner_usage=true,
         burnt_inventory_size=true,
         effectivity=true,
         emissions_per_joule=true,
         fuel_categories=true,
         fuel_inventory_size=true,
+        hide_from_stats=true,
         initial_fuel=true,
         initial_fuel_percent=true,
         light_flicker=true,
@@ -821,7 +824,9 @@ return {
     },
     LuaDebugAdapter={
       methods={
+        breakpoint=true,
         describe_field=true,
+        print=true,
         start_profile=true,
         stop_profile=true
       },
@@ -1304,6 +1309,7 @@ return {
         loader_container=true,
         loader_filter_mode=true,
         loader_type=true,
+        local_effect=true,
         localised_description=true,
         localised_name=true,
         logistic_cell=true,
@@ -1332,6 +1338,7 @@ return {
         pickup_target=true,
         player=true,
         pollution_bonus=true,
+        potential_effects=true,
         power_production=true,
         power_switch_state=true,
         power_usage=true,
@@ -1342,6 +1349,7 @@ return {
         products_finished=true,
         protected=true,
         prototype=true,
+        providing_to_other_platforms=true,
         proxy_target=true,
         proxy_target_entity=true,
         proxy_target_inventory=true,
@@ -1359,6 +1367,7 @@ return {
         render_player=true,
         render_to_forces=true,
         request_from_buffers=true,
+        request_missing_construction_materials=true,
         result_quality=true,
         robot_order_queue=true,
         rocket=true,
@@ -1553,6 +1562,7 @@ return {
         allow_unloading=true,
         allowed_effects=true,
         allowed_module_categories=true,
+        allows_flipping=true,
         always_on=true,
         ammo_category=true,
         ammo_stack_limit=true,
@@ -2001,6 +2011,7 @@ return {
         shot_category=true,
         shots_per_flare=true,
         should_ground_target=true,
+        show_fluid_visualization_when_in_cursor=true,
         shuffle_resources_to_mine=true,
         smoke=true,
         smoke_count=true,
@@ -2336,6 +2347,7 @@ return {
         emissions_per_joule=true,
         fluid_box=true,
         fluid_usage_per_tick=true,
+        hide_from_stats=true,
         maximum_temperature=true,
         object_name=true,
         output_fluid_box=true,
@@ -2438,6 +2450,7 @@ return {
         get_logistic_group=true,
         get_logistic_groups=true,
         get_script_visible=true,
+        get_space_platforms=true,
         get_spawn_position=true,
         get_surface_hidden=true,
         get_turret_attack_modifier=true,
@@ -2696,21 +2709,6 @@ return {
         input_networks=true,
         output_networks=true,
         type=true
-      },
-      operators={}
-    },
-    LuaGroup={
-      methods={},
-      attributes={
-        group=true,
-        localised_name=true,
-        name=true,
-        object_name=true,
-        order=true,
-        order_in_recipe=true,
-        subgroups=true,
-        type=true,
-        valid=true
       },
       operators={}
     },
@@ -3186,6 +3184,20 @@ return {
       },
       operators={}
     },
+    LuaItemGroup={
+      methods={},
+      attributes={
+        localised_name=true,
+        name=true,
+        object_name=true,
+        order=true,
+        order_in_recipe=true,
+        subgroups=true,
+        type=true,
+        valid=true
+      },
+      operators={}
+    },
     LuaItemPrototype={
       methods={
         get_ammo_type=true,
@@ -3412,6 +3424,19 @@ return {
         tile_filters=true,
         tile_selection_mode=true,
         trees_and_rocks_only=true
+      },
+      operators={}
+    },
+    LuaItemSubGroup={
+      methods={},
+      attributes={
+        group=true,
+        localised_name=true,
+        name=true,
+        object_name=true,
+        order=true,
+        type=true,
+        valid=true
       },
       operators={}
     },
@@ -3872,6 +3897,29 @@ return {
       },
       operators={}
     },
+    LuaPin={
+      methods={
+        destroy=true,
+        get_pin_center=true
+      },
+      attributes={
+        alert_positions=true,
+        alert_type=true,
+        always_visible=true,
+        chart_tag=true,
+        index=true,
+        label=true,
+        object_name=true,
+        owner=true,
+        player=true,
+        position=true,
+        preview_distance=true,
+        surface_index=true,
+        targets=true,
+        valid=true
+      },
+      operators={}
+    },
     LuaPlanet={
       methods={
         associate_surface=true,
@@ -3903,6 +3951,7 @@ return {
         clear_cursor=true,
         clear_inventory_highlights=true,
         clear_local_flying_texts=true,
+        clear_pins=true,
         clear_recipe_notification=true,
         clear_recipe_notifications=true,
         clear_selection=true,
@@ -3927,6 +3976,7 @@ return {
         get_associated_characters=true,
         get_goal_description=true,
         get_infinity_inventory_filter=true,
+        get_pins=true,
         get_quick_bar_slot=true,
         get_recipe_notifications=true,
         is_alert_enabled=true,
@@ -4017,6 +4067,7 @@ return {
         display_resolution=true,
         display_scale=true,
         drag_target=true,
+        editor_settings=true,
         entity_copy_source=true,
         game_view_settings=true,
         gui=true,
@@ -4051,6 +4102,7 @@ return {
         stashed_controller_type=true,
         tag=true,
         ticks_to_respawn=true,
+        toggle_menu_leaves_remote_view=true,
         undo_redo_stack=true,
         valid=true,
         zoom=true,
@@ -4248,6 +4300,7 @@ return {
         max_force_distraction_distance=true,
         max_gate_activation_distance=true,
         max_inserter_reach_distance=true,
+        max_logistics_connection_distance=true,
         max_pipe_to_ground_distance=true,
         max_underground_belt_distance=true,
         mod_data=true,
@@ -4313,7 +4366,10 @@ return {
       operators={}
     },
     LuaQualityPrototype={
-      methods={},
+      methods={
+        get_roll_chances=true,
+        roll_quality=true
+      },
       attributes={
         accumulator_capacity_multiplier=true,
         asteroid_collector_collection_radius_bonus=true,
@@ -4569,6 +4625,7 @@ return {
         main_product=true,
         maximum_productivity=true,
         object_name=true,
+        on_crafted_event=true,
         overload_multiplier=true,
         preserve_products_in_machine_output=true,
         products=true,
@@ -5086,6 +5143,7 @@ return {
         repair_tile=true
       },
       attributes={
+        completed_trips=true,
         damaged_tiles=true,
         distance=true,
         ejected_items=true,
