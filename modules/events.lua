@@ -1,9 +1,9 @@
 --로드
 
-local Commands = require('modules.commands')
-local Util = require('core.utils.util')
-local Tracking = require('core.utils.tracking')
-local Gui = require('modules.gui')
+local Commands = require(gvv.defines.modules.commands)
+local Util = require(gvv.defines.lualib.util)
+local Tracking = require(gvv.defines.gui.tracking)
+local Gui = require(gvv.defines.gui.main)
 
 local Load = {}
 
@@ -18,8 +18,8 @@ Load.example_load = function()
   }
 end
 
---중복해서 require('core.load') 호출해도 한번만 실행되도록
---run single time if called require('core.load') multiple times
+--중복해서 require(gvv.defines.modules.events) 호출해도 한번만 실행되도록
+--run single time if called require(gvv.defines.modules.events) multiple times
 if not _initiated_session_ then
   -- session global variables not inside of storage table
   _on_tick_function_ = Tracking.on_tick --constant
@@ -152,17 +152,21 @@ Load.register_volatiles = function()
   end
 end
 
--- 플레이어를 삭제한 후 삭제한 플레이어 인덱스에 새 플레이어가 올 경우
--- for when new player comes at empty index where player removed
-Load.on_player_created = function(event)
-  if storage.players then
-    storage.players[event.player_index] = nil
-  end
-end
-
 -- 런타임 모드 설정 변경시
 Load.on_runtime_mod_setting_changed = function(event)
   Commands.when_change_mod_settings(event)
 end
 
-return Load
+---------------------------------------------------------------------------------------------
+local module = {events = {}}
+---------------------------------------------------------------------------------------------
+-- FR : Cycle de vie du mod
+-- EN : Mod life cycle
+module.on_init = Load.on_init
+module.on_load = Load.on_load
+module.on_configuration_changed = Load.on_configuration_changed
+-- FR : Changement d'un paramètre du mod en cours de partie
+-- EN : Mod setting changed during the game
+module.events[defines.events.on_runtime_mod_setting_changed] = Load.on_runtime_mod_setting_changed
+---------------------------------------------------------------------------------------------
+return module

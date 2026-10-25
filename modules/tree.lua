@@ -1,8 +1,8 @@
 -- 트리
 
-local Table_to_str = require('core.utils.table_to_str')
-local Util = require('core.utils.util')
-local Sprite = require('core.utils.sprite')
+local Table_to_str = require(gvv.defines.lualib.table_to_str)
+local Util = require(gvv.defines.lualib.util)
+local Sprite = require(gvv.defines.lualib.sprite)
 
 local Tree = {}
 

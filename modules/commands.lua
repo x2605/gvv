@@ -1,7 +1,7 @@
 -- 커맨드
 
-local Table_to_str = require('core.utils.table_to_str')
-local Gui = require('modules.gui')
+local Table_to_str = require(gvv.defines.lualib.table_to_str)
+local Gui = require(gvv.defines.gui.main)
 
 local Commands = {}
 

@@ -14,19 +14,19 @@ local debug = false
 
 -- Charger runtime_api stable ou latest en fonction de la version de base
 -- Load runtime_api stable or latest depending on base version
-local runtime_api = require('generated.runtime-api-stable')
+local runtime_api = require(gvv.defines.generated.runtime_api_stable)
 --[[ 
 if (script.active_mods.base == "2.0.60") then 
-    runtime_api = require('generated.runtime-api-stable')
+    runtime_api = require(gvv.defines.generated.runtime_api_stable)
 else
-    runtime_api = require('generated.runtime-api-latest')
+    runtime_api = require(gvv.defines.generated.runtime_api_latest)
 end 
 ]]
 
 -- Charger les modules de mapping
 -- Load mapping modules
-local attribute_type_map = require("core.datas.attribute_type_map")
-local concept_fields = require("core.datas.concept_fields")
+local attribute_type_map = require(gvv.defines.datas.attribute_type_map)
+local concept_fields = require(gvv.defines.datas.concept_fields)
 
 -- Fonction helper pour log
 -- Logging helper function

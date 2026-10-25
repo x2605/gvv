@@ -1,9 +1,23 @@
--- 컨트롤
-
+---------------------------------------------------------------------------------------------
+-- CONTROL
+---------------------------------------------------------------------------------------------
+-- FR : util de Factorio, utilisé par l'exemple de code du suivi de variables (util.formattime)
+-- EN : Factorio's util, used by the variable tracking code example (util.formattime)
 local util = require('__core__.lualib.util')
 
+-- FR : Variable de session (hors storage), lue par modules/events.lua
+-- EN : Session variable (outside storage), read by modules/events.lua
 _initiated_session_ = false
-require('core.register_event')
+
+-- FR : Initialisation du registre des chemins
+-- EN : Path registry initialisation
+require("core.defines")
+-- FR : Chargement des classes
+-- EN : Classes loading
+require(gvv.defines.setup)
+-- FR : Envoi des modules à l'event handler
+-- EN : Send modules to the event handler
+local listener = require(gvv.defines.event).add_libraries(require(gvv.defines.modules.core))
 
 --[[
 download :

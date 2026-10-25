@@ -1,7 +1,7 @@
 -- 트래킹
 
-local Table_to_str = require('core.utils.table_to_str')
-local Tree = require('modules.tree')
+local Table_to_str = require(gvv.defines.lualib.table_to_str)
+local Tree = require(gvv.defines.gui.tree)
 
 local Tracking = {}
 
