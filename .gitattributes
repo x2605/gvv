@@ -3,6 +3,8 @@
 .github export-ignore
 docs export-ignore
 tests export-ignore
+.claude export-ignore
+CLAUDE.md export-ignore
 
 # excluded generated process runtime-api.lua
 generated/converter.mjs export-ignore
