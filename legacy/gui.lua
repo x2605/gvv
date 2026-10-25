@@ -32,13 +32,7 @@ Gui.build_tools = function(g, topspace)
   topspace.tree_refresh_btn.style.width = 20
   topspace.tree_refresh_btn.style.height = 20
   topspace.tree_refresh_btn.visible = false
-  topspace.add{type = 'sprite-button', name = 'search_btn', sprite = 'utility/search',
-    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.search-btn"},
-  }
-  topspace.search_btn.style.right_margin = 8
-  topspace.search_btn.style.width = 20
-  topspace.search_btn.style.height = 20
-  topspace.search_btn.visible = false
+  -- FR : Bouton loupe : construit par GvvGuiSearch:buildButton (étape 3.5) / EN : Magnifier button: built by GvvGuiSearch:buildButton (step 3.5)
   topspace.add{type = 'checkbox', name = 'chk_show_na', state = g.show_na, caption = 'n/a', tooltip = {"gvv-mod.show_na"}}
   topspace.chk_show_na.visible = false
   topspace.add{type = 'checkbox', name = 'chk_show_nil', state = g.show_nil, caption = 'nil', tooltip = {"gvv-mod.show_nil"}}
@@ -47,56 +41,13 @@ Gui.build_tools = function(g, topspace)
   topspace.chk_show_func.visible = false
 
   g.gui.tree_refresh_btn = topspace.tree_refresh_btn -- 사용자 개체 등록
-  g.gui.search_btn = topspace.search_btn -- 사용자 개체 등록
   g.gui.chk_show_na = topspace.chk_show_na -- 사용자 개체 등록
   g.gui.chk_show_nil = topspace.chk_show_nil -- 사용자 개체 등록
   g.gui.chk_show_func = topspace.chk_show_func -- 사용자 개체 등록
 end
 
--- FR : Panneau de recherche d'un arbre (repris de l'ancien open_main). tree_name : 'glob', 'prop' ou 'gobj'.
--- EN : Search panel of a tree (taken from the old open_main). tree_name: 'glob', 'prop' or 'gobj'.
-local build_search_panel = function(g, panel, tree_name)
-  local spanel = panel.add{type = 'flow', name = 'search_'..tree_name..'_wrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  spanel.style.width = 180
-  spanel.style.horizontally_stretchable = false
-  if not g.show_search then
-    spanel.visible = false
-  end
-  local vdiv = spanel.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
-  vdiv.style.width = 6
-  local vwrap = spanel.add{type = 'flow', name = 'vwrap', direction = 'vertical', style = 'vflow_gvv-mod'}
-  local swrap = vwrap.add{type = 'flow', name = 'swrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  local searchinput = swrap.add{type = 'textfield',
-    text = g.search_settings[tree_name].text, name = 'searchinput',
-  }
-  searchinput.style.minimal_width = 50
-  searchinput.style.maximal_width = 9999
-  searchinput.style.horizontally_stretchable = true
-  local filter_wrap = swrap.add{type = 'table', column_count = 2}
-  filter_wrap.style.horizontal_spacing = 0
-  filter_wrap.style.vertical_spacing = 0
-  local searchfilter_key = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-key"},
-    state = g.search_settings[tree_name].key, name = 'searchfilter_key',
-  }
-  local searchfilter_value = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-value"},
-    state = g.search_settings[tree_name].value, name = 'searchfilter_value',
-  }
-  local searchfilter_regexp = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-regexp"},
-    state = g.search_settings[tree_name].regexp, name = 'searchfilter_regexp',
-  }
-  local searchfilter_case = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-case"},
-    state = g.search_settings[tree_name].case, name = 'searchfilter_case',
-  }
-  local searchresult = vwrap.add{type = 'list-box', name = 'sresult', style = 'list_box-transparent_gvv-mod'}
-  searchresult.style.horizontally_stretchable = true
-  g.gui['search_'..tree_name..'_wrap'] = spanel -- 사용자 개체 등록
-  g.gui['search_'..tree_name..'_input'] = searchinput -- 사용자 개체 등록
-  g.gui['search_'..tree_name..'_fkey'] = searchfilter_key -- 사용자 개체 등록
-  g.gui['search_'..tree_name..'_fvalue'] = searchfilter_value -- 사용자 개체 등록
-  g.gui['search_'..tree_name..'_fregexp'] = searchfilter_regexp -- 사용자 개체 등록
-  g.gui['search_'..tree_name..'_fcase'] = searchfilter_case -- 사용자 개체 등록
-  g.gui['search_'..tree_name..'_result'] = searchresult -- 사용자 개체 등록
-end
+-- FR : Panneau de recherche d'un arbre : construit par GvvGuiSearch:buildPanel (étape 3.5)
+-- EN : Search panel of a tree: built by GvvGuiSearch:buildPanel (step 3.5)
 
 -- FR : Contenu commun aux onglets : bande de fond en haut (« w » > « fill »). Renvoie le conteneur « w ».
 -- EN : Content shared by the tabs: background strip at the top ("w" > "fill"). Returns the "w" container.
@@ -134,7 +85,7 @@ Gui.build_storage = function(g, cwrap2)
   local panel2, sub_modlist, sub_globtree = build_list_and_tree(cwrap2, '_gvv-mod_sub_modlist_', '_gvv-mod_sub_globtree_')
   g.gui.sub_modlist = sub_modlist -- 사용자 개체 등록
   g.gui.sub_globtree = sub_globtree -- 사용자 개체 등록
-  build_search_panel(g, panel2, 'glob')
+  GvvGuiSearch({player_index = g.index}):buildPanel('glob', panel2)
 end
 
 -- FR : Onglet 3, objets Lua ajoutés (repris de l'ancien open_main).
@@ -143,7 +94,7 @@ Gui.build_property = function(g, cwrap3)
   local panel3, sub_objlist, sub_proptree = build_list_and_tree(cwrap3, '_gvv-mod_sub_objlist_', '_gvv-mod_sub_proptree_')
   g.gui.sub_objlist = sub_objlist -- 사용자 개체 등록
   g.gui.sub_proptree = sub_proptree -- 사용자 개체 등록
-  build_search_panel(g, panel3, 'prop')
+  GvvGuiSearch({player_index = g.index}):buildPanel('prop', panel3)
 end
 
 -- FR : Onglet 4, objets globaux (repris de l'ancien open_main).
@@ -152,7 +103,7 @@ Gui.build_luaobject = function(g, cwrap4)
   local panel4, sub_gobjlist, sub_gobjtree = build_list_and_tree(cwrap4, '_gvv-mod_sub_gobjlist_', '_gvv-mod_sub_gobjtree_')
   g.gui.sub_gobjlist = sub_gobjlist -- 사용자 개체 등록
   g.gui.sub_gobjtree = sub_gobjtree -- 사용자 개체 등록
-  build_search_panel(g, panel4, 'gobj')
+  GvvGuiSearch({player_index = g.index}):buildPanel('gobj', panel4)
 end
 
 -- FR : Onglet 5, aide : construit par classes/GvvGuiHelp.lua (étape 3.3)
@@ -218,10 +169,8 @@ Gui.change_tab = function(g, index)
   end
   if tab > 1 and tab < 5 then
     g.gui.tree_refresh_btn.visible = true
-    g.gui.search_btn.visible = true
   else
     g.gui.tree_refresh_btn.visible = false
-    g.gui.search_btn.visible = false
   end
 end
 

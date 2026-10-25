@@ -24,6 +24,7 @@ local gui_classes = {
     GvvGuiMain,     -- FR : fenêtre principale (3.1) / EN : main window (3.1)
     GvvGuiDialog,   -- FR : petites fenêtres (3.2) / EN : small windows (3.2)
     GvvGuiHelp,     -- FR : onglet aide (3.3) / EN : help tab (3.3)
+    GvvGuiSearch,   -- FR : recherche dans les arbres (3.5) / EN : search in the trees (3.5)
 }
 
 

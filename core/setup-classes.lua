@@ -25,3 +25,4 @@ require(gvv.defines.class.gui_main)      -- GvvGuiMain : fenêtre principale (h�
 require(gvv.defines.class.gui_dialog)    -- GvvGuiDialog : petites fenêtres (hérite de GvvGui) / small windows (inherits GvvGui)
 require(gvv.defines.class.gui_help)      -- GvvGuiHelp : onglet aide (hérite de GvvGui) / help tab (inherits GvvGui)
 require(gvv.defines.class.gui_tracking)  -- GvvGuiTracking : onglet suivi (hérite de GvvGui) / tracking tab (inherits GvvGui)
+require(gvv.defines.class.gui_search)    -- GvvGuiSearch : recherche dans les arbres (hérite de GvvGui) / search in the trees (inherits GvvGui)

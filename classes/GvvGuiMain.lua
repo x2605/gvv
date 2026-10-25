@@ -243,6 +243,9 @@ function GvvGuiMain:open()
     -- FR : Contenu construit par l'ancien code : outils des arbres, puis contenu des onglets des arbres
     -- EN : Content built by the old code: trees tools, then trees tabs content
     Legacy_Gui.build_tools(data, tools)
+    -- FR : Bouton loupe (après le rafraîchissement des arbres) : construit par GvvGuiSearch (3.5)
+    -- EN : Magnifier button (after the trees refresh): built by GvvGuiSearch (3.5)
+    GvvGuiSearch(self.event):buildButton()
     Legacy_Gui.build_storage(data, contents.storage)
     Legacy_Gui.build_property(data, contents.property)
     Legacy_Gui.build_luaobject(data, contents.luaobject)
@@ -373,6 +376,7 @@ function GvvGuiMain:changeTab(tab_index)
     -- FR : Outils du suivi (GvvGuiTracking), puis outils des arbres et liste des mods (ancien code, migré en 3.6)
     -- EN : Tracking tools (GvvGuiTracking), then trees tools and mods list (old code, migrated in 3.6)
     GvvGuiTracking(self.event):updateTools(tab_index)
+    GvvGuiSearch(self.event):updateTools(tab_index)
     Legacy_Gui.change_tab(data, tab_index)
     return self
 end

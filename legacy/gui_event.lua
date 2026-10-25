@@ -8,7 +8,6 @@ local Util = require(gvv.defines.lualib.common.util)
 local Gui = require(gvv.defines.legacy.gui)
 local Tree = require(gvv.defines.legacy.tree)
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
-local Search_Tree = require(gvv.defines.legacy.search_tree)
 
 local Gui_Event = {}
 
@@ -119,9 +118,9 @@ Gui_Event.on_gui_click = function(event)
           end
         end
         if category == '_G_glob' then
-          Search_Tree.refresh(player_data, 'glob')
+          GvvGuiSearch(event):refresh('glob')
         else
-          Search_Tree.refresh(player_data, category)
+          GvvGuiSearch(event):refresh(category)
         end
         return
       end --continue to load end
@@ -177,9 +176,9 @@ Gui_Event.on_gui_click = function(event)
             data.object.parent.folder_sprite.sprite = 'gvv-mod_folder-closed'
           end
           if category == '_G_glob' then
-            Search_Tree.refresh(player_data, 'glob')
+            GvvGuiSearch(event):refresh('glob')
           else
-            Search_Tree.refresh(player_data, category)
+            GvvGuiSearch(event):refresh(category)
           end
         end
       end
@@ -210,7 +209,7 @@ Gui_Event.on_gui_click = function(event)
       event.element.style = 'tracked-tree-item-luaobj_gvv-mod'
       if Tree.ignore_in_help_page(player_data, event.element) then return end
       btn = Tree.register_object(player_data, event.element.parent['_gvv-mod_key_label'])
-      Search_Tree.refresh(player_data, 'prop')
+      GvvGuiSearch(event):refresh('prop')
       player_data.tabs.last_sub_obj = btn.caption
     elseif event.element.style.name == 'tracked-tree-item-luaobj_gvv-mod' then
       event.element.style = 'tree-item-luaobj_gvv-mod'
@@ -221,11 +220,11 @@ Gui_Event.on_gui_click = function(event)
     local index = event.element.name:match('^_gvv[-]mod_c_sub_obj_(%d+)$') + 0
     if event.button == defines.mouse_button_type.left then
       Tree.draw_proptree(player_data, index)
-      Search_Tree.refresh(player_data, 'prop')
+      GvvGuiSearch(event):refresh('prop')
       player_data.tabs.last_sub_obj = event.element.caption
     elseif event.button == defines.mouse_button_type.right then
       Tree.remove_prop_tree(player_data, index)
-      Search_Tree.refresh(player_data, 'prop')
+      GvvGuiSearch(event):refresh('prop')
       if player_data.tabs.last_sub_obj == event.element then
         player_data.tabs.last_sub_obj = nil
       end
@@ -234,14 +233,14 @@ Gui_Event.on_gui_click = function(event)
   --sub_modlist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_mod_%d+$') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_modlist_' then
     Tree.draw_globtree(player_data, event.element.caption)
-    Search_Tree.refresh(player_data, 'glob')
+    GvvGuiSearch(event):refresh('glob')
     player_data.tabs.last_sub_mod = event.element.caption
 
   --sub_gobjlist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_obj_%d+$') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_gobjlist_' then
     local index = event.element.name:match('^_gvv[-]mod_c_sub_obj_(%d+)$') + 0
     Tree.draw_gobjtree(player_data, event.element.caption)
-    Search_Tree.refresh(player_data, 'gobj')
+    GvvGuiSearch(event):refresh('gobj')
     player_data.tabs.last_sub_gobj = event.element.caption
 
   --sub_helplist 의 좌측 항목을 클릭할 때 : FR : géré par GvvGuiHelp / EN : handled by GvvGuiHelp
@@ -281,29 +280,7 @@ Gui_Event.on_gui_click = function(event)
     end
 
   --검색 보이기 버튼
-  elseif event.element == player_data.gui.search_btn then
-    if player_data.show_search then
-      player_data.show_search = false
-      player_data.gui.search_glob_wrap.visible = false
-      player_data.gui.search_prop_wrap.visible = false
-      player_data.gui.search_gobj_wrap.visible = false
-    else
-      local index = player_data.gui.tabpane.selected_tab_index
-      player_data.show_search = true
-      player_data.gui.search_glob_wrap.visible = true
-      player_data.gui.search_prop_wrap.visible = true
-      player_data.gui.search_gobj_wrap.visible = true
-      if index == 2 then
-        player_data.gui.search_glob_input.focus()
-      elseif index == 3 then
-        player_data.gui.search_prop_input.focus()
-      elseif index == 4 then
-        player_data.gui.search_gobj_input.focus()
-      end
-    end
-    Search_Tree.refresh(player_data, 'glob')
-    Search_Tree.refresh(player_data, 'prop')
-    Search_Tree.refresh(player_data, 'gobj')
+  -- FR : Bouton loupe : géré par GvvGuiSearch / EN : Magnifier button: handled by GvvGuiSearch
 
   --tracking_panel 의 빈 공간을 우클릭 / 휠클릭할 때 : FR : géré par GvvGuiTracking / EN : handled by GvvGuiTracking
 
@@ -364,56 +341,21 @@ Gui_Event.on_gui_checked_state_changed = function(event)
     player_data.show_na = event.element.state
     Tree.set_visible_item('na', player_data.gui.sub_proptree, player_data.show_na)
     Tree.set_visible_item('na', player_data.gui.sub_gobjtree, player_data.show_na)
-    Search_Tree.refresh(player_data, 'prop')
-    Search_Tree.refresh(player_data, 'gobj')
+    GvvGuiSearch(event):refresh('prop')
+    GvvGuiSearch(event):refresh('gobj')
   elseif event.element == player_data.gui.chk_show_nil then
     player_data.show_nil = event.element.state
     Tree.set_visible_item('nil', player_data.gui.sub_proptree, player_data.show_nil)
     Tree.set_visible_item('nil', player_data.gui.sub_gobjtree, player_data.show_nil)
-    Search_Tree.refresh(player_data, 'prop')
-    Search_Tree.refresh(player_data, 'gobj')
+    GvvGuiSearch(event):refresh('prop')
+    GvvGuiSearch(event):refresh('gobj')
   elseif event.element == player_data.gui.chk_show_func then
     player_data.show_func = event.element.state
     Tree.set_visible_item('func', player_data.gui.sub_proptree, player_data.show_func)
     Tree.set_visible_item('func', player_data.gui.sub_gobjtree, player_data.show_func)
-    Search_Tree.refresh(player_data, 'prop')
-    Search_Tree.refresh(player_data, 'gobj')
-  elseif event.element == player_data.gui.search_glob_fkey then
-    player_data.search_settings.glob.key = event.element.state
-    Search_Tree.refresh(player_data, 'glob')
-  elseif event.element == player_data.gui.search_glob_fvalue then
-    player_data.search_settings.glob.value = event.element.state
-    Search_Tree.refresh(player_data, 'glob')
-  elseif event.element == player_data.gui.search_glob_fregexp then
-    player_data.search_settings.glob.regexp = event.element.state
-    Search_Tree.refresh(player_data, 'glob')
-  elseif event.element == player_data.gui.search_glob_fcase then
-    player_data.search_settings.glob.case = event.element.state
-    Search_Tree.refresh(player_data, 'glob')
-  elseif event.element == player_data.gui.search_prop_fkey then
-    player_data.search_settings.prop.key = event.element.state
-    Search_Tree.refresh(player_data, 'prop')
-  elseif event.element == player_data.gui.search_prop_fvalue then
-    player_data.search_settings.prop.value = event.element.state
-    Search_Tree.refresh(player_data, 'prop')
-  elseif event.element == player_data.gui.search_prop_fregexp then
-    player_data.search_settings.prop.regexp = event.element.state
-    Search_Tree.refresh(player_data, 'prop')
-  elseif event.element == player_data.gui.search_prop_fcase then
-    player_data.search_settings.prop.case = event.element.state
-    Search_Tree.refresh(player_data, 'prop')
-  elseif event.element == player_data.gui.search_gobj_fkey then
-    player_data.search_settings.gobj.key = event.element.state
-    Search_Tree.refresh(player_data, 'gobj')
-  elseif event.element == player_data.gui.search_gobj_fvalue then
-    player_data.search_settings.gobj.value = event.element.state
-    Search_Tree.refresh(player_data, 'gobj')
-  elseif event.element == player_data.gui.search_gobj_fregexp then
-    player_data.search_settings.gobj.regexp = event.element.state
-    Search_Tree.refresh(player_data, 'gobj')
-  elseif event.element == player_data.gui.search_gobj_fcase then
-    player_data.search_settings.gobj.case = event.element.state
-    Search_Tree.refresh(player_data, 'gobj')
+    GvvGuiSearch(event):refresh('prop')
+    GvvGuiSearch(event):refresh('gobj')
+  -- FR : Filtres de recherche : gérés par GvvGuiSearch / EN : Search filters: handled by GvvGuiSearch
   end
 end
 
@@ -429,16 +371,7 @@ Gui_Event.on_gui_text_changed = function(event)
   if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
 
   -- FR : Code de la fenêtre anycode : géré par GvvGuiDialog / EN : anycode window code: handled by GvvGuiDialog
-  if event.element == player_data.gui.search_glob_input then
-    player_data.search_settings.glob.text = event.element.text
-    Search_Tree.refresh(player_data, 'glob')
-  elseif event.element == player_data.gui.search_prop_input then
-    player_data.search_settings.prop.text = event.element.text
-    Search_Tree.refresh(player_data, 'prop')
-  elseif event.element == player_data.gui.search_gobj_input then
-    player_data.search_settings.gobj.text = event.element.text
-    Search_Tree.refresh(player_data, 'gobj')
-  end
+  -- FR : Texte cherché : géré par GvvGuiSearch / EN : Searched text: handled by GvvGuiSearch
 end
 
 Gui_Event.on_gui_selection_state_changed = function(event)
@@ -451,23 +384,7 @@ Gui_Event.on_gui_selection_state_changed = function(event)
   local player_data = storage.players[event.player_index]
   if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
 
-  if event.element == player_data.gui.search_glob_result then
-    local index = event.element.selected_index
-    local data = player_data.data.search.glob[index]
-    player_data.gui.sub_globtree.scroll_to_element(data.elem, 'top-third')
-    event.element.selected_index = 0
-  elseif event.element == player_data.gui.search_prop_result then
-    local index = event.element.selected_index
-    local data = player_data.data.search.prop[index]
-    player_data.gui.sub_proptree.scroll_to_element(data.elem, 'top-third')
-    event.element.selected_index = 0
-  elseif event.element == player_data.gui.search_gobj_result then
-    local index = event.element.selected_index
-    local data = player_data.data.search.gobj[index]
-    player_data.gui.sub_gobjtree.scroll_to_element(data.elem, 'top-third')
-    event.element.selected_index = 0
-  end
-
+  -- FR : Résultats de recherche : gérés par GvvGuiSearch / EN : Search results: handled by GvvGuiSearch
 end
 
 -- FR : Raccourci Ctrl+Shift+V : géré par modules/gui.lua (GvvGuiMain:toggle)
