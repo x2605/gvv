@@ -65,6 +65,7 @@ local defines = {
             luaobj_prop = directory .. ".lualib.common.luaobj_prop",
             copy_code = directory .. ".lualib.common.copy_code",
             doctor = directory .. ".lualib.common.doctor",
+            check = directory .. ".lualib.common.check",
         },
         -- FR : Description de l'API Factorio, écrite à la main (complète generated/)
         -- EN : Factorio API description, hand-written (completes generated/)
