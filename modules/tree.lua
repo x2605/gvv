@@ -532,6 +532,32 @@ Tree.remove_prop_tree = function(g, index)
   end
 end
 
+-- FR : Un objet Lua est-il encore utilisable ? (objet sans champ valid : considéré valide)
+-- EN : Is a Lua object still usable? (object without a valid field: considered valid)
+local valid = function(obj)
+  local pc, ret = pcall(function() return obj.valid end)
+  if not pc then return true
+  else return ret
+  end
+end
+
+-- FR : La valeur est-elle un objet Lua encore utilisable ? obj peut être n'importe quoi, nil compris.
+-- EN : Is the value a Lua object still usable? obj can be anything, nil included.
+local is_usable_object = function(obj)
+  return type(obj) == 'userdata' and obj.object_name and valid(obj)
+end
+
+-- FR : Message quand un objet n'existe plus. obj peut être nil (la relecture via remote.call renvoie nil).
+-- EN : Message when an object no longer exists. obj can be nil (re-reading through remote.call returns nil).
+local object_gone_message = function(obj, where)
+  local name = 'LuaObject'
+  if type(obj) == 'userdata' then
+    local pc, ret = pcall(function() return obj.object_name end)
+    if pc and ret then name = ret end
+  end
+  return 'That '..name..' is not there anymore.\n'..where
+end
+
 -- 개체 등록
 Tree.register_object = function(g, luaobj_elem)
   local tree_data
@@ -552,13 +578,8 @@ Tree.register_object = function(g, luaobj_elem)
   if not succ then
     error('Tree.track_path failed in Tree.register_object')
   end
-  if type(obj) == 'userdata' and obj.object_name then
-    local pc, ret = pcall(function() return obj.valid end)
-    if pc and not ret then
-      error(luaobj_elem.caption..'('..obj.object_name..') object is not there anymore.')
-    end
-  else
-    error(luaobj_elem.caption..'('..obj.object_name..') object is not there anymore.')
+  if not is_usable_object(obj) then
+    error(object_gone_message(obj, luaobj_elem.caption))
   end
   local already_exist = false
   local index, btn
@@ -595,13 +616,6 @@ Tree.register_object = function(g, luaobj_elem)
   return btn
 end
 
-local valid = function(obj)
-  local pc, ret = pcall(function() return obj.valid end)
-  if not pc then return true
-  else return ret
-  end
-end
-
 -- 모드의 글로벌 트리 그리기
 Tree.draw_globtree = function(g, mod_name)
   Tree.draw_init(g, 'glob', mod_name, mod_name)
@@ -611,13 +625,11 @@ end
 Tree.draw_proptree = function(g, dock_index)
   local data = g.data.docked_luaobj[dock_index]
 
+  -- FR : L'objet est relu à chaque fois : il a pu disparaître depuis son ajout (entité détruite...)
+  -- EN : The object is re-read each time: it may have disappeared since it was added (destroyed entity...)
   local obj = Tree.get_tree_value(data.tree_path)
-  if type(obj) == 'userdata' and obj.object_name and valid(obj) then
-  else
-    local name = obj.object_name
-    if not name then name = 'LuaObject' end
-    error('That '..name..' is not there anymore.\n(index) path = '..root_name)
-    return
+  if not is_usable_object(obj) then
+    error(object_gone_message(obj, '('..tostring(dock_index)..') '..Table_to_str.path_to_lua_prop_path(data.tree_path, true)))
   end
   data.luaobj = obj
 

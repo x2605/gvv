@@ -12,6 +12,7 @@ Date: ????-??-??
     - Converting a table that references itself no longer crashes with a stack overflow: "<recursive table>" is written instead.
     - Deep copy (search results, tracking list, docked object paths) now uses Factorio util.table.deepcopy: no crash on recursive tables, original metatables kept.
     - LuaObject properties: reading methods is now protected like attributes (no error on an object that became invalid), a missing sub-object (nil) no longer crashes, read values are no longer modified (object_name injection), dead concept code removed.
+    - Lua objects tab: refreshing or registering an object that no longer exists (e.g. destroyed entity) raised "attempt to index local 'obj' (a nil value)" at tree.lua. A clear message is now shown: "That LuaObject is not there anymore." with the object path.
   Published:
     - Ritn
 
