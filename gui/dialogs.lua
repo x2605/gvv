@@ -54,9 +54,13 @@ local KINDS = {
 ---@return table
 local function getElement(gui_name, kind)
     local element = {
-        -- FR : Cadre de la fenêtre, centré ; le type est rangé dans ses tags
-        -- EN : Window frame, centred; the kind is stored in its tags
-        frame = GvvGuiElement(gui_name, "frame", kind):vertical():autoCenter():tags({ kind = kind }):get(),
+        -- FR : Cadre de la fenêtre ; le type est rangé dans ses tags.
+        --      Le centrage (auto_center) est activé après la construction de la barre de titre,
+        --      comme avant : activé à la création du cadre vide, la fenêtre n'était pas centrée.
+        -- EN : Window frame; the kind is stored in its tags.
+        --      Centring (auto_center) is enabled after the title bar is built,
+        --      as before: enabled when the empty frame is created, the window was not centred.
+        frame = GvvGuiElement(gui_name, "frame", kind):vertical():tags({ kind = kind }):get(),
         -- FR : Conteneurs
         -- EN : Containers
         flow = {

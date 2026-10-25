@@ -188,6 +188,10 @@ function GvvGuiDialog:buildFrame(kind, title)
     -- EN : Kind-specific content, added by the opening method
     local inner = frame.add(element.flow.inner)
 
+    -- FR : Centrage à l'écran, au même moment que l'ancien code (Util.create_frame_w_closebtn)
+    -- EN : Centring on screen, at the same moment as the old code (Util.create_frame_w_closebtn)
+    frame.auto_center = true
+
     return frame, inner, element
 end
 
