@@ -6,6 +6,7 @@ Date: 2026-10-25
     - converter runtime-api-stable.lua compatible for gvv  (2.1.23).
   Bugfixes:
     - Fixed "can't send LuaDebugAdapter through remote calls" error when viewing _G/storage while running under the VSCode debugger (FMTK). LuaDebugAdapter is now blacklisted and shown as "<LuaDebugAdapter>".
+    - Fixed "bad argument #1 of 2 to 'pairs' (table expected, got nil)" at tree.lua when opening a folder or clicking "Continue to load" on an entry that no longer exists. A message is now shown and the tree is refreshed.
   Published:
     - Ritn
 

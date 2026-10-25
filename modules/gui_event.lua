@@ -31,6 +31,30 @@ local other_frames_to_close_when_focusing_main = {
   ['_gvv-mod_import_tracking_code_frame_'] = true,
 }
 
+--트리 경로를 따라 값 찾기. 중간에 없어지면 nil
+--Follow tree path from value. Returns nil if something is gone on the way
+local follow_tree_path = function(value, tree_path)
+  for i = 2, #tree_path do
+    if type(value) ~= 'table' and type(value) ~= 'userdata' then return nil end
+    value = value[tree_path[i]]
+  end
+  return value
+end
+
+--그리기 전에 데이터가 사라졌을 때 : 알리고 트리 갱신
+--Data is gone since the tree was drawn : notify and refresh tree
+local on_tree_data_gone = function(player, player_data, event)
+  player.print({"gvv-mod.tree-data-gone"})
+  Gui_Event.on_gui_click{
+    element = player_data.gui.tree_refresh_btn,
+    player_index = event.player_index,
+    button = defines.mouse_button_type.left,
+    alt = false,
+    control = false,
+    shift = false
+  }
+end
+
 Gui_Event.on_gui_click = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
@@ -264,44 +288,38 @@ Gui_Event.on_gui_click = function(event)
         local folder = parentlabel.parent.parent.content_container.folder
         event.element.parent.parent.destroy()
         if category == '_G_glob' then
-          local tbl = Tree.get_storage(parentlabel)
-          for i = 2, #tree_path do
-            tbl = tbl[tree_path[i]]
-          end
+          local tbl = follow_tree_path(Tree.get_storage(parentlabel), tree_path)
+          if type(tbl) ~= 'table' then return on_tree_data_gone(player, player_data, event) end
           Tree.draw(player_data, tree_data, {}, tbl, folder, parentlabel, false, cont_from)
         elseif category == 'glob' then
-          local tbl = Tree.get_storage(parentlabel)
-          for i = 2, #tree_path do
-            tbl = tbl[tree_path[i]]
-          end
+          local tbl = follow_tree_path(Tree.get_storage(parentlabel), tree_path)
+          if type(tbl) ~= 'table' then return on_tree_data_gone(player, player_data, event) end
           Tree.draw(player_data, tree_data, {}, tbl, folder, parentlabel, false, cont_from)
         elseif category == 'prop' then
           local top = Tree.get_top_parent(parentlabel)
           local obj_index = top.caption:match('^[(](%d+)[)] ') + 0
-          local obj = player_data.data.docked_luaobj[obj_index].luaobj
-          for i = 2, #tree_path do
-            obj = obj[tree_path[i]]
-          end
+          local obj = follow_tree_path(player_data.data.docked_luaobj[obj_index].luaobj, tree_path)
           if type(obj) == 'userdata' and obj.object_name then
             Util.logger("get_property_list: userdata with object_name: " .. obj.object_name)
             local props = Util.get_property_list(obj, true)
             Tree.draw(player_data, tree_data, {}, props, folder, parentlabel, true, cont_from)
-          else
+          elseif type(obj) == 'table' then
             Tree.draw(player_data, tree_data, {}, obj, folder, parentlabel, true, cont_from)
+          else
+            return on_tree_data_gone(player, player_data, event)
           end
         elseif category == 'gobj' then
           local top = Tree.get_top_parent(parentlabel)
           local gobj_name = top.caption:match('^[%a_][%a%d_]*')
-          local obj = assert(loadstring('return '..gobj_name))()
-          for i = 2, #tree_path do
-            obj = obj[tree_path[i]]
-          end
+          local obj = follow_tree_path(assert(loadstring('return '..gobj_name))(), tree_path)
           if type(obj) == 'userdata' and obj.object_name then
             Util.logger("get_property_list: userdata with object_name: " .. obj.object_name)
             local props = Util.get_property_list(obj, true)
             Tree.draw(player_data, tree_data, {}, props, folder, parentlabel, true, cont_from)
-          else
+          elseif type(obj) == 'table' then
             Tree.draw(player_data, tree_data, {}, obj, folder, parentlabel, true, cont_from)
+          else
+            return on_tree_data_gone(player, player_data, event)
           end
         end
         if category == '_G_glob' then
@@ -322,44 +340,38 @@ Gui_Event.on_gui_click = function(event)
           local folder = event.element.parent.parent.content_container.folder
           if table_size(folder.children) == 0 then
             if category == '_G_glob' then
-              local tbl = Tree.get_storage(event.element)
-              for i = 2, #tree_path do
-                tbl = tbl[tree_path[i]]
-              end
+              local tbl = follow_tree_path(Tree.get_storage(event.element), tree_path)
+              if type(tbl) ~= 'table' then return on_tree_data_gone(player, player_data, event) end
               Tree.draw(player_data, tree_data, {}, tbl, folder, event.element, false)
             elseif category == 'glob' then
-              local tbl = Tree.get_storage(event.element)
-              for i = 2, #tree_path do
-                tbl = tbl[tree_path[i]]
-              end
+              local tbl = follow_tree_path(Tree.get_storage(event.element), tree_path)
+              if type(tbl) ~= 'table' then return on_tree_data_gone(player, player_data, event) end
               Tree.draw(player_data, tree_data, {}, tbl, folder, event.element, false)
             elseif category == 'prop' then
               local top = Tree.get_top_parent(event.element)
               local obj_index = top.caption:match('^[(](%d+)[)] ') + 0
-              local obj = player_data.data.docked_luaobj[obj_index].luaobj
-              for i = 2, #tree_path do
-                obj = obj[tree_path[i]]
-              end
+              local obj = follow_tree_path(player_data.data.docked_luaobj[obj_index].luaobj, tree_path)
               if type(obj) == 'userdata' and obj.object_name then
                 Util.logger("get_property_list: userdata with object_name: " .. obj.object_name)
                 local props = Util.get_property_list(obj, true)
                 Tree.draw(player_data, tree_data, {}, props, folder, event.element, true)
-              else
+              elseif type(obj) == 'table' then
                 Tree.draw(player_data, tree_data, {}, obj, folder, event.element, true)
+              else
+                return on_tree_data_gone(player, player_data, event)
               end
             elseif category == 'gobj' then
               local top = Tree.get_top_parent(event.element)
               local gobj_name = top.caption:match('^[%a_][%a%d_]*')
-              local obj = assert(loadstring('return '..gobj_name))()
-              for i = 2, #tree_path do
-                obj = obj[tree_path[i]]
-              end
+              local obj = follow_tree_path(assert(loadstring('return '..gobj_name))(), tree_path)
               if type(obj) == 'userdata' and obj.object_name then
                 Util.logger("get_property_list: userdata with object_name: " .. obj.object_name)
                 local props = Util.get_property_list(obj, true)
                 Tree.draw(player_data, tree_data, {}, props, folder, event.element, true)
-              else
+              elseif type(obj) == 'table' then
                 Tree.draw(player_data, tree_data, {}, obj, folder, event.element, true)
+              else
+                return on_tree_data_gone(player, player_data, event)
               end
             end
           end

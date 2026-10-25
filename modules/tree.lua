@@ -257,6 +257,7 @@ Tree.draw = function(g, tree_data, opened_folder_tree, tbl, parent_container, pa
   local last_item, label_wrap, label_container, folder, label
   local drawn = 0
   if not opened_folder_tree then return end
+  if type(tbl) ~= 'table' then return end
   if not draw_from then draw_from = 0 end
   if not storage.meta_data.treelimit then storage.meta_data.treelimit = 500 end
   for k, obj in pairs(tbl) do
