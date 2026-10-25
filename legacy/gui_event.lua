@@ -9,9 +9,6 @@ local Gui = require(gvv.defines.legacy.gui)
 local Tree = require(gvv.defines.legacy.tree)
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 local Tracking = require(gvv.defines.legacy.tracking)
-local Help_Menu = require(gvv.defines.legacy.help_menu)
-local Doctor = require(gvv.defines.lualib.common.doctor)
-local Copy_Code = require(gvv.defines.lualib.common.copy_code)
 local Search_Tree = require(gvv.defines.legacy.search_tree)
 
 local Gui_Event = {}
@@ -169,20 +166,7 @@ Gui_Event.on_gui_click = function(event)
   elseif event.element == player_data.gui.track_refresh_btn then
     Tracking.refresh_value(player_data)
 
-  --진단
-  elseif event.element.name == '_gvv-mod_fix_diagnose_btn_' then
-    local mod_name = event.element.parent.parent['_gvv-mod_fix_mod_name_input_'].text
-    Doctor.take_a_look(player_data, mod_name, 'diag')
-
-  --정리
-  elseif event.element.name == '_gvv-mod_fix_fix_btn_' then
-    local mod_name = event.element.parent.parent['_gvv-mod_fix_mod_name_input_'].text
-    Doctor.take_a_look(player_data, mod_name, 'fix')
-
-  --storage.report 비우기
-  elseif event.element.name == '_gvv-mod_fix_clear_report_btn_' then
-    storage.report = {}
-    player.print('(gvv) storage.report is cleared.')
+  --진단, 정리, storage.report 비우기 : FR : gérés par GvvGuiHelp / EN : handled by GvvGuiHelp
 
   --추적 간격 숫자 누를때
   elseif event.element == player_data.gui.track_inter_show and event.button == defines.mouse_button_type.left then
@@ -380,10 +364,7 @@ Gui_Event.on_gui_click = function(event)
     Search_Tree.refresh(player_data, 'gobj')
     player_data.tabs.last_sub_gobj = event.element.caption
 
-  --sub_helplist 의 좌측 항목을 클릭할 때
-  elseif event.element.name:match('^_gvv[-]mod_c_sub_help_/') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_helplist_' then
-    local page_name = event.element.name:match('^_gvv[-]mod_c_sub_help_/(.+)$')
-    Help_Menu.draw_page(player_data, page_name)
+  --sub_helplist 의 좌측 항목을 클릭할 때 : FR : géré par GvvGuiHelp / EN : handled by GvvGuiHelp
 
   -- _gvv-mod_anycode_frame_, _gvv-mod_copy_tracking_code_frame_, _gvv-mod_edit_tracking_code_frame_ :
   -- FR : boutons gérés par GvvGuiDialog / EN : buttons handled by GvvGuiDialog
@@ -596,13 +577,8 @@ Gui_Event.on_gui_text_changed = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
 
-  if event.element.name == '_gvv-mod_uneditable_text_' then
-    if event.element.parent['_gvv-mod_uneditable_text_buffer_'] then
-      event.element.text = event.element.parent['_gvv-mod_uneditable_text_buffer_'].caption
-      event.element.select_all()
-    end
-    return
-  end
+  -- FR : Textes à copier en lecture seule : gérés par GvvGuiDialog et GvvGuiHelp (tags)
+  -- EN : Read-only texts to copy: handled by GvvGuiDialog and GvvGuiHelp (tags)
   
   if not storage.players then return end
   local player_data = storage.players[event.player_index]
@@ -625,46 +601,7 @@ Gui_Event.on_gui_selection_state_changed = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
 
-  if event.element.name == '_gvv-mod_help_copy_mod_string_code_' or event.element.name == '_gvv-mod_help_copy_option_mod_string_' then
-    local optionbox
-    local modbox
-    if event.element.name == '_gvv-mod_help_copy_mod_string_code_' then
-      modbox = event.element
-      optionbox = event.element.parent.parent['_gvv-mod_help_copy_option_mod_string_']
-    elseif event.element.name == '_gvv-mod_help_copy_option_mod_string_' then
-      modbox = event.element.parent['mod_list']['_gvv-mod_help_copy_mod_string_code_']
-      optionbox = event.element
-    end
-    local option = optionbox.items[optionbox.selected_index]
-    local copybox = modbox.parent['_gvv-mod_copyable_']
-    if option == '__<mod_name>__' then
-      copybox['_gvv-mod_uneditable_text_buffer_'].caption = '__'..modbox.items[modbox.selected_index]..'__'
-    elseif option == 'remote.call..."storage")' then
-      copybox['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..modbox.items[modbox.selected_index]..'__gvv","storage")'
-    elseif option == 'remote.call..."c",)' then
-      copybox['_gvv-mod_uneditable_text_buffer_'].caption = 'remote.call("__'..modbox.items[modbox.selected_index]..'__gvv","c",)'
-    else
-      copybox['_gvv-mod_uneditable_text_buffer_'].caption = modbox.items[modbox.selected_index]
-    end
-    copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
-    copybox['_gvv-mod_uneditable_text_'].focus()
-    copybox['_gvv-mod_uneditable_text_'].select_all()
-    return
-  elseif event.element.name == '_gvv-mod_help_copy_temp_enable_code_' then
-    local copybox = event.element.parent['_gvv-mod_copyable_']
-    copybox['_gvv-mod_uneditable_text_buffer_'].caption = Copy_Code.in_console_enable(event.element.items[event.element.selected_index])
-    copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
-    copybox['_gvv-mod_uneditable_text_'].focus()
-    copybox['_gvv-mod_uneditable_text_'].select_all()
-    return
-  elseif event.element.name == '_gvv-mod_help_copy_temp_disable_code_' then
-    local copybox = event.element.parent['_gvv-mod_copyable_']
-    copybox['_gvv-mod_uneditable_text_buffer_'].caption = Copy_Code.in_console_disable(event.element.items[event.element.selected_index])
-    copybox['_gvv-mod_uneditable_text_'].text = copybox['_gvv-mod_uneditable_text_buffer_'].caption
-    copybox['_gvv-mod_uneditable_text_'].focus()
-    copybox['_gvv-mod_uneditable_text_'].select_all()
-    return
-  end
+  -- FR : Menus et listes de l'onglet aide : gérés par GvvGuiHelp / EN : Help tab menus and lists: handled by GvvGuiHelp
 
   if not storage.players then return end
   local player_data = storage.players[event.player_index]

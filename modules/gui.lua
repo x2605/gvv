@@ -18,6 +18,7 @@ local Legacy_Gui_Event = require(gvv.defines.legacy.gui_event)
 local gui_classes = {
     GvvGuiMain,     -- FR : fenêtre principale (3.1) / EN : main window (3.1)
     GvvGuiDialog,   -- FR : petites fenêtres (3.2) / EN : small windows (3.2)
+    GvvGuiHelp,     -- FR : onglet aide (3.3) / EN : help tab (3.3)
 }
 
 

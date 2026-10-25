@@ -36,6 +36,7 @@ local defines = {
         gui_element = directory .. ".classes.GvvGuiElement",
         gui_main = directory .. ".classes.GvvGuiMain",
         gui_dialog = directory .. ".classes.GvvGuiDialog",
+        gui_help = directory .. ".classes.GvvGuiHelp",
     },
 
     -- FR : Description des fenêtres (getElement / getContent)
@@ -43,6 +44,8 @@ local defines = {
     gui = {
         main = directory .. ".gui.main",
         dialogs = directory .. ".gui.dialogs",
+        help = directory .. ".gui.help",
+        help_pages = directory .. ".gui.help_pages",
     },
 
     -- FR : Modules envoyés à l'event handler
@@ -65,7 +68,6 @@ local defines = {
         gui_event = directory .. ".legacy.gui_event",
         tree = directory .. ".legacy.tree",
         tracking = directory .. ".legacy.tracking",
-        help_menu = directory .. ".legacy.help_menu",
         search_tree = directory .. ".legacy.search_tree",
     },
 

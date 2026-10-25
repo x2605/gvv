@@ -243,10 +243,12 @@ function GvvGuiMain:open()
     Legacy_Gui.build_storage(data, contents.storage)
     Legacy_Gui.build_property(data, contents.property)
     Legacy_Gui.build_luaobject(data, contents.luaobject)
-    Legacy_Gui.build_help(data, contents.help)
+    -- FR : Onglet aide : construit par sa propre classe (3.3)
+    -- EN : Help tab: built by its own class (3.3)
+    GvvGuiHelp(self.event):build()
 
-    -- FR : Listes (mods, objets ajoutés, objets globaux, pages d'aide) et entrées du suivi
-    -- EN : Lists (mods, added objects, global objects, help pages) and tracking entries
+    -- FR : Listes (mods, objets ajoutés, objets globaux) et entrées du suivi
+    -- EN : Lists (mods, added objects, global objects) and tracking entries
     Legacy_Gui.fill_lists(data)
     Legacy_Gui.fill_tracking(data, first_time)
 

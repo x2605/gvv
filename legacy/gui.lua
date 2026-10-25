@@ -4,7 +4,6 @@ local Util = require(gvv.defines.lualib.common.util)
 local Tree = require(gvv.defines.legacy.tree)
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 local Tracking = require(gvv.defines.legacy.tracking)
-local Help_Menu = require(gvv.defines.legacy.help_menu)
 
 local Gui = {}
 
@@ -249,21 +248,14 @@ Gui.build_luaobject = function(g, cwrap4)
   build_search_panel(g, panel4, 'gobj')
 end
 
--- FR : Onglet 5, aide (repris de l'ancien open_main).
--- EN : Tab 5, help (taken from the old open_main).
-Gui.build_help = function(g, cwrap5)
-  local panel5, sub_helplist, sub_helppanel = build_list_and_tree(cwrap5, '_gvv-mod_sub_helplist_', '_gvv-mod_sub_helppanel_')
-  g.gui.sub_helplist = sub_helplist -- 사용자 개체 등록
-  g.gui.sub_helppanel = sub_helppanel -- 사용자 개체 등록
-end
+-- FR : Onglet 5, aide : construit par classes/GvvGuiHelp.lua (étape 3.3)
+-- EN : Tab 5, help: built by classes/GvvGuiHelp.lua (step 3.3)
 
--- FR : Remplit les listes de gauche : pages d'aide, mods accessibles, objets ajoutés, objets globaux (repris de l'ancien open_main).
--- EN : Fills the left lists: help pages, accessible mods, added objects, global objects (taken from the old open_main).
+-- FR : Remplit les listes de gauche : mods accessibles, objets ajoutés, objets globaux (repris de l'ancien open_main).
+--      Les pages d'aide sont listées par GvvGuiHelp.
+-- EN : Fills the left lists: accessible mods, added objects, global objects (taken from the old open_main).
+--      Help pages are listed by GvvGuiHelp.
 Gui.fill_lists = function(g)
-  for i, v in ipairs(Help_Menu.page_list) do
-    local btn = g.gui.sub_helplist.add{type = 'button', caption = v.caption, name = '_gvv-mod_c_sub_help_/'..v.name, mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
-  end
-
   local mod_list = Util.get_accessible_mod_list()
   for i, v in ipairs(mod_list) do
     local btn = g.gui.sub_modlist.add{type = 'button', caption = v, name = '_gvv-mod_c_sub_mod_'..string.format('%d',i), mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
