@@ -11,6 +11,7 @@ Date: ????-??-??
     - /gdump-luaon produced invalid Lua: reserved words used as keys (end, for...) are now written ["end"], inf/NaN as math.huge and 0/0, functions as "function".
     - Converting a table that references itself no longer crashes with a stack overflow: "<recursive table>" is written instead.
     - Deep copy (search results, tracking list, docked object paths) now uses Factorio util.table.deepcopy: no crash on recursive tables, original metatables kept.
+    - LuaObject properties: reading methods is now protected like attributes (no error on an object that became invalid), a missing sub-object (nil) no longer crashes, read values are no longer modified (object_name injection), dead concept code removed.
   Published:
     - Ritn
 

@@ -10,7 +10,9 @@
 ]]
 
 -- Activer le mode debug (logs détaillés) / Enable debug mode (detailed logs)
-local debug = false
+-- FR : Nommé debug_mode pour ne pas masquer la bibliothèque Lua debug
+-- EN : Named debug_mode so it doesn't hide the Lua debug library
+local debug_mode = false
 
 -- Charger runtime_api stable ou latest en fonction de la version de base
 -- Load runtime_api stable or latest depending on base version
@@ -31,28 +33,31 @@ local concept_fields = require(gvv.defines.lualib.api.concept_fields)
 -- Fonction helper pour log
 -- Logging helper function
 local function log_message(msg)
-    if debug then log("[luaobj_prop] " .. msg) end
+    if debug_mode then log("[luaobj_prop] " .. msg) end
 end
 
 
--- Injecter object_name si nécessaire
--- Inject object_name if needed
-local function inject_object_name(value, name)
+-- Nom de classe à utiliser pour une valeur : une table sans object_name reçoit le nom donné.
+-- La valeur lue n'est plus modifiée (avant, on lui ajoutait un champ object_name).
+-- Class name to use for a value: a table without object_name gets the given name.
+-- The read value is no longer modified (it used to get an object_name field added).
+local function class_name_for(value, name)
     if type(value) == "table" and not value.object_name then
-        value.object_name = name
-        log_message(">>> Injected object_name: " .. name)
+        log_message(">>> Class name given: " .. name)
+        return name
     end
 end
 
 
 -- Fonction principale récursive pour explorer les propriétés
 -- Main recursive function to explore object properties
-local function alt_prop(obj, add_value)
+-- forced_name : nom de classe imposé (table sans object_name) / forced class name (table without object_name)
+local function alt_prop(obj, add_value, forced_name)
     local result_table = {}
 
     -- Nom initial d'objet (ex: LuaMapSettings.pollution)
     -- Initial object name (e.g., LuaMapSettings.pollution)
-    local object_name = obj.object_name
+    local object_name = forced_name or obj.object_name
     local base_class = object_name
 
     -- Correction éventuelle si c'est une sous-classe mapée
@@ -105,35 +110,17 @@ local function alt_prop(obj, add_value)
             local sub_class = parent_map and parent_map[attribute_name]
             log_message(">>>> sub_class: " .. tostring(sub_class))
 
-            if sub_class then
-                if runtime_api.classes[sub_class] then
-                    -- Cas sous-classe Factorio
-                    -- Factorio sub-class case
-                    log_message("    Sub-class detected: " .. sub_class)
-                    inject_object_name(value, sub_class)
-                    result_table[attribute_name] = alt_prop(value, add_value)
-
-                elseif concept_fields[sub_class] then
-                    -- Cas concept Factorio
-                    -- Factorio concept case
-                    log_message("    Concept detected: " .. sub_class)
-                    inject_object_name(value, sub_class)
-
-                    local concept_tbl = {}
-                    for _, field_name in ipairs(concept_fields[sub_class]) do
-                        local ok_field, val_field = pcall(function() return value[field_name] end)
-                        log_message("      Field " .. field_name .. ": " .. (ok_field and "OK" or "FAIL"))
-                        concept_tbl[field_name] = ok_field and (add_value and val_field or true) or "<cannot read>"
-                    end
-
-                    result_table[attribute_name] = alt_prop(value, add_value)
-                else
-                    -- Fallback générique
-                    -- Generic fallback
-                    log_message("    Sub-class fallback: " .. sub_class)
-                    inject_object_name(value, sub_class)
-                    result_table[attribute_name] = alt_prop(value, add_value)
-                end
+            if sub_class and type(value) ~= "table" and type(value) ~= "userdata" then
+                -- FR : Valeur absente ou simple (nil, nombre...) : rien à explorer
+                -- EN : Missing or simple value (nil, number...): nothing to explore
+                result_table[attribute_name] = add_value and value or true
+            elseif sub_class then
+                -- FR : Sous-classe ou concept Factorio : alt_prop gère les deux cas
+                --      (runtime_api pour une classe, concept_fields pour un concept)
+                -- EN : Factorio sub-class or concept: alt_prop handles both cases
+                --      (runtime_api for a class, concept_fields for a concept)
+                log_message("    Sub-class or concept: " .. sub_class)
+                result_table[attribute_name] = alt_prop(value, add_value, class_name_for(value, sub_class))
             else
                 -- Attribut simple
                 -- Simple attribute
@@ -146,8 +133,11 @@ local function alt_prop(obj, add_value)
 
     -- Copier méthodes
     -- Copy methods
+    -- FR : Protégé comme les attributs : sur un objet devenu invalide, la lecture lève une erreur
+    -- EN : Protected like attributes: on an object that became invalid, reading raises an error
     for method_name, _ in pairs(class.methods) do
-        result_table[method_name] = obj[method_name]
+        local ok, method = pcall(function() return obj[method_name] end)
+        result_table[method_name] = ok and method or "<unknown>"
     end
 
     -- Opérateurs spéciaux
