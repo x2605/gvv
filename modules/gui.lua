@@ -25,6 +25,9 @@ local gui_classes = {
     GvvGuiDialog,   -- FR : petites fenêtres (3.2) / EN : small windows (3.2)
     GvvGuiHelp,     -- FR : onglet aide (3.3) / EN : help tab (3.3)
     GvvGuiSearch,   -- FR : recherche dans les arbres (3.5) / EN : search in the trees (3.5)
+    -- FR : Arbres (3.6) : une entrée par onglet, le moteur reçoit le nom de sa configuration
+    -- EN : Trees (3.6): one entry per tab, the engine receives its configuration name
+    function(event) return GvvGuiTree(event, "storage") end,
 }
 
 

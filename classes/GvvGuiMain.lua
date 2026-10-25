@@ -246,7 +246,8 @@ function GvvGuiMain:open()
     -- FR : Bouton loupe (après le rafraîchissement des arbres) : construit par GvvGuiSearch (3.5)
     -- EN : Magnifier button (after the trees refresh): built by GvvGuiSearch (3.5)
     GvvGuiSearch(self.event):buildButton()
-    Legacy_Gui.build_storage(data, contents.storage)
+    -- FR : Onglet storage : construit par le moteur des arbres (3.6a) / EN : storage tab: built by the trees engine (3.6a)
+    GvvGuiTree(self.event, "storage"):build()
     Legacy_Gui.build_property(data, contents.property)
     Legacy_Gui.build_luaobject(data, contents.luaobject)
     -- FR : Onglet aide : construit par sa propre classe (3.3)
@@ -281,7 +282,10 @@ function GvvGuiMain:close(ignore_save)
     local data = self:getData()
     local saved, message = true, nil
     if not ignore_save and data ~= nil then
-        saved, message = pcall(Legacy_Tree.save_on_quit, data)
+        saved, message = pcall(function()
+            GvvGuiTree(self.event, "storage"):saveOpened()
+            Legacy_Tree.save_on_quit(data)
+        end)
     end
 
     -- FR : Destruction de la fenêtre principale
@@ -373,10 +377,16 @@ function GvvGuiMain:changeTab(tab_index)
         tabbed.selected_tab_index = tab_index
     end
 
-    -- FR : Outils du suivi (GvvGuiTracking), puis outils des arbres et liste des mods (ancien code, migré en 3.6)
-    -- EN : Tracking tools (GvvGuiTracking), then trees tools and mods list (old code, migrated in 3.6)
+    -- FR : Outils du suivi (GvvGuiTracking), loupe (GvvGuiSearch), liste des mods à jour (GvvGuiTree),
+    --      puis outils des arbres (ancien code, migré en 3.6b)
+    -- EN : Tracking tools (GvvGuiTracking), magnifier (GvvGuiSearch), mods list up to date (GvvGuiTree),
+    --      then trees tools (old code, migrated in 3.6b)
     GvvGuiTracking(self.event):updateTools(tab_index)
     GvvGuiSearch(self.event):updateTools(tab_index)
+    local storage_tree = GvvGuiTree(self.event, "storage")
+    if tab_index == storage_tree.config.tab_index then
+        storage_tree:fillList()
+    end
     Legacy_Gui.change_tab(data, tab_index)
     return self
 end

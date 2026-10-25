@@ -7,8 +7,8 @@
 --      surligne les résultats et fait défiler l'arbre jusqu'au résultat choisi.
 --      Comportement repris de l'ancien code (legacy/search_tree.lua, legacy/gui_event.lua), sans changement :
 --      la recherche ne porte que sur les lignes affichées (dossiers ouverts).
---      Le parcours de l'arbre suit encore la structure de l'ancien arbre (legacy/tree.lua) ; il sera
---      adapté avec les arbres (3.6).
+--      L'arbre storage est parcouru par le moteur GvvGuiTree (3.6a) ; les arbres property et LuaObject
+--      suivent encore la structure de l'ancien arbre (legacy/tree.lua), jusqu'à la 3.6b.
 --      Description des éléments : gui/search.lua.
 -- EN : Search in gvv trees (step 3.5 of the 0.6 restructuring).
 --      Builds the magnifier button (toolbar) and one search panel per tree
@@ -16,8 +16,8 @@
 --      highlights the results and scrolls the tree to the chosen result.
 --      Behaviour taken from the old code (legacy/search_tree.lua, legacy/gui_event.lua), unchanged:
 --      the search only covers the displayed rows (opened folders).
---      The tree walk still follows the old tree structure (legacy/tree.lua); it will be
---      adapted with the trees (3.6).
+--      The storage tree is walked by the GvvGuiTree engine (3.6a); the property and LuaObject trees
+--      still follow the old tree structure (legacy/tree.lua), until 3.6b.
 --      Elements description: gui/search.lua.
 ---------------------------------------------------------------------------------------------
 local check = require(gvv.defines.lualib.common.check)
@@ -77,6 +77,10 @@ end)
 ---@param tree_name string  'glob', 'prop' ou 'gobj'
 ---@return LuaGuiElement?
 function GvvGuiSearch:getTree(tree_name)
+    -- FR : Arbre storage : dans le moteur des arbres (3.6a) / EN : storage tree: inside the trees engine (3.6a)
+    if tree_name == 'glob' then
+        return GvvGuiTree(self.event, 'storage'):getPane()
+    end
     local tree = check.getPath(self:getData(), {"gui", "sub_" .. tree_name .. "tree"})
     if check.isValidLuaObject(tree) then
         return tree
@@ -368,10 +372,9 @@ function GvvGuiSearch:refresh(tree_name)
     -- FR : Recherche fermée : styles remis à zéro dans l'arbre
     -- EN : Search closed: styles reset in the tree
     if not panel.visible then
-        if treeReady(tree) then
-            if tree_name == 'glob' then
-                resetScan(tree.children[2].content_container.folder)
-            end
+        if tree_name == 'glob' then
+            GvvGuiTree(self.event, 'storage'):searchReset()
+        elseif treeReady(tree) then
             resetScan(tree.children[3].content_container.folder)
         end
         return self
@@ -394,18 +397,19 @@ function GvvGuiSearch:refresh(tree_name)
         text = text:lower()
     end
 
-    if not treeReady(tree) then
-        return self
-    end
-
-    -- FR : Recherche : dans l'arbre _G (storage seulement), puis dans l'arbre principal
-    -- EN : Search: in the _G tree (storage only), then in the main tree
-    local state = { text = text, found = {}, key = settings.key, value = settings.value, case = settings.case }
-    local roots = { tree.children[3] }
+    local state = { text = text, found = {}, key = settings.key, value = settings.value, case = settings.case,
+        removeRichKey = removeRichKey, removeRichValue = removeRichValue }
     if tree_name == 'glob' then
-        roots = { tree.children[2], tree.children[3] }
-    end
-    for _, root in ipairs(roots) do
+        -- FR : Arbre storage : parcouru par le moteur des arbres (3.6a), racines _G puis storage
+        -- EN : storage tree: walked by the trees engine (3.6a), _G then storage roots
+        if not GvvGuiTree(self.event, 'storage'):searchScan(state) then
+            return self
+        end
+    else
+        if not treeReady(tree) then
+            return self
+        end
+        local root = tree.children[3]
         if root.content_container.visible then
             scan(root.content_container.folder, state)
         else

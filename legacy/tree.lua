@@ -573,15 +573,24 @@ Tree.register_object = function(g, luaobj_elem)
   elseif category == 'gobj' then
     tree_data = g.data.tree_item_gobj
   end
-  if not g.data.docked_luaobj then g.data.docked_luaobj = {} end
   local data = Tree.get_tree_data(tree_data, luaobj_elem)
   local succ, tree_path = Tree.track_path(tree_data, luaobj_elem, {})
-  local obj = Tree.get_tree_value(tree_path)
   if not succ then
     error('Tree.track_path failed in Tree.register_object')
   end
+  return Tree.register_object_at(g, data.key, tree_path, luaobj_elem.caption)
+end
+
+-- FR : Ajoute l'objet au bout de tree_path à l'onglet property (séparé de register_object pour le moteur
+--      GvvGuiTree, qui donne directement la clé et le chemin). caption : texte du message si l'objet a disparu.
+-- EN : Adds the object at the end of tree_path to the property tab (split from register_object for the
+--      GvvGuiTree engine, which gives the key and the path directly). caption: message text if the object is gone.
+Tree.register_object_at = function(g, key, tree_path, caption)
+  if not g.data.docked_luaobj then g.data.docked_luaobj = {} end
+  local data = {key = key}
+  local obj = Tree.get_tree_value(tree_path)
   if not is_usable_object(obj) then
-    error(object_gone_message(obj, luaobj_elem.caption))
+    error(object_gone_message(obj, caption))
   end
   local already_exist = false
   local index, btn
@@ -650,7 +659,9 @@ end
 
 -- gvv 창을 닫을 때 저장하기
 Tree.save_on_quit = function(g)
-  if table_size(g.gui.sub_globtree.children) > 2 then
+  -- FR : Arbre storage : sauvegardé par GvvGuiTree (3.6a) ; g.gui.sub_globtree n'existe plus
+  -- EN : storage tree: saved by GvvGuiTree (3.6a); g.gui.sub_globtree no longer exists
+  if g.gui.sub_globtree and table_size(g.gui.sub_globtree.children) > 2 then
     local header = g.gui.sub_globtree.children[1]
     local _G_top = g.gui.sub_globtree.children[2]
     local top = g.gui.sub_globtree.children[3]

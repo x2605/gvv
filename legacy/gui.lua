@@ -79,14 +79,8 @@ end
 -- FR : Onglet 1, suivi de variables : construit par classes/GvvGuiTracking.lua (étape 3.4)
 -- EN : Tab 1, variable tracking: built by classes/GvvGuiTracking.lua (step 3.4)
 
--- FR : Onglet 2, storage et _G des mods (repris de l'ancien open_main).
--- EN : Tab 2, mods storage and _G (taken from the old open_main).
-Gui.build_storage = function(g, cwrap2)
-  local panel2, sub_modlist, sub_globtree = build_list_and_tree(cwrap2, '_gvv-mod_sub_modlist_', '_gvv-mod_sub_globtree_')
-  g.gui.sub_modlist = sub_modlist -- 사용자 개체 등록
-  g.gui.sub_globtree = sub_globtree -- 사용자 개체 등록
-  GvvGuiSearch({player_index = g.index}):buildPanel('glob', panel2)
-end
+-- FR : Onglet 2, storage et _G des mods : construit par classes/GvvGuiTree.lua (étape 3.6a)
+-- EN : Tab 2, mods storage and _G: built by classes/GvvGuiTree.lua (step 3.6a)
 
 -- FR : Onglet 3, objets Lua ajoutés (repris de l'ancien open_main).
 -- EN : Tab 3, added Lua objects (taken from the old open_main).
@@ -109,16 +103,11 @@ end
 -- FR : Onglet 5, aide : construit par classes/GvvGuiHelp.lua (étape 3.3)
 -- EN : Tab 5, help: built by classes/GvvGuiHelp.lua (step 3.3)
 
--- FR : Remplit les listes de gauche : mods accessibles, objets ajoutés, objets globaux (repris de l'ancien open_main).
---      Les pages d'aide sont listées par GvvGuiHelp.
--- EN : Fills the left lists: accessible mods, added objects, global objects (taken from the old open_main).
---      Help pages are listed by GvvGuiHelp.
+-- FR : Remplit les listes de gauche : objets ajoutés, objets globaux (repris de l'ancien open_main).
+--      Les mods sont listés par GvvGuiTree, les pages d'aide par GvvGuiHelp.
+-- EN : Fills the left lists: added objects, global objects (taken from the old open_main).
+--      Mods are listed by GvvGuiTree, help pages by GvvGuiHelp.
 Gui.fill_lists = function(g)
-  local mod_list = Util.get_accessible_mod_list()
-  for i, v in ipairs(mod_list) do
-    local btn = g.gui.sub_modlist.add{type = 'button', caption = v, name = '_gvv-mod_c_sub_mod_'..string.format('%d',i), mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
-  end
-
   for k, v in pairs(g.data.docked_luaobj) do
     local caption = '('..tostring(v.index)..') '..Table_to_str.to_luaon(v.key, true)
     local btn = g.gui.sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(v.index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"",{"gvv-mod.obj-list-tooltip"},'\n',Table_to_str.path_to_lua_prop_path(v.tree_path)}}
@@ -150,14 +139,9 @@ end
 Gui.change_tab = function(g, index)
   -- FR : Onglet sélectionné et outils du suivi : gérés par GvvGuiMain:changeTab et GvvGuiTracking (étape 3.4)
   -- EN : Selected tab and tracking tools: handled by GvvGuiMain:changeTab and GvvGuiTracking (step 3.4)
+  -- FR : Onglet 2 : liste des mods remplie à nouveau par GvvGuiTree:fillList (étape 3.6a)
+  -- EN : Tab 2: mods list filled again by GvvGuiTree:fillList (step 3.6a)
   local tab = index
-  if tab == 2 then
-    local mod_list = Util.get_accessible_mod_list()
-    g.gui.sub_modlist.clear()
-    for i, v in ipairs(mod_list) do
-      local btn = g.gui.sub_modlist.add{type = 'button', caption = v, name = '_gvv-mod_c_sub_mod_'..string.format('%d',i), mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
-    end
-  end
   if tab == 3 or tab == 4 then
     g.gui.chk_show_na.visible = true
     g.gui.chk_show_nil.visible = true

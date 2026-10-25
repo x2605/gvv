@@ -39,6 +39,7 @@ local defines = {
         gui_help = directory .. ".classes.GvvGuiHelp",
         gui_tracking = directory .. ".classes.GvvGuiTracking",
         gui_search = directory .. ".classes.GvvGuiSearch",
+        gui_tree = directory .. ".classes.GvvGuiTree",
     },
 
     -- FR : Description des fenêtres (getElement / getContent)
@@ -50,6 +51,12 @@ local defines = {
         help_pages = directory .. ".gui.help_pages",
         tracking = directory .. ".gui.tracking",
         search = directory .. ".gui.search",
+        tree = directory .. ".gui.tree",
+        -- FR : Configuration de chaque arbre, par nom (GvvGuiTree(event, nom))
+        -- EN : Configuration of each tree, by name (GvvGuiTree(event, name))
+        trees = {
+            storage = directory .. ".gui.tree.storage",
+        },
     },
 
     -- FR : Modules envoyés à l'event handler

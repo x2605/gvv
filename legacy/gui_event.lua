@@ -230,11 +230,7 @@ Gui_Event.on_gui_click = function(event)
       end
     end
 
-  --sub_modlist 의 좌측 항목을 클릭할 때
-  elseif event.element.name:match('^_gvv[-]mod_c_sub_mod_%d+$') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_modlist_' then
-    Tree.draw_globtree(player_data, event.element.caption)
-    GvvGuiSearch(event):refresh('glob')
-    player_data.tabs.last_sub_mod = event.element.caption
+  --sub_modlist 의 좌측 항목을 클릭할 때 : FR : géré par GvvGuiTree (storage) / EN : handled by GvvGuiTree (storage)
 
   --sub_gobjlist 의 좌측 항목을 클릭할 때
   elseif event.element.name:match('^_gvv[-]mod_c_sub_obj_%d+$') and event.element.parent and event.element.parent.name == '_gvv-mod_sub_gobjlist_' then
@@ -256,9 +252,8 @@ Gui_Event.on_gui_click = function(event)
     local tab = pane.selected_tab_index
     local subelem = nil
     if tab == 2 then
-      if player_data.tabs.last_sub_mod then
-        subelem = Util.get_guichild_by_caption(player_data.gui.sub_modlist, player_data.tabs.last_sub_mod)
-      end
+      -- FR : Arbre storage : redessiné par GvvGuiTree / EN : storage tree: drawn again by GvvGuiTree
+      GvvGuiTree(event, 'storage'):refresh()
     elseif tab == 3 then
       if player_data.tabs.last_sub_obj then
         subelem = Util.get_guichild_by_caption(player_data.gui.sub_objlist, player_data.tabs.last_sub_obj)
