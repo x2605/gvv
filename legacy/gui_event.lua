@@ -5,14 +5,14 @@
 -- GUI 이벤트
 
 local Util = require(gvv.defines.lualib.common.util)
-local Gui = require(gvv.defines.gui.main)
-local Tree = require(gvv.defines.gui.tree)
+local Gui = require(gvv.defines.legacy.gui)
+local Tree = require(gvv.defines.legacy.tree)
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
-local Tracking = require(gvv.defines.gui.tracking)
-local Help_Menu = require(gvv.defines.gui.help_menu)
+local Tracking = require(gvv.defines.legacy.tracking)
+local Help_Menu = require(gvv.defines.legacy.help_menu)
 local Doctor = require(gvv.defines.lualib.common.doctor)
 local Copy_Code = require(gvv.defines.lualib.common.copy_code)
-local Search_Tree = require(gvv.defines.gui.search_tree)
+local Search_Tree = require(gvv.defines.legacy.search_tree)
 
 local Gui_Event = {}
 
@@ -887,34 +887,6 @@ Gui_Event['refresh_gvv-mod'] = function(event)
   end
 end
 
----------------------------------------------------------------------------------------------
--- FR : Exécute un handler GUI dans un pcall : une erreur est affichée au joueur au lieu de planter.
--- EN : Runs a GUI handler inside a pcall: an error is shown to the player instead of crashing.
-local function protected(handler)
-  return function(event)
-    local success, message = pcall(handler, event)
-    if not success and event.player_index then
-      game.get_player(event.player_index).print('[font=var-outline-gvv-mod]'..message..'[/font]', {1,0.85,0.7,1})
-    end
-  end
-end
-
----------------------------------------------------------------------------------------------
-local module = {events = {}}
----------------------------------------------------------------------------------------------
--- FR : Évènements GUI
--- EN : GUI events
-module.events[defines.events.on_gui_click] = protected(Gui_Event.on_gui_click)
-module.events[defines.events.on_gui_closed] = protected(Gui_Event.on_gui_closed)
-module.events[defines.events.on_gui_value_changed] = protected(Gui_Event.on_gui_value_changed)
-module.events[defines.events.on_gui_confirmed] = protected(Gui_Event.on_gui_confirmed)
-module.events[defines.events.on_gui_selected_tab_changed] = protected(Gui_Event.on_gui_selected_tab_changed)
-module.events[defines.events.on_gui_checked_state_changed] = protected(Gui_Event.on_gui_checked_state_changed)
-module.events[defines.events.on_gui_text_changed] = protected(Gui_Event.on_gui_text_changed)
-module.events[defines.events.on_gui_selection_state_changed] = protected(Gui_Event.on_gui_selection_state_changed)
--- FR : Raccourcis clavier (custom-input)
--- EN : Keyboard shortcuts (custom-input)
-module.events['toggle-main-frame_gvv-mod'] = Gui_Event['toggle-main-frame_gvv-mod']
-module.events['refresh_gvv-mod'] = Gui_Event['refresh_gvv-mod']
----------------------------------------------------------------------------------------------
-return module
+-- FR : Handlers bruts, appelés par l'aiguillage modules/gui.lua quand aucune fenêtre migrée ne traite l'évènement
+-- EN : Raw handlers, called by the modules/gui.lua dispatcher when no migrated window handles the event
+return Gui_Event

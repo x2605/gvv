@@ -10,3 +10,6 @@ log('> imported : ' .. gvv.defines.class.core)
 -- FR : Classes de gvv (ajoutées au fil de la restructuration 0.6)
 -- EN : gvv classes (added along the 0.6 restructuring)
 ---------------------------------------------------------------------------------------------
+require(gvv.defines.class.player)        -- GvvPlayer
+require(gvv.defines.class.gui)           -- GvvGui
+require(gvv.defines.class.gui_element)   -- GvvGuiElement

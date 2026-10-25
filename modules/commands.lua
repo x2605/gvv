@@ -1,7 +1,7 @@
 -- 커맨드
 
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
-local Gui = require(gvv.defines.gui.main)
+local Gui = require(gvv.defines.legacy.gui)
 
 local Commands = {}
 
@@ -186,4 +186,33 @@ Commands.when_change_mod_settings = function(event)
   end
 end
 
-return Commands
+---------------------------------------------------------------------------------------------
+-- FR : Enregistrement des commandes, appelé une fois par session par l'event handler
+--      (on_init ou on_load). pcall : une commande déjà enregistrée ne bloque pas les suivantes.
+-- EN : Commands registration, called once per session by the event handler
+--      (on_init or on_load). pcall: an already registered command doesn't block the next ones.
+local function add_commands()
+  local command_list = {
+    {'gvv', {"gvv-mod-command-help.gvv"}, Commands.gvv},
+    {'gdump-json', {"gvv-mod-command-help.gdump-json"}, Commands.gdump_json},
+    {'gdump-luaon', {"gvv-mod-command-help.gdump-luaon"}, Commands.gdump_luaon},
+    {'gdump', {"gvv-mod-command-help.gdump"}, Commands.gdump_luaon},
+    {'gmods', {"gvv-mod-command-help.gmods"}, Commands.gmods},
+  }
+  for _, command in ipairs(command_list) do
+    local success, message = pcall(commands.add_command, command[1], command[2], command[3])
+    if not success then log(message) end
+  end
+end
+
+---------------------------------------------------------------------------------------------
+local module = {events = {}}
+---------------------------------------------------------------------------------------------
+-- FR : Commandes de la console
+-- EN : Console commands
+module.add_commands = add_commands
+-- FR : Changement d'un paramètre du mod en cours de partie
+-- EN : Mod setting changed during the game
+module.events[defines.events.on_runtime_mod_setting_changed] = Commands.when_change_mod_settings
+---------------------------------------------------------------------------------------------
+return module

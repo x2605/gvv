@@ -1,9 +1,8 @@
 --로드
 
-local Commands = require(gvv.defines.modules.commands)
 local Util = require(gvv.defines.lualib.common.util)
-local Tracking = require(gvv.defines.gui.tracking)
-local Gui = require(gvv.defines.gui.main)
+local Tracking = require(gvv.defines.legacy.tracking)
+local Gui = require(gvv.defines.legacy.gui)
 
 local Load = {}
 
@@ -132,29 +131,8 @@ Load.register_volatiles = function()
       script.on_event(defines.events.on_tick, nil)
       _initiated_on_tick_ = true
     end
-    local pc, ret
-    pc, ret = pcall(function()
-      commands.add_command('gvv', {"gvv-mod-command-help.gvv"}, Commands.gvv)
-    end) if not pc then log(ret) end
-    pc, ret = pcall(function()
-      commands.add_command('gdump-json', {"gvv-mod-command-help.gdump-json"}, Commands.gdump_json)
-    end) if not pc then log(ret) end
-    pc, ret = pcall(function()
-      commands.add_command('gdump-luaon', {"gvv-mod-command-help.gdump-luaon"}, Commands.gdump_luaon)
-    end) if not pc then log(ret) end
-    pc, ret = pcall(function()
-      commands.add_command('gdump', {"gvv-mod-command-help.gdump"}, Commands.gdump_luaon)
-    end) if not pc then log(ret) end
-    pc, ret = pcall(function()
-      commands.add_command('gmods', {"gvv-mod-command-help.gmods"}, Commands.gmods)
-    end) if not pc then log(ret) end
     _one_of_three_volatiles_executed_ = true
   end
-end
-
--- 런타임 모드 설정 변경시
-Load.on_runtime_mod_setting_changed = function(event)
-  Commands.when_change_mod_settings(event)
 end
 
 ---------------------------------------------------------------------------------------------
@@ -165,8 +143,5 @@ local module = {events = {}}
 module.on_init = Load.on_init
 module.on_load = Load.on_load
 module.on_configuration_changed = Load.on_configuration_changed
--- FR : Changement d'un paramètre du mod en cours de partie
--- EN : Mod setting changed during the game
-module.events[defines.events.on_runtime_mod_setting_changed] = Load.on_runtime_mod_setting_changed
 ---------------------------------------------------------------------------------------------
 return module

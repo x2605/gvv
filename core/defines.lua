@@ -25,10 +25,14 @@ local defines = {
     -- EN : Public remote interface, also loaded by other mods (path must never change)
     interface = directory .. ".gvv",
 
-    -- FR : Factory de classes
-    -- EN : Class factory
+    -- FR : Factory de classes et classes de gvv
+    -- EN : Class factory and gvv classes
     class = {
         core = directory .. ".core.class",
+        ----
+        player = directory .. ".classes.GvvPlayer",
+        gui = directory .. ".classes.GvvGui",
+        gui_element = directory .. ".classes.GvvGuiElement",
     },
 
     -- FR : Modules envoyés à l'event handler
@@ -38,19 +42,21 @@ local defines = {
         ----
         events = directory .. ".modules.events",
         player = directory .. ".modules.player",
-        gui_event = directory .. ".modules.gui_event",
-        ----
+        gui = directory .. ".modules.gui",
         commands = directory .. ".modules.commands",
     },
 
-    -- FR : Construction et gestion des fenêtres
-    -- EN : Windows building and handling
-    gui = {
-        main = directory .. ".modules.gui",
-        tree = directory .. ".modules.tree",
-        tracking = directory .. ".core.utils.tracking",
-        help_menu = directory .. ".modules.help_menu",
-        search_tree = directory .. ".modules.search_tree",
+    -- FR : Ancien code des fenêtres, migré fenêtre par fenêtre vers classes/ et gui/ (étape 3),
+    --      puis supprimé. Le dossier legacy/ disparaît à la fin de la restructuration.
+    -- EN : Old windows code, migrated window by window to classes/ and gui/ (step 3),
+    --      then removed. The legacy/ folder disappears at the end of the restructuring.
+    legacy = {
+        gui = directory .. ".legacy.gui",
+        gui_event = directory .. ".legacy.gui_event",
+        tree = directory .. ".legacy.tree",
+        tracking = directory .. ".legacy.tracking",
+        help_menu = directory .. ".legacy.help_menu",
+        search_tree = directory .. ".legacy.search_tree",
     },
 
     -- FR : Bibliothèque de gvv, rangée par partie

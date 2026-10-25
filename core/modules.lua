@@ -11,6 +11,7 @@ log('modules gvv')
 ---------------------------------------------------------------------------------------------
 modules.events =    require(gvv.defines.modules.events)
 modules.player =    require(gvv.defines.modules.player)
-modules.gui_event = require(gvv.defines.modules.gui_event)
+modules.gui =       require(gvv.defines.modules.gui)
+modules.commands =  require(gvv.defines.modules.commands)
 ---------------------------------------------------------------------------------------------
 return modules
