@@ -50,32 +50,37 @@ local defines = {
         search_tree = directory .. ".modules.search_tree",
     },
 
-    -- FR : Fonctions utilitaires
-    -- EN : Utility functions
+    -- FR : Bibliothèque de gvv, rangée par partie
+    -- EN : gvv library, sorted by part
     lualib = {
-        util = directory .. ".core.utils.util",
-        table_to_str = directory .. ".core.utils.table_to_str",
-        sprite = directory .. ".core.utils.sprite",
-        luaobj_prop = directory .. ".core.utils.luaobj_prop",
-        copy_code = directory .. ".core.utils.copy_code",
-        doctor = directory .. ".core.doctor",
+        -- FR : Fonctions génériques, sans interface graphique
+        -- EN : Generic functions, without GUI
+        common = {
+            util = directory .. ".lualib.common.util",
+            table_to_str = directory .. ".lualib.common.table_to_str",
+            sprite = directory .. ".lualib.common.sprite",
+            luaobj_prop = directory .. ".lualib.common.luaobj_prop",
+            copy_code = directory .. ".lualib.common.copy_code",
+            doctor = directory .. ".lualib.common.doctor",
+        },
+        -- FR : Description de l'API Factorio, écrite à la main (complète generated/)
+        -- EN : Factorio API description, hand-written (completes generated/)
+        api = {
+            attribute_type_map = directory .. ".lualib.api.attribute_type_map",
+            concept_fields = directory .. ".lualib.api.concept_fields",
+        },
+        -- FR : Modèles de code Lua à copier dans la console ou dans un autre mod
+        -- EN : Lua code templates to copy into the console or into another mod
+        remote_code = {
+            diag_n_fix = directory .. ".lualib.remote_code.diag_n_fix",
+            lua_command = directory .. ".lualib.remote_code.lua_command",
+            get_g = directory .. ".lualib.remote_code.get_g",
+            get_global = directory .. ".lualib.remote_code.get_global",
+        },
     },
 
-    -- FR : Code Lua à copier dans la console ou dans un autre mod
-    -- EN : Lua code to copy into the console or into another mod
-    remote_code = {
-        diag_n_fix = directory .. ".modules.remote_code.diag_n_fix",
-        lua_command = directory .. ".modules.remote_code.lua_command",
-        get_g = directory .. ".modules.remote_code.get_g",
-        get_global = directory .. ".modules.remote_code.get_global",
-    },
-
-    -- FR : Données de l'API Factorio
-    -- EN : Factorio API data
-    datas = {
-        attribute_type_map = directory .. ".core.datas.attribute_type_map",
-        concept_fields = directory .. ".core.datas.concept_fields",
-    },
+    -- FR : Description de l'API Factorio, produite par le convertisseur
+    -- EN : Factorio API description, produced by the converter
     generated = {
         runtime_api_stable = directory .. ".generated.runtime-api-stable",
         runtime_api_latest = directory .. ".generated.runtime-api-latest",

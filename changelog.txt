@@ -5,6 +5,7 @@ Date: ????-??-??
   Changes:
     - gvv file restructuring: core files moved from modules/ to core/ (core/utils/, core/datas/).
     - Ritn mods architecture (step 1): core/defines.lua path registry (gvv.defines), core/class.lua class factory, core/setup-classes.lua, core/modules.lua sent to __core__ event_handler. load.lua and gui_event.lua become modules (modules/events.lua, modules/player.lua, modules/gui_event.lua). No behaviour change.
+    - Ritn mods architecture (step 2a): library sorted by part in lualib/ : lualib/common/ (util, table_to_str, sprite, luaobj_prop, copy_code, doctor), lualib/api/ (attribute_type_map, concept_fields), lualib/remote_code/. No behaviour change.
   Published:
     - Ritn
 

@@ -1,8 +1,8 @@
 -- 그래픽 유저 인터페이스
 
-local Util = require(gvv.defines.lualib.util)
+local Util = require(gvv.defines.lualib.common.util)
 local Tree = require(gvv.defines.gui.tree)
-local Table_to_str = require(gvv.defines.lualib.table_to_str)
+local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 local Tracking = require(gvv.defines.gui.tracking)
 local Help_Menu = require(gvv.defines.gui.help_menu)
 

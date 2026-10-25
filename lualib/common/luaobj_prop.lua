@@ -25,8 +25,8 @@ end
 
 -- Charger les modules de mapping
 -- Load mapping modules
-local attribute_type_map = require(gvv.defines.datas.attribute_type_map)
-local concept_fields = require(gvv.defines.datas.concept_fields)
+local attribute_type_map = require(gvv.defines.lualib.api.attribute_type_map)
+local concept_fields = require(gvv.defines.lualib.api.concept_fields)
 
 -- Fonction helper pour log
 -- Logging helper function

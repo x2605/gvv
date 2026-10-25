@@ -1,7 +1,7 @@
 -- 트리 검색
 
 --local Tree = require(gvv.defines.gui.tree) --treepath 미사용. unused.
-local Util = require(gvv.defines.lualib.util)
+local Util = require(gvv.defines.lualib.common.util)
 
 local Search_Tree = {}
 

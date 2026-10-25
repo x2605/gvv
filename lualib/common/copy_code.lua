@@ -9,10 +9,10 @@ local version_code = function() return [[=function()
 end,
 ]] end
 
-local fix_code = require(gvv.defines.remote_code.diag_n_fix)
-local luac_code = require(gvv.defines.remote_code.lua_command)
-local get_g_code = require(gvv.defines.remote_code.get_g)
-local get_storage_code = require(gvv.defines.remote_code.get_global)
+local fix_code = require(gvv.defines.lualib.remote_code.diag_n_fix)
+local luac_code = require(gvv.defines.lualib.remote_code.lua_command)
+local get_g_code = require(gvv.defines.lualib.remote_code.get_g)
+local get_storage_code = require(gvv.defines.lualib.remote_code.get_global)
 
 
 codes.in_control_lua = [[

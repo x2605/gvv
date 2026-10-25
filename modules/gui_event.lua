@@ -4,14 +4,14 @@
 
 -- GUI 이벤트
 
-local Util = require(gvv.defines.lualib.util)
+local Util = require(gvv.defines.lualib.common.util)
 local Gui = require(gvv.defines.gui.main)
 local Tree = require(gvv.defines.gui.tree)
-local Table_to_str = require(gvv.defines.lualib.table_to_str)
+local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 local Tracking = require(gvv.defines.gui.tracking)
 local Help_Menu = require(gvv.defines.gui.help_menu)
-local Doctor = require(gvv.defines.lualib.doctor)
-local Copy_Code = require(gvv.defines.lualib.copy_code)
+local Doctor = require(gvv.defines.lualib.common.doctor)
+local Copy_Code = require(gvv.defines.lualib.common.copy_code)
 local Search_Tree = require(gvv.defines.gui.search_tree)
 
 local Gui_Event = {}

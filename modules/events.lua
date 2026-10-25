@@ -1,7 +1,7 @@
 --로드
 
 local Commands = require(gvv.defines.modules.commands)
-local Util = require(gvv.defines.lualib.util)
+local Util = require(gvv.defines.lualib.common.util)
 local Tracking = require(gvv.defines.gui.tracking)
 local Gui = require(gvv.defines.gui.main)
 

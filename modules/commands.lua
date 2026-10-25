@@ -1,6 +1,6 @@
 -- 커맨드
 
-local Table_to_str = require(gvv.defines.lualib.table_to_str)
+local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 local Gui = require(gvv.defines.gui.main)
 
 local Commands = {}
