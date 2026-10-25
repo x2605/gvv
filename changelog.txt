@@ -2,6 +2,8 @@
 Version: 0.5.21
 Date: 2026-10-25
 
+  Changes:
+    - converter runtime-api-stable.lua compatible for gvv  (2.1.23).
   Bugfixes:
     - Fixed "can't send LuaDebugAdapter through remote calls" error when viewing _G/storage while running under the VSCode debugger (FMTK). LuaDebugAdapter is now blacklisted and shown as "<LuaDebugAdapter>".
   Published:
