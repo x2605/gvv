@@ -6,6 +6,10 @@ Date: ????-??-??
     - gvv file restructuring: core files moved from modules/ to core/ (core/utils/, core/datas/).
     - Ritn mods architecture (step 1): core/defines.lua path registry (gvv.defines), core/class.lua class factory, core/setup-classes.lua, core/modules.lua sent to __core__ event_handler. load.lua and gui_event.lua become modules (modules/events.lua, modules/player.lua, modules/gui_event.lua). No behaviour change.
     - Ritn mods architecture (step 2a): library sorted by part in lualib/ : lualib/common/ (util, table_to_str, sprite, luaobj_prop, copy_code, doctor), lualib/api/ (attribute_type_map, concept_fields), lualib/remote_code/. No behaviour change.
+  Bugfixes:
+    - /gdump-json produced invalid JSON: apostrophes and some control characters were escaped Lua-style (\', \a, \v), inf/NaN and functions were written raw. Strings are now escaped per JSON rules, inf/NaN become null, functions become "function".
+    - /gdump-luaon produced invalid Lua: reserved words used as keys (end, for...) are now written ["end"], inf/NaN as math.huge and 0/0, functions as "function".
+    - Converting a table that references itself no longer crashes with a stack overflow: "<recursive table>" is written instead.
   Published:
     - Ritn
 
