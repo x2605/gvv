@@ -34,13 +34,23 @@ local exclude_classes = {
 --      Elle appelle wrap_object et capture toute erreur éventuelle.
 -- EN : Function that wraps object copying using pcall to avoid runtime errors.
 --      It calls wrap_object and safely catches any possible errors.
-local function copy_object(o, parents, is_key, counter)
-  local success, res = pcall(function() return wrap_object(o, parents, is_key, counter) end)
+local function copy_object(o, parents, is_key, counters)
+  local success, res = pcall(function() return wrap_object(o, parents, is_key, counters) end)
   if success then
     return res
   else
     return { ["<ERROR>"] = "<" .. res .. ">" }
   end
+end
+
+-- key_name :
+-- FR : Nom texte d'une clé non copiable, numéroté par type dans la table : <table_1>, <table_2>, <LuaEntity_1>...
+--      counters : compteurs propres à la table parcourue, pour garder des clés uniques.
+-- EN : Text name of a non-copyable key, numbered per type within the table: <table_1>, <table_2>, <LuaEntity_1>...
+--      counters : counters of the table being copied, to keep keys unique.
+local function key_name(counters, name)
+  counters[name] = (counters[name] or 0) + 1
+  return "<" .. name .. "_" .. counters[name] .. ">"
 end
 
 -- wrap_object :
@@ -52,18 +62,17 @@ end
 --      - Avoids cycles by checking recursion (parents).
 --      - Replaces non-copyable keys or values (function, userdata, thread, nil) with text representation.
 --      - For Factorio userdata, if it's a key or an excluded class, replaces it with a tag.
-function wrap_object(obj, parents, is_key, counter)
+function wrap_object(obj, parents, is_key, counters)
   local obj_type = type(obj)
   local representation
 
   if obj_type == "userdata" and getmetatable(obj) == "private" and obj.object_name then
-    -- FR : Si clé ou classe exclue, on simplifie.
-    -- EN : If key or excluded class, simplify.
-    if obj.object_name == "LuaDebugAdapter" and not is_key then
-      representation = "<LuaDebugAdapter>"
-    elseif is_key or (exclude_classes[obj.object_name] or obj.object_name:match('^LuaMapSettings')) then
-      counter = counter + 1
-      representation = "<" .. obj.object_name .. counter .. ">"
+    -- FR : Si clé ou classe exclue, on simplifie. Les clés sont numérotées, pas les valeurs.
+    -- EN : If key or excluded class, simplify. Keys are numbered, values are not.
+    if is_key then
+      representation = key_name(counters, obj.object_name)
+    elseif exclude_classes[obj.object_name] or obj.object_name:match('^LuaMapSettings') then
+      representation = "<" .. obj.object_name .. ">"
     else
       representation = obj
     end
@@ -72,8 +81,7 @@ function wrap_object(obj, parents, is_key, counter)
     if is_key then
       -- FR : Simplification pour les clés qui sont des tables.
       -- EN : Simplify table keys.
-      counter = counter + 1
-      representation = "<table" .. counter .. ">"
+      representation = key_name(counters, "table")
     else
       -- FR : Vérifie la récursivité pour éviter les boucles infinies.
       -- EN : Check recursion to avoid infinite loops.
@@ -93,8 +101,9 @@ function wrap_object(obj, parents, is_key, counter)
           new_parents[i] = v
         end
         table.insert(new_parents, obj)
+        local new_counters = {}
         for k, v in next, obj, nil do
-          representation[copy_object(k, new_parents, true)] = copy_object(v, new_parents, false)
+          representation[copy_object(k, new_parents, true, new_counters)] = copy_object(v, new_parents, false)
         end
       end
     end
@@ -103,8 +112,7 @@ function wrap_object(obj, parents, is_key, counter)
     -- FR : Remplace les types non copiables.
     -- EN : Replace non-copyable types.
     if is_key then
-      counter = counter + 1
-      representation = "<" .. obj_type .. counter .. ">"
+      representation = key_name(counters, obj_type)
     else
       representation = "<" .. obj_type .. ">"
     end
@@ -138,14 +146,14 @@ return function()
     storage = function()
       local root = storage
       local exclude_keys = {}
-      local counter = 0
+      local counters = {}
       local result = {}
 
       -- Parcours de storage
       -- Iterate over storage
       for key, value in next, root, nil do
         if not exclude_keys[key] then
-          result[copy_object(key, { root }, true, counter)] = copy_object(value, { root }, false, counter)
+          result[copy_object(key, { root }, true, counters)] = copy_object(value, { root }, false)
         end
       end
 
@@ -167,14 +175,14 @@ return function()
         settings = true, rcon = true, rendering = true, script = true, defines = true, game = true,
         prototypes = true, helpers = true, copy_object = true,
       }
-      local counter = 0
+      local counters = {}
       local result = {}
 
       -- Parcours de _G
       -- Iterate over _G
       for key, value in next, root, nil do
         if not exclude_keys[key] then
-          result[copy_object(key, { root }, true, counter)] = copy_object(value, { root }, false, counter)
+          result[copy_object(key, { root }, true, counters)] = copy_object(value, { root }, false)
         end
       end
 
