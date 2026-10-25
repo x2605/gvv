@@ -1,10 +1,14 @@
 ---------------------------------------------------------------------------------------------
 -- CLASS FACTORY
 ---------------------------------------------------------------------------------------------
--- FR : Factory de classes orientée objet (Lua 5.1), même principe que celle de RitnLib.
---      Copiée ici pour que gvv reste autonome, sans dépendance.
--- EN : Object-oriented class factory (Lua 5.1), same principle as RitnLib's.
---      Copied here so gvv stays standalone, without dependency.
+-- FR : Source : RitnLib (Ritn), core/class.lua (ritnlib.classFactory), version 0.10.7.
+--      Factory de classes orientée objet (Lua 5.1), copiée pour que gvv reste autonome.
+--      Différences : seule newclass est reprise (la variante new, inutilisée, est laissée de côté),
+--      noms de variables explicites.
+-- EN : Source: RitnLib (Ritn), core/class.lua (ritnlib.classFactory), version 0.10.7.
+--      Object-oriented class factory (Lua 5.1), copied so gvv stays standalone.
+--      Differences: only newclass is kept (the unused new variant is left out),
+--      explicit variable names.
 ---------------------------------------------------------------------------------------------
 
 ---@class GvvClassFactory

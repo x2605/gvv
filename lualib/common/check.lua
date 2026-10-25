@@ -1,14 +1,26 @@
 ---------------------------------------------------------------------------------------------
 -- CHECK
 ---------------------------------------------------------------------------------------------
--- FR : Fonctions de vérification des valeurs, sur le modèle de RitnLib
---      (lualib/string-functions.lua, table-functions.lua, other-functions.lua).
---      Copiées et corrigées ici pour que gvv reste autonome. Aucune ne lève d'erreur,
+-- FR : Source : RitnLib (Ritn), version 0.10.7 :
+--        lualib/string-functions.lua : isNil, isNotNil, isString, isEmptyString, isNotEmptyString,
+--                                      defaultValue, startsWith
+--        lualib/table-functions.lua  : isTable, length, isEmpty, isNotEmpty, containsKey
+--        lualib/other-functions.lua  : data_type (ici dataType), tryCatch
+--      Copiées et adaptées pour que gvv reste autonome. Aucune ne lève d'erreur,
 --      quelle que soit la valeur reçue (nil, objet Lua invalide...).
--- EN : Value checking functions, modelled on RitnLib
---      (lualib/string-functions.lua, table-functions.lua, other-functions.lua).
---      Copied and fixed here so gvv stays standalone. None of them raises an error,
+--      Différences : startsWith sans motif Lua, defaultValue garde nombres et booléens,
+--      dataType renvoie "string" pour une chaîne, tryCatch renvoie les résultats.
+--      Ajouts propres à gvv : isLuaObject, isValidLuaObject, tryGet, getPath.
+-- EN : Source: RitnLib (Ritn), version 0.10.7:
+--        lualib/string-functions.lua : isNil, isNotNil, isString, isEmptyString, isNotEmptyString,
+--                                      defaultValue, startsWith
+--        lualib/table-functions.lua  : isTable, length, isEmpty, isNotEmpty, containsKey
+--        lualib/other-functions.lua  : data_type (here dataType), tryCatch
+--      Copied and adapted so gvv stays standalone. None of them raises an error,
 --      whatever the value received (nil, invalid Lua object...).
+--      Differences: startsWith without Lua pattern, defaultValue keeps numbers and booleans,
+--      dataType returns "string" for a string, tryCatch returns the results.
+--      gvv's own additions: isLuaObject, isValidLuaObject, tryGet, getPath.
 ---------------------------------------------------------------------------------------------
 local TOKEN_EMPTY_STRING = ""
 
