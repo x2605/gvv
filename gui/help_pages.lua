@@ -267,8 +267,11 @@ pages[5].write = function(help)
     -- FR : Nom du mod, puis boutons diagnostic et nettoyage alignés à droite
     -- EN : Mod name, then diagnose and fix buttons aligned to the right
     help:openColumn().style.padding = 10
-    local mod_name = help:add(help.specs.textfield.mod)
-    mod_name.clear_and_focus_on_right_click = false
+    -- FR : clear_and_focus_on_right_click ne se donne qu'à la création : il est dans la description
+    -- EN : clear_and_focus_on_right_click can only be given at creation: it is in the description
+    local mod_name_spec = help.specs.textfield.mod
+    mod_name_spec.clear_and_focus_on_right_click = false
+    local mod_name = help:add(mod_name_spec)
     mod_name.style.horizontally_stretchable = true
     mod_name.style.horizontally_squashable = true
     mod_name.style.minimal_width = 10
