@@ -1,7 +1,7 @@
 --도움말
 
-local Util = require('modules.util')
-local Copy_Code = require('modules.copy_code')
+local Util = require('core.utils.util')
+local Copy_Code = require('core.utils.copy_code')
 
 local Help_Menu = {}
 

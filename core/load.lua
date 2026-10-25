@@ -1,8 +1,8 @@
 --로드
 
 local Commands = require('modules.commands')
-local Util = require('modules.util')
-local Tracking = require('modules.tracking')
+local Util = require('core.utils.util')
+local Tracking = require('core.utils.tracking')
 local Gui = require('modules.gui')
 
 local Load = {}
@@ -18,8 +18,8 @@ Load.example_load = function()
   }
 end
 
---중복해서 require('modules.load') 호출해도 한번만 실행되도록
---run single time if called require('modules.load') multiple times
+--중복해서 require('core.load') 호출해도 한번만 실행되도록
+--run single time if called require('core.load') multiple times
 if not _initiated_session_ then
   -- session global variables not inside of storage table
   _on_tick_function_ = Tracking.on_tick --constant

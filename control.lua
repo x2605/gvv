@@ -3,7 +3,7 @@
 local util = require('__core__.lualib.util')
 
 _initiated_session_ = false
-require('modules.register_event')
+require('core.register_event')
 
 --[[
 download :

@@ -1,8 +1,8 @@
 -- 트리
 
-local Table_to_str = require('modules.table_to_str')
-local Util = require('modules.util')
-local Sprite = require('modules.sprite')
+local Table_to_str = require('core.utils.table_to_str')
+local Util = require('core.utils.util')
+local Sprite = require('core.utils.sprite')
 
 local Tree = {}
 

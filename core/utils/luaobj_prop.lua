@@ -25,8 +25,8 @@ end
 
 -- Charger les modules de mapping
 -- Load mapping modules
-local attribute_type_map = require("modules.attribute_type_map")
-local concept_fields = require("modules.concept_fields")
+local attribute_type_map = require("core.datas.attribute_type_map")
+local concept_fields = require("core.datas.concept_fields")
 
 -- Fonction helper pour log
 -- Logging helper function

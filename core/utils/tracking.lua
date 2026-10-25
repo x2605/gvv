@@ -1,6 +1,6 @@
 -- 트래킹
 
-local Table_to_str = require('modules.table_to_str')
+local Table_to_str = require('core.utils.table_to_str')
 local Tree = require('modules.tree')
 
 local Tracking = {}

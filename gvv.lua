@@ -131,7 +131,7 @@ end
 
 return function()
 -- contents of following line is came from the Helper tab of the mod's GUI.
--- source at __gvv__/modules/copy_code.lua
+-- source at __gvv__/core/utils/copy_code.lua
 --  & __gvv__/modules/remote_code/get_g.lua
 --  & __gvv__/modules/remote_code/get_global.lua
 --  & __gvv__/modules/remote_code/diag_n_fix.lua
