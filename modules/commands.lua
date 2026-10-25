@@ -187,11 +187,13 @@ Commands.when_change_mod_settings = function(event)
 end
 
 ---------------------------------------------------------------------------------------------
--- FR : Enregistrement des commandes, appelé une fois par session par l'event handler
---      (on_init ou on_load). pcall : une commande déjà enregistrée ne bloque pas les suivantes.
--- EN : Commands registration, called once per session by the event handler
---      (on_init or on_load). pcall: an already registered command doesn't block the next ones.
+-- FR : Enregistrement des commandes de la console, appelé une fois par session par l'event handler
+--      (dans on_init ou on_load).
+-- EN : Console commands registration, called once per session by the event handler
+--      (in on_init or on_load).
 local function add_commands()
+  -- FR : Liste des commandes : nom, aide affichée par /help, fonction appelée
+  -- EN : Commands list: name, help shown by /help, called function
   local command_list = {
     {'gvv', {"gvv-mod-command-help.gvv"}, Commands.gvv},
     {'gdump-json', {"gvv-mod-command-help.gdump-json"}, Commands.gdump_json},
@@ -199,13 +201,23 @@ local function add_commands()
     {'gdump', {"gvv-mod-command-help.gdump"}, Commands.gdump_luaon},
     {'gmods', {"gvv-mod-command-help.gmods"}, Commands.gmods},
   }
+
   for _, command in ipairs(command_list) do
+    -- FR : Enregistrement protégé : une commande déjà enregistrée (erreur) ne bloque pas les suivantes
+    -- EN : Protected registration: an already registered command (error) doesn't block the next ones
     local success, message = pcall(commands.add_command, command[1], command[2], command[3])
-    if not success then log(message) end
+
+    -- FR : En cas d'erreur, on la note dans le log
+    -- EN : On error, write it to the log
+    if not success then
+      log(message)
+    end
   end
 end
 
 ---------------------------------------------------------------------------------------------
+-- FR : Module envoyé à l'event handler (core/modules.lua)
+-- EN : Module sent to the event handler (core/modules.lua)
 local module = {events = {}}
 ---------------------------------------------------------------------------------------------
 -- FR : Commandes de la console

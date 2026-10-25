@@ -3,10 +3,6 @@
 ---------------------------------------------------------------------------------------------
 -- FR : Source : RitnLib (Ritn), classes/LuaClass/RitnGui.lua (RitnLibGui), version 0.10.7.
 --      Classe de base des fenêtres de gvv, copiée et adaptée pour que gvv reste autonome.
---      Principe : chaque élément est nommé gui_name-type-name (GvvGuiElement). Lors d'un évènement,
---      le nom de l'élément est découpé ; si gui_name est celui de la fenêtre, l'action type-name
---      (ex. « button-close ») est cherchée dans self.gui_action, qui donne la méthode à appeler.
---      self.gui[1] est le conteneur de la fenêtre, self.content les chemins des éléments (getContent).
 --      Différences : l'action appelle directement une méthode de la classe (RitnLib passe par
 --      remote.call, utile seulement entre mods) ; les méthodes on_gui_* renvoient true si l'évènement
 --      a été traité (pour l'aiguillage de modules/gui.lua) ; tous les évènements GUI sont gérés,
@@ -14,21 +10,34 @@
 --      principale (le préfixe du nom suffit) ; accès protégés via check.lua.
 -- EN : Source: RitnLib (Ritn), classes/LuaClass/RitnGui.lua (RitnLibGui), version 0.10.7.
 --      Base class of gvv windows, copied and adapted so gvv stays standalone.
---      Principle: each element is named gui_name-type-name (GvvGuiElement). On an event,
---      the element name is split; if gui_name is the window's, the action type-name
---      (e.g. "button-close") is looked up in self.gui_action, which gives the method to call.
---      self.gui[1] is the window container, self.content the element paths (getContent).
 --      Differences: the action calls a class method directly (RitnLib goes through
 --      remote.call, only useful between mods); on_gui_* methods return true when the event
 --      was handled (for the modules/gui.lua dispatcher); every GUI event is handled,
 --      not only click and selection; no more condition on the main window being present
 --      (the name prefix is enough); protected accesses through check.lua.
 ---------------------------------------------------------------------------------------------
+-- FR : Principe :
+--      1. Chaque élément d'une fenêtre est nommé gui_name-type-name (voir GvvGuiElement),
+--         ex. « gvv_main-button-close ».
+--      2. Lors d'un évènement, le nom de l'élément est découpé en trois parties.
+--      3. Si gui_name est celui de la fenêtre, l'action « type-name » (ex. « button-close »)
+--         est cherchée dans self.gui_action, qui donne la méthode à appeler (ex. « action_close »).
+--      Une fenêtre hérite de GvvGui, remplit self.gui, self.content et self.gui_action,
+--      et écrit ses méthodes action_*.
+-- EN : Principle:
+--      1. Each element of a window is named gui_name-type-name (see GvvGuiElement),
+--         e.g. "gvv_main-button-close".
+--      2. On an event, the element name is split into three parts.
+--      3. If gui_name is the window's, the action "type-name" (e.g. "button-close")
+--         is looked up in self.gui_action, which gives the method to call (e.g. "action_close").
+--      A window inherits from GvvGui, fills self.gui, self.content and self.gui_action,
+--      and writes its action_* methods.
+---------------------------------------------------------------------------------------------
 local check = require(gvv.defines.lualib.common.check)
 ---------------------------------------------------------------------------------------------
 
--- FR : gui_name-type-name, aucune partie ne contient de « - »
--- EN : gui_name-type-name, no part contains "-"
+-- FR : Format d'un nom d'élément : gui_name-type-name, aucune des trois parties ne contient de « - »
+-- EN : Element name format: gui_name-type-name, none of the three parts contains "-"
 local NAME_PATTERN = "^([^-]+)-([^-]+)-([^-]+)$"
 
 
@@ -41,18 +50,37 @@ local NAME_PATTERN = "^([^-]+)-([^-]+)-([^-]+)$"
 ---@field content table        Chemins des éléments depuis gui[1] / Element paths from gui[1]
 ---@field gui_action table<string, string|function> Action -> méthode / Action -> method
 GvvGui = gvv.classFactory.newclass(GvvPlayer, function(self, event, gui_name, main_gui)
+    -- FR : Le joueur vient de l'évènement (event.player_index) ; sans évènement, pas de joueur
+    -- EN : The player comes from the event (event.player_index); without event, no player
     local player = nil
     if check.isTable(event) and event.player_index then
         player = game.get_player(event.player_index)
     end
+
+    -- FR : Initialisation de la partie joueur (classe parente GvvPlayer)
+    -- EN : Initialise the player part (parent class GvvPlayer)
     GvvPlayer.init(self, player)
     self.object_name = "GvvGui"
+
     --------------------------------------------------
+    -- FR : L'évènement reçu et l'élément concerné (nil pour un raccourci clavier, par exemple)
+    -- EN : The received event and the element concerned (nil for a keyboard shortcut, for example)
     self.event = event
     self.element = check.tryGet(event, "element")
+
+    -- FR : Identité de la fenêtre : préfixe de ses noms (ex. « gvv_main ») et élément racine (ex. « frame-main »)
+    -- EN : Window identity: prefix of its names (e.g. "gvv_main") and root element (e.g. "frame-main")
     self.gui_name = check.defaultValue(gui_name, "")
     self.main_gui = check.defaultValue(main_gui, "")
-    -- FR : Remplis par chaque fenêtre / Filled by each window
+
+    -- FR : Remplis par chaque fenêtre (classe enfant) :
+    --        gui[1]     : conteneur où vit la fenêtre (ex. player.gui.screen)
+    --        content    : chemins des éléments (getContent du fichier gui/)
+    --        gui_action : action -> méthode à appeler
+    -- EN : Filled by each window (child class):
+    --        gui[1]     : container where the window lives (e.g. player.gui.screen)
+    --        content    : element paths (getContent of the gui/ file)
+    --        gui_action : action -> method to call
     self.gui = {}
     self.content = {}
     self.gui_action = {}
@@ -61,23 +89,41 @@ end)
 ----------------------------------------------------------------
 
 
----FR : Découpe un nom d'élément en gui_name, type court et name. Renvoie nil si le nom ne suit pas le format.
----EN : Splits an element name into gui_name, short type and name. Returns nil if the name doesn't follow the format.
+---FR : Découpe un nom d'élément en gui_name, type court et name.
+---     Renvoie nil si le nom ne suit pas le format (ex. les anciens noms « _gvv-mod_... »).
+---EN : Splits an element name into gui_name, short type and name.
+---     Returns nil if the name doesn't follow the format (e.g. the old "_gvv-mod_..." names).
 ---@param name any
 ---@return string? gui_name
 ---@return string? short_type
 ---@return string? element_name
 function GvvGui.splitName(name)
-    if not check.isString(name) then return nil end
+    -- FR : Pas un texte : rien à découper
+    -- EN : Not a text: nothing to split
+    if not check.isString(name) then
+        return nil
+    end
+
+    -- FR : « gvv_main-button-close » donne « gvv_main », « button », « close »
+    -- EN : "gvv_main-button-close" gives "gvv_main", "button", "close"
     return name:match(NAME_PATTERN)
 end
 
 
----FR : Élément racine de la fenêtre (gui_name-main_gui dans gui[1]), ou nil s'il n'existe pas.
----EN : Root element of the window (gui_name-main_gui inside gui[1]), or nil if it doesn't exist.
+---FR : Élément racine de la fenêtre (gui_name-main_gui dans gui[1]), ou nil s'il n'existe pas
+---     (fenêtre fermée).
+---EN : Root element of the window (gui_name-main_gui inside gui[1]), or nil if it doesn't exist
+---     (window closed).
 ---@return LuaGuiElement?
 function GvvGui:getMainElement()
-    if not check.isValidLuaObject(self.gui[1]) then return nil end
+    -- FR : Conteneur absent ou invalide : la fenêtre ne peut pas exister
+    -- EN : Missing or invalid container: the window cannot exist
+    if not check.isValidLuaObject(self.gui[1]) then
+        return nil
+    end
+
+    -- FR : ex. player.gui.screen["gvv_main-frame-main"]
+    -- EN : e.g. player.gui.screen["gvv_main-frame-main"]
     return check.tryGet(self.gui[1], self.gui_name .. "-" .. self.main_gui)
 end
 
@@ -90,18 +136,47 @@ end
 ---@param element_name? string
 ---@return LuaGuiElement?
 function GvvGui:getElement(element_type, element_name)
+    -- FR : Chemin de l'élément dans self.content (rempli par getContent de la fenêtre)
+    --      ex. content.button.close = { "frame-main", "flow-header", "button-close" }
+    -- EN : Element path in self.content (filled by the window's getContent)
+    --      e.g. content.button.close = { "frame-main", "flow-header", "button-close" }
     local path
     if element_name ~= nil then
+        -- FR : Élément rangé par type puis par nom : content[type][name]
+        -- EN : Element sorted by type then name: content[type][name]
         path = check.getPath(self.content, {element_type, element_name})
     else
+        -- FR : Élément rangé par type seulement : content[type]
+        -- EN : Element sorted by type only: content[type]
         path = check.tryGet(self.content, element_type)
     end
-    if not check.isTable(path) then return nil end
+
+    -- FR : Chemin inconnu : rien à chercher
+    -- EN : Unknown path: nothing to look for
+    if not check.isTable(path) then
+        return nil
+    end
+
+    -- FR : On part du conteneur de la fenêtre (ex. player.gui.screen)
+    -- EN : Start from the window container (e.g. player.gui.screen)
     local element = self.gui[1]
+
+    -- FR : On descend étape par étape ; chaque nom en jeu est préfixé par gui_name
+    --      (« frame-main » devient « gvv_main-frame-main »)
+    -- EN : Go down step by step; each in-game name is prefixed by gui_name
+    --      ("frame-main" becomes "gvv_main-frame-main")
     for _, name in ipairs(path) do
         element = check.tryGet(element, self.gui_name .. "-" .. name)
-        if element == nil then return nil end
+
+        -- FR : Une étape manque (fenêtre fermée, élément pas encore créé) : on s'arrête sans erreur
+        -- EN : A step is missing (window closed, element not created yet): stop without error
+        if element == nil then
+            return nil
+        end
     end
+
+    -- FR : Élément trouvé
+    -- EN : Element found
     return element
 end
 
@@ -111,13 +186,31 @@ end
 ---@param action string
 ---@return boolean
 function GvvGui:actionGui(action, ...)
+    -- FR : Méthode associée à l'action, ex. gui_action["button-close"] = "action_close"
+    -- EN : Method linked to the action, e.g. gui_action["button-close"] = "action_close"
     local method = self.gui_action[action]
-    if method == nil then return false end
-    if check.isString(method) then method = self[method] end
+
+    -- FR : Action inconnue de cette fenêtre : pas traitée ici
+    -- EN : Action unknown to this window: not handled here
+    if method == nil then
+        return false
+    end
+
+    -- FR : La méthode peut être donnée par son nom (cas habituel) ou directement par une fonction
+    -- EN : The method can be given by its name (usual case) or directly as a function
+    if check.isString(method) then
+        method = self[method]
+    end
+
+    -- FR : Nom de méthode qui n'existe pas dans la classe : erreur de programmation, on la note dans le log
+    -- EN : Method name that doesn't exist in the class: programming error, written to the log
     if type(method) ~= "function" then
         log('> ' .. self.object_name .. ':actionGui(' .. action .. ') : no method !')
         return false
     end
+
+    -- FR : Appel de la méthode sur cette fenêtre
+    -- EN : Call the method on this window
     method(self, ...)
     return true
 end
@@ -130,22 +223,100 @@ end
 ---@param suffix? string
 ---@return boolean
 function GvvGui:dispatch(suffix, ...)
-    if not self.isPresent then return false end
-    if not check.isValidLuaObject(self.element) then return false end
+    -- FR : Joueur absent ou invalide : rien à faire
+    -- EN : Missing or invalid player: nothing to do
+    if not self.isPresent then
+        return false
+    end
+
+    -- FR : Pas d'élément (raccourci clavier...) ou élément détruit : rien à faire
+    -- EN : No element (keyboard shortcut...) or destroyed element: nothing to do
+    if not check.isValidLuaObject(self.element) then
+        return false
+    end
+
+    -- FR : Découpage du nom : « gvv_main-button-close » donne « gvv_main », « button », « close »
+    -- EN : Name split: "gvv_main-button-close" gives "gvv_main", "button", "close"
     local gui_name, short_type, element_name = GvvGui.splitName(self.element.name)
-    if gui_name == nil or gui_name ~= self.gui_name then return false end
+
+    -- FR : Élément d'une autre fenêtre, ou ancien nom : pas pour nous
+    -- EN : Element of another window, or old name: not for us
+    if gui_name == nil or gui_name ~= self.gui_name then
+        return false
+    end
+
+    -- FR : Action = type-name, suivie du suffixe de l'évènement s'il y en a un
+    --      (clic : « button-close » ; sélection : « listbox-mods-selection_state_changed »)
+    -- EN : Action = type-name, followed by the event suffix if any
+    --      (click: "button-close"; selection: "listbox-mods-selection_state_changed")
     local action = short_type .. "-" .. element_name
-    if suffix ~= nil then action = action .. "-" .. suffix end
+    if suffix ~= nil then
+        action = action .. "-" .. suffix
+    end
+
+    -- FR : Appel de la méthode associée (true si elle existe)
+    -- EN : Call the linked method (true if it exists)
     return self:actionGui(action, ...)
 end
 
 
--- FR : Un point d'entrée par évènement GUI / EN : One entry point per GUI event
-function GvvGui:on_gui_click(...) return self:dispatch(nil, ...) end
-function GvvGui:on_gui_closed(...) return self:dispatch("closed", ...) end
-function GvvGui:on_gui_confirmed(...) return self:dispatch("confirmed", ...) end
-function GvvGui:on_gui_value_changed(...) return self:dispatch("value_changed", ...) end
-function GvvGui:on_gui_text_changed(...) return self:dispatch("text_changed", ...) end
-function GvvGui:on_gui_checked_state_changed(...) return self:dispatch("checked_state_changed", ...) end
-function GvvGui:on_gui_selection_state_changed(...) return self:dispatch("selection_state_changed", ...) end
-function GvvGui:on_gui_selected_tab_changed(...) return self:dispatch("selected_tab_changed", ...) end
+---------------------------------------------------------------------------------------------
+-- FR : Un point d'entrée par évènement GUI. Chacun renvoie true si l'évènement a été traité.
+-- EN : One entry point per GUI event. Each returns true if the event was handled.
+---------------------------------------------------------------------------------------------
+
+---FR : Clic sur un élément. Action sans suffixe (ex. « button-close »).
+---EN : Click on an element. Action without suffix (e.g. "button-close").
+---@return boolean
+function GvvGui:on_gui_click(...)
+    return self:dispatch(nil, ...)
+end
+
+---FR : Fermeture d'un élément (Échap, ou player.opened remplacé). Action « type-name-closed ».
+---EN : Element closed (Escape, or player.opened replaced). Action "type-name-closed".
+---@return boolean
+function GvvGui:on_gui_closed(...)
+    return self:dispatch("closed", ...)
+end
+
+---FR : Validation d'un champ texte (Entrée). Action « type-name-confirmed ».
+---EN : Text field confirmed (Enter). Action "type-name-confirmed".
+---@return boolean
+function GvvGui:on_gui_confirmed(...)
+    return self:dispatch("confirmed", ...)
+end
+
+---FR : Valeur d'un curseur modifiée. Action « type-name-value_changed ».
+---EN : Slider value changed. Action "type-name-value_changed".
+---@return boolean
+function GvvGui:on_gui_value_changed(...)
+    return self:dispatch("value_changed", ...)
+end
+
+---FR : Texte d'un champ modifié. Action « type-name-text_changed ».
+---EN : Field text changed. Action "type-name-text_changed".
+---@return boolean
+function GvvGui:on_gui_text_changed(...)
+    return self:dispatch("text_changed", ...)
+end
+
+---FR : Case à cocher ou bouton radio modifié. Action « type-name-checked_state_changed ».
+---EN : Checkbox or radio button changed. Action "type-name-checked_state_changed".
+---@return boolean
+function GvvGui:on_gui_checked_state_changed(...)
+    return self:dispatch("checked_state_changed", ...)
+end
+
+---FR : Sélection modifiée dans une liste ou un menu déroulant. Action « type-name-selection_state_changed ».
+---EN : Selection changed in a list or drop-down. Action "type-name-selection_state_changed".
+---@return boolean
+function GvvGui:on_gui_selection_state_changed(...)
+    return self:dispatch("selection_state_changed", ...)
+end
+
+---FR : Onglet sélectionné modifié. Action « type-name-selected_tab_changed ».
+---EN : Selected tab changed. Action "type-name-selected_tab_changed".
+---@return boolean
+function GvvGui:on_gui_selected_tab_changed(...)
+    return self:dispatch("selected_tab_changed", ...)
+end

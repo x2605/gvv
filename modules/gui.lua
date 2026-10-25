@@ -23,7 +23,12 @@ local gui_classes = {
 -- EN : Runs a GUI handler inside a pcall: an error is shown to the player instead of crashing.
 local function protected(handler)
     return function(event)
+        -- FR : Exécution protégée du handler
+        -- EN : Protected run of the handler
         local success, message = pcall(handler, event)
+
+        -- FR : En cas d'erreur, le message est affiché dans le chat du joueur concerné
+        -- EN : On error, the message is printed in the chat of the player concerned
         if not success and event.player_index then
             game.get_player(event.player_index).print('[font=var-outline-gvv-mod]' .. message .. '[/font]', {1, 0.85, 0.7, 1})
         end
@@ -32,20 +37,33 @@ end
 
 
 -- FR : Construit le handler d'un évènement GUI : fenêtres migrées d'abord, puis ancien code.
+--      method_name : nom de la méthode à appeler, ex. « on_gui_click ».
 -- EN : Builds the handler of a GUI event: migrated windows first, then old code.
+--      method_name : name of the method to call, e.g. "on_gui_click".
 local function dispatcher(method_name)
     return protected(function(event)
+        -- FR : Chaque fenêtre migrée reçoit l'évènement ; la première qui le traite (true) arrête la recherche
+        -- EN : Each migrated window receives the event; the first one that handles it (true) stops the search
         for _, gui_class in ipairs(gui_classes) do
             local gui = gui_class(event)
-            if gui[method_name] and gui[method_name](gui) then return end
+            if gui[method_name] and gui[method_name](gui) then
+                return
+            end
         end
+
+        -- FR : Aucune fenêtre migrée ne l'a traité : l'ancien code s'en charge
+        -- EN : No migrated window handled it: the old code takes care of it
         local legacy_handler = Legacy_Gui_Event[method_name]
-        if legacy_handler then legacy_handler(event) end
+        if legacy_handler then
+            legacy_handler(event)
+        end
     end)
 end
 
 
 ---------------------------------------------------------------------------------------------
+-- FR : Module envoyé à l'event handler (core/modules.lua)
+-- EN : Module sent to the event handler (core/modules.lua)
 local module = {events = {}}
 ---------------------------------------------------------------------------------------------
 -- FR : Évènements GUI
