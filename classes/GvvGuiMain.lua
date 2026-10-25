@@ -126,12 +126,16 @@ function GvvGuiMain:open()
     local element = fGui.getElement(self.gui_name)
 
     --------------------------------------------------
-    -- FR : Cadre principal, en haut à gauche, à la dernière taille choisie
-    -- EN : Main frame, top left, at the last chosen size
+    -- FR : Cadre principal, à la dernière taille choisie, centré à l'écran
+    --      (avant 0.6, il s'ouvrait en haut à gauche : location = {0, 0}).
+    --      Le centrage est activé une fois la taille donnée, pour être calculé sur la bonne taille.
+    -- EN : Main frame, at the last chosen size, centred on screen
+    --      (before 0.6, it opened top left: location = {0, 0}).
+    --      Centring is enabled once the size is given, so it is computed on the right size.
     local frame = self.gui[1].add(element.frame.main)
-    frame.location = {0, 0}
     frame.style.width = data.last_width
     frame.style.height = data.last_height
+    frame.auto_center = true
 
     --------------------------------------------------
     -- FR : Barre de titre : fond, titre, zone de déplacement, bouton fermer
