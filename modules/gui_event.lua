@@ -113,7 +113,7 @@ Gui_Event.on_gui_click = function(event)
     local list = player_data.data.tracking_list
     local array = {}
     for index, elem in pairs(panel.children) do
-      array[i] = {
+      array[index] = {
         index = index,
         checked = elem.header.check_to_remove.state,
         path_str = elem.name,
@@ -141,7 +141,7 @@ Gui_Event.on_gui_click = function(event)
       elem.destroy()
     end
     for index, v in ipairs(array) do
-      Tracking.draw(panel, value.path_str, value.full_path, value.preinput)
+      Tracking.draw(panel, v.path_str, v.full_path, v.preinput)
     end
 
   --추적 항목 체크 조정 버튼
@@ -196,8 +196,8 @@ Gui_Event.on_gui_click = function(event)
       end
     end
     for index, v in ipairs(codes) do
-      codes[i] = v:gsub('^\n',''):gsub('\n$','')
-      if codes[i]:gsub('^%s*(.-)%s*$', '%1') ~= '' then import_codes[#import_codes + 1] = codes[i] end
+      codes[index] = v:gsub('^\n',''):gsub('\n$','')
+      if codes[index]:gsub('^%s*(.-)%s*$', '%1') ~= '' then import_codes[#import_codes + 1] = codes[index] end
     end
     local panel = player_data.gui.tracking_panel
     local list = player_data.data.tracking_list
@@ -502,7 +502,7 @@ Gui_Event.on_gui_click = function(event)
     end
     Tracking.add(player_data, code)
     for index, v in ipairs(buffer) do
-      Tracking.draw(panel, value.path_str, value.full_path, value.preinput)
+      Tracking.draw(panel, v.path_str, v.full_path, v.preinput)
     end
     local top = Util.get_top_frame(event.element)
     if top and top.valid then
