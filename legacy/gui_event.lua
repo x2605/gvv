@@ -16,20 +16,8 @@ local Search_Tree = require(gvv.defines.legacy.search_tree)
 
 local Gui_Event = {}
 
-local simple_frame_names = {
-  ['_gvv-mod_dump_frame_'] = true,
-  ['_gvv-mod_anycode_frame_'] = true,
-  ['_gvv-mod_copy_tracking_code_frame_'] = true,
-  ['_gvv-mod_edit_tracking_code_frame_'] = true,
-  ['_gvv-mod_export_tracking_code_frame_'] = true,
-  ['_gvv-mod_import_tracking_code_frame_'] = true,
-}
-local other_frames_to_close_when_focusing_main = {
-  ['_gvv-mod_anycode_frame_'] = true,
-  ['_gvv-mod_copy_tracking_code_frame_'] = true,
-  ['_gvv-mod_export_tracking_code_frame_'] = true,
-  ['_gvv-mod_import_tracking_code_frame_'] = true,
-}
+-- FR : Listes des petites fenêtres : maintenant dans gui/dialogs.lua (KINDS)
+-- EN : Small windows lists: now in gui/dialogs.lua (KINDS)
 
 --트리 경로를 따라 값 찾기. 중간에 없어지면 nil
 --Follow tree path from value. Returns nil if something is gone on the way
@@ -59,11 +47,7 @@ Gui_Event.on_gui_click = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
   local player = game.get_player(event.player_index)
-  local topframe = Util.get_top_frame(event.element)
-  if event.element.name == 'closebtn' and topframe and simple_frame_names[topframe.name] then
-    topframe.destroy()
-    return
-  end
+  -- FR : Bouton fermer des petites fenêtres : géré par GvvGuiDialog / EN : Small windows close button: handled by GvvGuiDialog
 
   if not storage.players then return end
   local player_data = storage.players[event.player_index]
@@ -179,57 +163,7 @@ Gui_Event.on_gui_click = function(event)
       Gui.import_window(player_data)
     end
 
-  --추적 항목 가져오기 버튼 - 가져오기
-  elseif event.element == player_data.gui.imconf then
-    local raw = event.element.parent.parent['_gvv-mod_import_tracking_code_code_'].text
-    local r, codes = true, {}
-    local import_codes = {}
-    local c = 0
-    while r do
-      codes[#codes + 1] = raw:match('^(.-)(%-%-%[%[%]%]%-%-)')
-      raw, c = raw:gsub('^(.-)(%-%-%[%[%]%]%-%-)','')
-      if c == 0 then
-        codes[#codes + 1] = raw
-        r = false
-      end
-    end
-    for index, v in ipairs(codes) do
-      codes[index] = v:gsub('^\n',''):gsub('\n$','')
-      if codes[index]:gsub('^%s*(.-)%s*$', '%1') ~= '' then import_codes[#import_codes + 1] = codes[index] end
-    end
-    local panel = player_data.gui.tracking_panel
-    local list = player_data.data.tracking_list
-    local pnsize, imsize = #panel.children, #import_codes
-    local dup_count, new_count = 0, 0
-    local duplicate
-    for ii = 1, pnsize do
-      panel.children[ii].header.check_to_remove.state = false
-    end
-    for i = 1, imsize do
-      duplicate = false
-      for ii = 1, pnsize do
-        if panel.children[ii].name == import_codes[i] then
-          duplicate = true
-          import_codes[i] = nil
-          panel.children[ii].header.check_to_remove.state = true
-          dup_count = dup_count + 1
-          break
-        end
-      end
-      if not duplicate then
-        Tracking.add(player_data, import_codes[i])
-        new_count = new_count + 1
-      end
-    end
-    for i = pnsize + 1, #panel.children do
-      panel.children[i].header.check_to_remove.state = true
-    end
-    local top = Util.get_top_frame(event.element)
-    if top and top.valid then
-      top.destroy()
-    end
-    Gui.change_tab(player_data, 1)
-    game.get_player(player_data.index).print('(gvv) '..new_count..' new entries imported.  /  '..dup_count..' entries already exist.')
+  --추적 항목 가져오기 버튼 - 가져오기 : FR : géré par GvvGuiDialog / EN : handled by GvvGuiDialog
 
   --추적 갱신
   elseif event.element == player_data.gui.track_refresh_btn then
@@ -451,62 +385,8 @@ Gui_Event.on_gui_click = function(event)
     local page_name = event.element.name:match('^_gvv[-]mod_c_sub_help_/(.+)$')
     Help_Menu.draw_page(player_data, page_name)
 
-  -- _gvv-mod_anycode_frame_ 의 입력버튼을 클릭할 때
-  elseif player_data.gui.icconf and player_data.gui.icconf.valid and event.element == player_data.gui.icconf then
-    local code = event.element.parent.parent['_gvv-mod_anycode_code_']
-    Tracking.add(player_data, code.text)
-    local top = Util.get_top_frame(event.element)
-    if top and top.valid then
-      top.destroy()
-    end
-    Gui.change_tab(player_data, 1)
-
-  -- _gvv-mod_copy_tracking_code_frame_ 의 편집버튼을 클릭할 때
-  elseif player_data.gui.ecedit and player_data.gui.ecedit.valid and event.element == player_data.gui.ecedit then
-    local name = event.element.parent.parent.entry_name_buffer.caption
-    local code = event.element.parent.parent['_gvv-mod_uneditable_text_buffer_'].caption
-    local succ = Gui.edit_code_in_tracking(player_data, code, name)
-    if succ then
-      local top = Util.get_top_frame(event.element)
-      if top and top.valid then
-        top.destroy()
-      end
-    end
-
-  -- _gvv-mod_edit_tracking_code_frame_ 의 편집 확인 버튼을 클릭할 때
-  elseif player_data.gui.ecconf and player_data.gui.ecconf.valid and event.element == player_data.gui.ecconf then
-    local name = event.element.parent.parent.sc.entry_name_buffer.caption
-    local code = event.element.parent.parent['_gvv-mod_edit_tracking_code_code_'].text
-    local panel = player_data.gui.tracking_panel
-    local list = player_data.data.tracking_list
-    local buffer = {}
-    local start_adding_buffer = false
-    for index, elem in ipairs(panel.children) do
-      if start_adding_buffer then
-        buffer[#buffer + 1] = {
-          path_str = elem.name,
-          full_path = list[elem.name],
-          preinput = {
-            remchk = elem.header.check_to_remove.state,
-            value = elem.body['_gvv-mod_tracking_output_'].caption
-          }
-        }
-        elem.destroy()
-      elseif elem.name == name then
-        list[elem.name] = nil
-        elem.destroy()
-        start_adding_buffer = true
-      end
-    end
-    Tracking.add(player_data, code)
-    for index, v in ipairs(buffer) do
-      Tracking.draw(panel, v.path_str, v.full_path, v.preinput)
-    end
-    local top = Util.get_top_frame(event.element)
-    if top and top.valid then
-      top.destroy()
-    end
-    Gui.change_tab(player_data, 1)
+  -- _gvv-mod_anycode_frame_, _gvv-mod_copy_tracking_code_frame_, _gvv-mod_edit_tracking_code_frame_ :
+  -- FR : boutons gérés par GvvGuiDialog / EN : buttons handled by GvvGuiDialog
 
   --tracking_panel 의 경로를 우클릭할 때
   elseif event.element.name == '_gvv-mod_tracking_path_str_' and event.button == defines.mouse_button_type.right then
@@ -583,43 +463,16 @@ Gui_Event.on_gui_click = function(event)
 
   --메인 프레임을 클릭할 때 (이 조건은 가장 마지막에)
   elseif Util.find_parent_gui(event.element, player_data.gui.frame) then
-    local frame
-    for frame_name in pairs(other_frames_to_close_when_focusing_main) do
-      frame = player.gui.screen[frame_name]
-      if frame and frame.valid then
-        if frame_name == '_gvv-mod_anycode_frame_' then
-          local text = frame.innerframe['_gvv-mod_anycode_code_'].text
-          if text == '' then
-            frame.destroy()
-          end
-        --elseif frame_name == '_gvv-mod_import_tracking_code_frame_' then
-          --local text = frame.innerframe['_gvv-mod_import_tracking_code_code_'].text
-          --if text == '' then
-          --  frame.destroy()
-          --end
-        else
-          frame.destroy()
-        end
-      end
-    end
+    -- FR : Ferme les petites fenêtres concernées (anycode seulement si vide) / EN : Closes the small windows concerned (anycode only if empty)
+    GvvGuiDialog(event):closeOnMainFocus()
 
   end
 end
 
 Gui_Event.on_gui_closed = function(event)
+  -- FR : Fermeture des petites fenêtres (Échap) : gérée par GvvGuiDialog / EN : Small windows closing (Escape): handled by GvvGuiDialog
   if event.element then
     if event.element.player_index ~= event.player_index then return end
-    if simple_frame_names[event.element.name] then
-      if event.element.name == '_gvv-mod_anycode_frame_' then
-        local text = event.element.innerframe['_gvv-mod_anycode_code_'].text
-        if text == '' then
-          event.element.destroy()
-        end
-      else
-        event.element.destroy()
-      end
-      return
-    end
   end
 
   if not storage.players then return end
@@ -755,14 +608,8 @@ Gui_Event.on_gui_text_changed = function(event)
   local player_data = storage.players[event.player_index]
   if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
 
-  if event.element.name == '_gvv-mod_anycode_code_' then
-    if event.element.text == '' then
-      local player = game.get_player(event.player_index)
-      if player.opened_gui_type == defines.gui_type.none then
-        player.opened = Util.get_top_frame(event.element)
-      end
-    end
-  elseif event.element == player_data.gui.search_glob_input then
+  -- FR : Code de la fenêtre anycode : géré par GvvGuiDialog / EN : anycode window code: handled by GvvGuiDialog
+  if event.element == player_data.gui.search_glob_input then
     player_data.search_settings.glob.text = event.element.text
     Search_Tree.refresh(player_data, 'glob')
   elseif event.element == player_data.gui.search_prop_input then

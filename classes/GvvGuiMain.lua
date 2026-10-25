@@ -108,6 +108,9 @@ function GvvGuiMain:open()
     if check.isValidLuaObject(legacy_frame) then
         legacy_frame.destroy()
     end
+    -- FR : Même chose pour les anciennes petites fenêtres
+    -- EN : Same for the old small windows
+    GvvGuiDialog(self.event):destroyLegacy()
 
     -- FR : Les références d'éléments de l'ancien code repartent de zéro
     --      (elles pointaient vers une fenêtre qui n'existe plus)
@@ -277,9 +280,9 @@ function GvvGuiMain:close(ignore_save)
         frame.destroy()
     end
 
-    -- FR : Destruction des petites fenêtres de gvv (copie, code, édition, export, import)
-    -- EN : Destroy gvv's small windows (copy, code, edit, export, import)
-    Legacy_Gui.close_dialogs(self.player)
+    -- FR : Destruction des petites fenêtres de gvv (code, copie, édition, export, import)
+    -- EN : Destroy gvv's small windows (code, copy, edit, export, import)
+    GvvGuiDialog(self.event):closeWithMain()
 
     -- FR : La sauvegarde a échoué : l'erreur est remontée (affichée dans le chat), comme avant
     -- EN : The save failed: the error is raised (shown in the chat), as before

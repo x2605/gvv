@@ -14,7 +14,6 @@ local check = require(gvv.defines.lualib.common.check)
 ---------------------------------------------------------------------------------------------
 -- FR : Ancien code, utilisé par la migration 0.6.0
 -- EN : Old code, used by the 0.6.0 migration
-local Legacy_Gui = require(gvv.defines.legacy.gui)
 local Legacy_Tree = require(gvv.defines.legacy.tree)
 ---------------------------------------------------------------------------------------------
 
@@ -105,12 +104,9 @@ local function migration_0_6_0()
             old_frame.destroy()
         end
 
-        -- FR : Petites fenêtres de gvv encore ouvertes (joueur toujours présent seulement)
-        -- EN : gvv's small windows still open (player still present only)
-        local player = game.get_player(index)
-        if check.isValidLuaObject(player) then
-            Legacy_Gui.close_dialogs(player)
-        end
+        -- FR : Anciennes petites fenêtres de gvv encore ouvertes (joueur toujours présent seulement)
+        -- EN : Old gvv small windows still open (player still present only)
+        GvvGuiDialog({ player_index = index }):destroyLegacy()
 
         -- FR : Les anciennes références d'éléments ne servent plus
         -- EN : The old element references are no longer used

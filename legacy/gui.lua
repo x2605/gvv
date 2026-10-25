@@ -9,13 +9,6 @@ local Help_Menu = require(gvv.defines.legacy.help_menu)
 local Gui = {}
 
 local gobjlist = {'game', 'script', 'remote', 'commands', 'settings', 'prototypes', 'rcon', 'rendering', 'helpers', 'defines'}
-local other_frames_to_close_when_closing_main = {
-  ['_gvv-mod_anycode_frame_'] = true,
-  ['_gvv-mod_copy_tracking_code_frame_'] = true,
-  ['_gvv-mod_edit_tracking_code_frame_'] = true,
-  ['_gvv-mod_export_tracking_code_frame_'] = true,
-  ['_gvv-mod_import_tracking_code_frame_'] = true,
-}
 
 -- 메인 윈도우
 -- FR : Fenêtre principale : maintenant construite par classes/GvvGuiMain.lua (étape 3.1).
@@ -29,18 +22,6 @@ end
 -- 메인 윈도우 닫기
 Gui.close_main = function(g, ignore_save)
   GvvGuiMain({player_index = g.index}):close(ignore_save)
-end
-
--- FR : Ferme les petites fenêtres de gvv (copie, code, édition, export, import). Appelé par GvvGuiMain:close.
--- EN : Closes gvv's small windows (copy, code, edit, export, import). Called by GvvGuiMain:close.
-Gui.close_dialogs = function(player)
-  local frame
-  for frame_name in pairs(other_frames_to_close_when_closing_main) do
-    frame = player.gui.screen[frame_name]
-    if frame and frame.valid then
-      frame.destroy()
-    end
-  end
 end
 
 -- FR : Boutons propres aux onglets, dans flow-tools de la barre d'outils (repris de l'ancien open_main).
@@ -328,64 +309,17 @@ Gui.fill_tracking = function(g, first_time)
   end
 end
 -- 내용을 복사할 수 있는 미니 윈도우1
+-- FR : Petites fenêtres : maintenant construites par classes/GvvGuiDialog.lua (étape 3.2).
+--      Ces fonctions restent comme points d'entrée pour l'ancien code (/gdump, onglet suivi).
+-- EN : Small windows: now built by classes/GvvGuiDialog.lua (step 3.2).
+--      These functions stay as entry points for the old code (/gdump, tracking tab).
 Gui.copyable_dump = function(player_index, str, title)
-  local player = game.get_player(player_index)
-  local frame = player.gui.screen['_gvv-mod_dump_frame_']
-  local closebtn, innerframe
-
-  if frame and frame.valid then
-    frame.destroy()
-  end
-
-  frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_dump_frame_', title)
-  innerframe.add{type = 'textfield', name = '_gvv-mod_uneditable_text_',
-    text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"},
-  }
-  innerframe['_gvv-mod_uneditable_text_'].focus()
-  innerframe['_gvv-mod_uneditable_text_'].select_all()
-  innerframe['_gvv-mod_uneditable_text_'].style.width = 400
-  innerframe.add{type = 'label', name = '_gvv-mod_uneditable_text_buffer_', caption = str}
-  innerframe['_gvv-mod_uneditable_text_buffer_'].visible = false
-
-  player.opened = frame
+  GvvGuiDialog({player_index = player_index}):openDump(str, title)
 end
 
 -- 코드를 입력하는 미니 윈도우
 Gui.put_anycode_in_tracking = function(g)
-  local player = game.get_player(g.index)
-  local frame = player.gui.screen['_gvv-mod_anycode_frame_']
-  local closebtn, innerframe
-
-  if frame and frame.valid then
-    frame.focus()
-    --frame.innerframe['_gvv-mod_anycode_code_'].focus()
-    frame.force_auto_center()
-    error('Already an input window is opened.')
-    return
-  end
-
-  frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_anycode_frame_', {"gvv-mod.input-code"})
-  innerframe.add{type = 'text-box', name = '_gvv-mod_anycode_code_', text = '', clear_and_focus_on_right_click = false}
-  innerframe['_gvv-mod_anycode_code_'].focus()
-  innerframe['_gvv-mod_anycode_code_'].style.width = 600
-  innerframe['_gvv-mod_anycode_code_'].style.height = 200
-  innerframe['_gvv-mod_anycode_code_'].style.font = 'default-semibold'
-
-  local right = innerframe.add{type = 'flow', direction = 'horizontal'}
-  right.style.horizontal_align = 'right'
-  right.style.horizontally_stretchable = true
-  right.style.left_padding = 0
-  right.style.top_padding = 6
-  local drag = right.add{type = 'empty-widget', name = 'dragspace', style = 'draggable_space_header'}
-  drag.drag_target = frame
-  drag.style.left_margin = 0
-  drag.style.right_margin = 8
-  drag.style.height = 32
-  drag.style.horizontally_stretchable = true
-  g.gui.icconf = right.add{type = 'button', caption = {"gvv-mod.confirm-input-code"}, style = 'confirm_button', mouse_button_filter = {'left'}}
-
-  player.opened = frame
-  return true
+  return GvvGuiDialog({player_index = g.index}):openAnycode()
 end
 
 -- 탭 변경
@@ -448,175 +382,22 @@ end
 
 -- 내용을 복사할 수 있는 미니 윈도우2
 Gui.copyable_tracking_code = function(g, str, entry_name)
-  local player = game.get_player(g.index)
-  local frame = player.gui.screen['_gvv-mod_copy_tracking_code_frame_']
-  local closebtn, innerframe
-
-  if frame and frame.valid then
-    frame.destroy()
-  end
-
-  str = str:gsub('^“',''):gsub('”$','')
-  local newline_count = select(2, str:gsub('\n',''))
-
-  frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_copy_tracking_code_frame_', {"gvv-mod.copy-code"})
-
-  if newline_count > 0 then
-    local height = 23 + 23 * newline_count
-    if height > 400 then height = 400 end
-    innerframe.add{type = 'text-box', name = '_gvv-mod_uneditable_text_',
-      text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"},
-    }
-    innerframe['_gvv-mod_uneditable_text_'].style.height = height
-  else
-    innerframe.add{type = 'textfield', name = '_gvv-mod_uneditable_text_',
-      text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"},
-    }
-  end
-  innerframe['_gvv-mod_uneditable_text_'].focus()
-  innerframe['_gvv-mod_uneditable_text_'].select_all()
-  innerframe['_gvv-mod_uneditable_text_'].style.width = 400
-  innerframe.add{type = 'label', name = '_gvv-mod_uneditable_text_buffer_', caption = str}
-  innerframe['_gvv-mod_uneditable_text_buffer_'].visible = false
-
-  if entry_name then
-    local entry_name_buffer = innerframe.add{type = 'label', name = 'entry_name_buffer', caption = entry_name}
-    entry_name_buffer.visible = false
-    local center = innerframe.add{type = 'flow', direction = 'horizontal'}
-    center.style.horizontal_align = 'center'
-    center.style.horizontally_stretchable = true
-    center.style.left_padding = 0
-    center.style.right_padding = 0
-    center.style.top_padding = 6
-    local drag1 = center.add{type = 'empty-widget', name = 'dragspace1', style = 'draggable_space_header'}
-    drag1.drag_target = frame
-    drag1.style.left_margin = 0
-    drag1.style.right_margin = 8
-    drag1.style.height = 32
-    drag1.style.horizontally_stretchable = true
-    g.gui.ecedit = center.add{type = 'button', caption = {"gvv-mod.edit-code-btn"}, mouse_button_filter = {'left'}, style = 'dialog_button'}
-    local drag2 = center.add{type = 'empty-widget', name = 'dragspace2', style = 'draggable_space_header'}
-    drag2.drag_target = frame
-    drag2.style.left_margin = 8
-    drag2.style.right_margin = 0
-    drag2.style.height = 32
-    drag2.style.horizontally_stretchable = true
-  end
-
-  player.opened = frame
+  GvvGuiDialog({player_index = g.index}):openCopy(str, entry_name)
 end
 
 -- 코드를 편집하는 미니 윈도우
 Gui.edit_code_in_tracking = function(g, str, entry_name)
-  local player = game.get_player(g.index)
-  local frame = player.gui.screen['_gvv-mod_edit_tracking_code_frame_']
-  local closebtn, innerframe
-
-  if frame and frame.valid then
-    frame.focus()
-    --frame.innerframe['_gvv-mod_edit_tracking_code_code_'].focus()
-    frame.force_auto_center()
-    error('Already an edit window is opened.')
-    return
-  end
-
-  frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_edit_tracking_code_frame_', {"gvv-mod.edit-code-title"})
-  innerframe.add{type = 'scroll-pane', name = 'sc', vertical_scroll_policy = 'never', horizontal_scroll_policy = 'auto'}
-  innerframe.sc.style.width = 600
-  innerframe.sc.style.height = 39
-  innerframe.sc.add{type = 'label', name = 'entry_name_buffer', caption = entry_name}
-
-  innerframe.add{type = 'text-box', name = '_gvv-mod_edit_tracking_code_code_', text = '', clear_and_focus_on_right_click = false}
-  innerframe['_gvv-mod_edit_tracking_code_code_'].focus()
-  innerframe['_gvv-mod_edit_tracking_code_code_'].style.width = 600
-  innerframe['_gvv-mod_edit_tracking_code_code_'].style.height = 400
-  innerframe['_gvv-mod_edit_tracking_code_code_'].style.font = 'default-semibold'
-  innerframe['_gvv-mod_edit_tracking_code_code_'].text = str
-
-  local right = innerframe.add{type = 'flow', direction = 'horizontal'}
-  right.style.horizontal_align = 'right'
-  right.style.horizontally_stretchable = true
-  right.style.left_padding = 0
-  right.style.top_padding = 6
-  local drag = right.add{type = 'empty-widget', name = 'dragspace', style = 'draggable_space_header'}
-  drag.drag_target = frame
-  drag.style.left_margin = 0
-  drag.style.right_margin = 8
-  drag.style.height = 32
-  drag.style.horizontally_stretchable = true
-  g.gui.ecconf = right.add{type = 'button', caption = {"gvv-mod.confirm-edit-code"}, style = 'confirm_button', mouse_button_filter = {'left'}}
-
-  --player.opened = frame
-  return true
+  return GvvGuiDialog({player_index = g.index}):openEdit(str, entry_name)
 end
 
 --내보내기 윈도우
 Gui.export_window = function(g)
-  local player = game.get_player(g.index)
-  local frame = player.gui.screen['_gvv-mod_export_tracking_code_frame_']
-  local closebtn, innerframe
-
-  if frame and frame.valid then
-    frame.destroy()
-  end
-
-  local panel = g.gui.tracking_panel
-  local str = ''
-  for i, v in ipairs(panel.children) do
-    str = str .. v.name .. '\n--[[]]--\n'
-  end
-
-  frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_export_tracking_code_frame_', {"gvv-mod.export-code-title"})
-  innerframe.add{type = 'text-box', name = '_gvv-mod_uneditable_text_', text = str, clear_and_focus_on_right_click = true, tooltip = {"gvv-mod.right-to-select-all"}}
-  innerframe['_gvv-mod_uneditable_text_'].focus()
-  innerframe['_gvv-mod_uneditable_text_'].select_all()
-  innerframe['_gvv-mod_uneditable_text_'].style.width = 400
-  innerframe['_gvv-mod_uneditable_text_'].style.height = 300
-  innerframe.add{type = 'label', name = '_gvv-mod_uneditable_text_buffer_', caption = str}
-  innerframe['_gvv-mod_uneditable_text_buffer_'].visible = false
-
-  player.opened = frame
+  GvvGuiDialog({player_index = g.index}):openExport()
 end
 
 --가져오기 윈도우
 Gui.import_window = function(g)
-  local player = game.get_player(g.index)
-  local frame = player.gui.screen['_gvv-mod_import_tracking_code_frame_']
-  local closebtn, innerframe
-
-  if frame and frame.valid then
-    frame.destroy()
-  end
-
-  local panel = g.gui.tracking_panel
-  local str = ''
-  for i, v in ipairs(panel.children) do
-    str = str .. v.name .. '\n--[[]]--\n'
-  end
-
-  frame, closebtn, innerframe = Util.create_frame_w_closebtn(player, '_gvv-mod_import_tracking_code_frame_', {"gvv-mod.import-code-title"})
-  innerframe.add{type = 'label', name = 'comment', caption = {"gvv-mod.import-code-comment"}}
-  innerframe.comment.style.single_line = false
-  innerframe.comment.style.width = 400
-  innerframe.add{type = 'text-box', name = '_gvv-mod_import_tracking_code_code_', text = '', clear_and_focus_on_right_click = false}
-  innerframe['_gvv-mod_import_tracking_code_code_'].focus()
-  innerframe['_gvv-mod_import_tracking_code_code_'].style.width = 400
-  innerframe['_gvv-mod_import_tracking_code_code_'].style.height = 300
-
-  local right = innerframe.add{type = 'flow', direction = 'horizontal'}
-  right.style.horizontal_align = 'right'
-  right.style.horizontally_stretchable = true
-  right.style.left_padding = 0
-  right.style.top_padding = 6
-  local drag = right.add{type = 'empty-widget', name = 'dragspace', style = 'draggable_space_header'}
-  drag.drag_target = frame
-  drag.style.left_margin = 0
-  drag.style.right_margin = 8
-  drag.style.height = 32
-  drag.style.horizontally_stretchable = true
-  g.gui.imconf = right.add{type = 'button', caption = {"gvv-mod.import-code-btn"}, style = 'confirm_button', mouse_button_filter = {'left'}}
-
-  player.opened = frame
+  GvvGuiDialog({player_index = g.index}):openImport()
 end
 
 return Gui

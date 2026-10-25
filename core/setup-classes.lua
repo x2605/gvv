@@ -22,3 +22,4 @@ require(gvv.defines.class.player)        -- GvvPlayer : joueur / player
 require(gvv.defines.class.gui)           -- GvvGui : base des fenêtres (hérite de GvvPlayer) / windows base (inherits GvvPlayer)
 require(gvv.defines.class.gui_element)   -- GvvGuiElement : description d'un élément GUI / GUI element description
 require(gvv.defines.class.gui_main)      -- GvvGuiMain : fenêtre principale (hérite de GvvGui) / main window (inherits GvvGui)
+require(gvv.defines.class.gui_dialog)    -- GvvGuiDialog : petites fenêtres (hérite de GvvGui) / small windows (inherits GvvGui)

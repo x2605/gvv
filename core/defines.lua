@@ -35,12 +35,14 @@ local defines = {
         gui = directory .. ".classes.GvvGui",
         gui_element = directory .. ".classes.GvvGuiElement",
         gui_main = directory .. ".classes.GvvGuiMain",
+        gui_dialog = directory .. ".classes.GvvGuiDialog",
     },
 
     -- FR : Description des fenêtres (getElement / getContent)
     -- EN : Windows description (getElement / getContent)
     gui = {
         main = directory .. ".gui.main",
+        dialogs = directory .. ".gui.dialogs",
     },
 
     -- FR : Modules envoyés à l'event handler
