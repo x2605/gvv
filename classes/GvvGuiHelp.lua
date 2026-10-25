@@ -418,13 +418,29 @@ end
 ---FR : Bouton diagnostic : diagnostic du storage du mod saisi (lualib/common/doctor.lua).
 ---EN : Diagnose button: diagnosis of the typed mod storage (lualib/common/doctor.lua).
 function GvvGuiHelp:action_diagnose()
-    Doctor.take_a_look(self:getData(), typedModName(self), 'diag')
+    self:runDoctor('diag')
 end
 
 ---FR : Bouton nettoyage : nettoyage du storage du mod saisi (lualib/common/doctor.lua).
 ---EN : Fix button: cleaning of the typed mod storage (lualib/common/doctor.lua).
 function GvvGuiHelp:action_fix()
-    Doctor.take_a_look(self:getData(), typedModName(self), 'fix')
+    self:runDoctor('fix')
+end
+
+---FR : Lance le diagnostic ('diag') ou le nettoyage ('fix') sur le mod saisi.
+---     Champ vide : un message demande le nom du mod (avant : erreur « "____gvv" interface is not found »).
+---EN : Runs the diagnosis ('diag') or the fixing ('fix') on the typed mod.
+---     Empty field: a message asks for the mod name (before: error ""____gvv" interface is not found").
+---@param action string
+function GvvGuiHelp:runDoctor(action)
+    -- FR : Nom du mod sans espaces autour ; vide : on le demande
+    -- EN : Mod name without surrounding spaces; empty: ask for it
+    local mod_name = typedModName(self):gsub('^%s*(.-)%s*$', '%1')
+    if mod_name == '' then
+        self.player.print('(gvv) Type a mod name first.')
+        return
+    end
+    Doctor.take_a_look(self:getData(), mod_name, action)
 end
 
 ---FR : Bouton d'effacement de storage.report.
