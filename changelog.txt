@@ -10,6 +10,7 @@ Date: ????-??-??
     - /gdump-json produced invalid JSON: apostrophes and some control characters were escaped Lua-style (\', \a, \v), inf/NaN and functions were written raw. Strings are now escaped per JSON rules, inf/NaN become null, functions become "function".
     - /gdump-luaon produced invalid Lua: reserved words used as keys (end, for...) are now written ["end"], inf/NaN as math.huge and 0/0, functions as "function".
     - Converting a table that references itself no longer crashes with a stack overflow: "<recursive table>" is written instead.
+    - Deep copy (search results, tracking list, docked object paths) now uses Factorio util.table.deepcopy: no crash on recursive tables, original metatables kept.
   Published:
     - Ritn
 

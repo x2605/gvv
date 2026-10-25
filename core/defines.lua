@@ -17,6 +17,9 @@ local defines = {
     -- EN : Mod bootstrap (control stage)
     setup = directory .. ".core.setup-classes",
     event = "__core__.lualib.event_handler",
+    -- FR : util de Factorio (copie profonde, formattime...)
+    -- EN : Factorio's util (deep copy, formattime...)
+    util = "__core__.lualib.util",
 
     -- FR : Interface remote publique, chargée aussi par les autres mods (chemin à ne jamais changer)
     -- EN : Public remote interface, also loaded by other mods (path must never change)

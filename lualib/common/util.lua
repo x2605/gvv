@@ -92,23 +92,11 @@ Util.table_shallow_compare = function(tbl1, tbl2)
   return true
 end
 
---깊은 테이블 복사
-Util.deepcopytbl = function(ori)
-  local t = type(ori)
-  local ret
-  if t == 'userdata' and ori.object_name then
-    ret = ori
-  elseif t == 'table' then
-    ret = {}
-    for k, v in next, ori, nil do
-      ret[Util.deepcopytbl(k)] = Util.deepcopytbl(v)
-    end
-    setmetatable(ret, Util.deepcopytbl(getmetatable(ori)))
-  else
-    ret = ori
-  end
-  return ret
-end
+-- FR : Copie profonde de Factorio : gère les tables récursives, garde les objets Lua
+--      et les métatables d'origine (les marqueurs comme storage.meta_data._nil_ restent reconnus)
+-- EN : Factorio's deep copy: handles recursive tables, keeps Lua objects
+--      and the original metatables (markers like storage.meta_data._nil_ stay recognised)
+Util.deepcopytbl = require(gvv.defines.util).table.deepcopy
 
 --목록 옮기기
 Util.shift_checked = function(array, direction)
