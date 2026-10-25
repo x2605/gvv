@@ -25,7 +25,7 @@ local exclude_classes = {
   LuaCommandProcessor = true, LuaSettings = true, LuaRCON = true,
   LuaRendering = true, LuaLazyLoadedValue = true, LuaCustomTable = true,
   LuaDifficultySettings = true, LuaFlowStatistics = true, LuaPrototypes = true,
-  LuaHelpers = true,
+  LuaHelpers = true, LuaDebugAdapter = true,
 }
 
 
@@ -59,7 +59,9 @@ function wrap_object(obj, parents, is_key, counter)
   if obj_type == "userdata" and getmetatable(obj) == "private" and obj.object_name then
     -- FR : Si clé ou classe exclue, on simplifie.
     -- EN : If key or excluded class, simplify.
-    if is_key or (exclude_classes[obj.object_name] or obj.object_name:match('^LuaMapSettings')) then
+    if obj.object_name == "LuaDebugAdapter" and not is_key then
+      representation = "<LuaDebugAdapter>"
+    elseif is_key or (exclude_classes[obj.object_name] or obj.object_name:match('^LuaMapSettings')) then
       counter = counter + 1
       representation = "<" .. obj.object_name .. counter .. ">"
     else

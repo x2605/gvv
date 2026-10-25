@@ -1,7 +1,7 @@
 return function() return [[=function()
   local G,_,j,s,cp,wr=storage,true,0,{}
   local B={}
-  local N={LuaGameScript=_,LuaBootstrap=_,LuaRemote=_,LuaCommandProcessor=_,LuaSettings=_,LuaRCON=_,LuaRendering=_,LuaLazyLoadedValue=_,LuaCustomTable=_,LuaDifficultySettings=_,LuaFlowStatistics=_,LuaPrototypes=_,LuaHelpers=_,}
+  local N={LuaGameScript=_,LuaBootstrap=_,LuaRemote=_,LuaCommandProcessor=_,LuaSettings=_,LuaRCON=_,LuaRendering=_,LuaLazyLoadedValue=_,LuaCustomTable=_,LuaDifficultySettings=_,LuaFlowStatistics=_,LuaPrototypes=_,LuaHelpers=_,LuaDebugAdapter=_,}
   ]]--[[ G:_G, j:namespace count, s:returning table --]]..[[
   ]]--[[ B:_G blacklist, N:object blacklist --]]..[[
   cp=function(o,p,a)
@@ -13,7 +13,9 @@ return function() return [[=function()
     ]]--[[ o:object, p:parent_list, a:as key? --]]..[[
     local t,r=type(o)
     if t=='userdata' and getmetatable(o)=='private' and o.object_name then
-      if a or (N[o.object_name] or o.object_name:match('^LuaMapSettings')) then
+      if o.object_name=='LuaDebugAdapter' and not a then
+        r='<LuaDebugAdapter>'
+      elseif a or (N[o.object_name] or o.object_name:match('^LuaMapSettings')) then
         j=j+1
         r='<'..o.object_name..j..'>'
       else
