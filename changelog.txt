@@ -13,6 +13,7 @@ Date: ????-??-??
     - Ritn mods architecture (step 3.3): help tab rebuilt by classes/GvvGuiHelp.lua, gui/help.lua and gui/help_pages.lua (pages content, same texts) with gvv_help-type-name names; legacy/help_menu.lua removed. Texts to copy are read-only through element tags.
     - The main gvv window now opens centred on screen (it used to open in the top left corner).
   Bugfixes:
+    - Help tab diagnose / fix and remote.call(..., "c", ...) failed with "function diag ... is not found" for mods loading gvv through require("__gvv__.gvv")(): diag, fix and c were missing from that interface since 0.5.x. Restored, built from the console code templates.
     - /gdump-json produced invalid JSON: apostrophes and some control characters were escaped Lua-style (\', \a, \v), inf/NaN and functions were written raw. Strings are now escaped per JSON rules, inf/NaN become null, functions become "function".
     - /gdump-luaon produced invalid Lua: reserved words used as keys (end, for...) are now written ["end"], inf/NaN as math.huge and 0/0, functions as "function".
     - Converting a table that references itself no longer crashes with a stack overflow: "<recursive table>" is written instead.

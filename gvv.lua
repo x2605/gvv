@@ -129,6 +129,29 @@ end
 
 
 
+-- diag, fix, c :
+-- FR : Construites à partir des modèles du code de console (lualib/remote_code), pour n'avoir qu'une
+--      seule source : le code collé dans la console et cette interface font exactement la même chose.
+--      Ces fonctions avaient disparu de cette interface lors de sa réécriture en 0.5.x : le diagnostic
+--      et le nettoyage de l'onglet aide échouaient (« function "diag" ... is not found »).
+--      Le code est chargé dans l'environnement du mod qui charge gvv : il lit donc le storage de ce mod.
+-- EN : Built from the console code templates (lualib/remote_code), to have a single source:
+--      the code pasted in the console and this interface do exactly the same thing.
+--      These functions had disappeared from this interface when it was rewritten in 0.5.x: the help tab
+--      diagnosis and fixing failed ("function "diag" ... is not found").
+--      The code is loaded in the environment of the mod that loads gvv: it reads that mod's storage.
+local diag_n_fix_code = require("__gvv__.lualib.remote_code.diag_n_fix")
+local lua_command_code = require("__gvv__.lualib.remote_code.lua_command")
+
+-- FR : Transforme un modèle « =function() ... end, » en fonction utilisable
+-- EN : Turns a "=function() ... end," template into a usable function
+local function functionFromTemplate(template)
+  local code = template:gsub('^%s*=', 'return ', 1)
+  code = code:gsub(',%s*$', '')
+  return assert(loadstring(code))()
+end
+
+
 return function()
 -- contents of following line is came from the Helper tab of the mod's GUI.
 -- source at __gvv__/lualib/common/copy_code.lua
@@ -188,6 +211,18 @@ return function()
 
       return result
     end,
+
+    -- FR : Diagnostic du storage : chemins des entrées que remote.call ne peut pas transmettre
+    -- EN : Storage diagnosis: paths of the entries that remote.call cannot send
+    diag = functionFromTemplate(diag_n_fix_code('')),
+
+    -- FR : Nettoyage du storage : comme diag, mais supprime ces entrées
+    -- EN : Storage fixing: like diag, but removes these entries
+    fix = functionFromTemplate(diag_n_fix_code('b[k]=nil')),
+
+    -- FR : Exécute du code Lua dans ce mod : remote.call("__<mod>__gvv", "c", code, ...)
+    -- EN : Runs Lua code in this mod: remote.call("__<mod>__gvv", "c", code, ...)
+    c = functionFromTemplate(lua_command_code()),
 
     -- Version info
     version = function()
