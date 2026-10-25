@@ -526,7 +526,9 @@ Tree.remove_prop_tree = function(g, index)
   end
   if g.gui.sub_proptree.children[3] then
     m = g.gui.sub_proptree.children[3].name:match('^[(](%d+)[)] .+')
-    if m + 0 == index then
+    -- FR : m vaut nil si l'arbre affiché n'est pas celui d'un objet de la liste
+    -- EN : m is nil when the displayed tree is not one of a listed object
+    if m and m + 0 == index then
       g.gui.sub_proptree.clear()
     end
   end
@@ -629,7 +631,11 @@ Tree.draw_proptree = function(g, dock_index)
   -- EN : The object is re-read each time: it may have disappeared since it was added (destroyed entity...)
   local obj = Tree.get_tree_value(data.tree_path)
   if not is_usable_object(obj) then
-    error(object_gone_message(obj, '('..tostring(dock_index)..') '..Table_to_str.path_to_lua_prop_path(data.tree_path, true)))
+    -- FR : L'objet n'existe plus : on le retire de la liste de l'onglet avant d'afficher le message
+    -- EN : The object no longer exists: remove it from the tab list before showing the message
+    local message = object_gone_message(obj, '('..tostring(dock_index)..') '..Table_to_str.path_to_lua_prop_path(data.tree_path, true))
+    Tree.remove_prop_tree(g, dock_index)
+    error(message)
   end
   data.luaobj = obj
 
