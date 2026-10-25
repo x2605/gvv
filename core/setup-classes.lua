@@ -24,3 +24,4 @@ require(gvv.defines.class.gui_element)   -- GvvGuiElement : description d'un él
 require(gvv.defines.class.gui_main)      -- GvvGuiMain : fenêtre principale (hérite de GvvGui) / main window (inherits GvvGui)
 require(gvv.defines.class.gui_dialog)    -- GvvGuiDialog : petites fenêtres (hérite de GvvGui) / small windows (inherits GvvGui)
 require(gvv.defines.class.gui_help)      -- GvvGuiHelp : onglet aide (hérite de GvvGui) / help tab (inherits GvvGui)
+require(gvv.defines.class.gui_tracking)  -- GvvGuiTracking : onglet suivi (hérite de GvvGui) / tracking tab (inherits GvvGui)

@@ -1,7 +1,6 @@
 --로드
 
 local Util = require(gvv.defines.lualib.common.util)
-local Tracking = require(gvv.defines.legacy.tracking)
 local Migrations = require(gvv.defines.migrations)
 
 local Load = {}
@@ -21,7 +20,7 @@ end
 --run single time if called require(gvv.defines.modules.events) multiple times
 if not _initiated_session_ then
   -- session global variables not inside of storage table
-  _on_tick_function_ = Tracking.on_tick --constant
+  _on_tick_function_ = GvvGuiTracking.onTick --constant
   _one_of_three_volatiles_executed_ = false
   _initiated_on_tick_ = false
   _initiated_session_ = true

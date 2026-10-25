@@ -158,26 +158,16 @@ Commands.when_change_mod_settings = function(event)
       if value then
         script.on_event(defines.events.on_tick, _on_tick_function_)
         storage.meta_data['enable-on-tick'] = true
-        if storage.players then
-          for _, player in pairs(game.players) do
-            g = storage.players[player.index]
-            if g and g.gui and g.gui.track_inter_show and g.gui.track_inter_show.valid then
-              g.gui.track_inter_show.style.font_color = {1,1,1}
-              g.gui.track_inter_show.tooltip = {"gvv-mod.track-interval-control"}
-            end
-          end
+        -- FR : Nombre de l'intervalle en blanc pour chaque joueur / EN : Interval number in white for each player
+        for _, player in pairs(game.players) do
+          GvvGuiTracking({player_index = player.index}):updateTickWarning()
         end
       else
         script.on_event(defines.events.on_tick, nil)
         storage.meta_data['enable-on-tick'] = false
-        if storage.players then
-          for _, player in pairs(game.players) do
-            g = storage.players[player.index]
-            if g and g.gui and g.gui.track_inter_show and g.gui.track_inter_show.valid then
-              g.gui.track_inter_show.style.font_color = {1,0.25,0.25}
-              g.gui.track_inter_show.tooltip = {"gvv-mod.track-interval-control-off"}
-            end
-          end
+        -- FR : Nombre de l'intervalle en rouge pour chaque joueur / EN : Interval number in red for each player
+        for _, player in pairs(game.players) do
+          GvvGuiTracking({player_index = player.index}):updateTickWarning()
         end
       end
     end

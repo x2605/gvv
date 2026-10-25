@@ -16,6 +16,11 @@ local Legacy_Gui_Event = require(gvv.defines.legacy.gui_event)
 -- FR : Fenêtres migrées, dans l'ordre où elles reçoivent les évènements
 -- EN : Migrated windows, in the order they receive events
 local gui_classes = {
+    -- FR : Le suivi passe en premier : à chaque clic, il valide l'intervalle en cours de saisie
+    --      et cache la confirmation de suppression (comme l'ancien code), puis laisse la main
+    -- EN : Tracking comes first: on each click, it confirms the interval being typed
+    --      and hides the removal confirmation (as the old code did), then passes on
+    GvvGuiTracking, -- FR : onglet suivi (3.4) / EN : tracking tab (3.4)
     GvvGuiMain,     -- FR : fenêtre principale (3.1) / EN : main window (3.1)
     GvvGuiDialog,   -- FR : petites fenêtres (3.2) / EN : small windows (3.2)
     GvvGuiHelp,     -- FR : onglet aide (3.3) / EN : help tab (3.3)

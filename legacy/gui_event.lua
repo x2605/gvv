@@ -8,7 +8,6 @@ local Util = require(gvv.defines.lualib.common.util)
 local Gui = require(gvv.defines.legacy.gui)
 local Tree = require(gvv.defines.legacy.tree)
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
-local Tracking = require(gvv.defines.legacy.tracking)
 local Search_Tree = require(gvv.defines.legacy.search_tree)
 
 local Gui_Event = {}
@@ -50,134 +49,15 @@ Gui_Event.on_gui_click = function(event)
   local player_data = storage.players[event.player_index]
   if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
 
-  --트래킹 간격 편집하다가 딴거 누를 때
-  if event.element ~= player_data.gui.track_inter_edit and player_data.gui.track_inter_edit.visible then
-    if player_data.gui.track_inter_edit.text ~= '' then player_data.track_interval_tick = player_data.gui.track_inter_edit.text + 0 end
-    if player_data.track_interval_tick < 1 then player_data.track_interval_tick = 1 end
-    player_data.gui.track_inter_edit.visible = false
-    if player_data.gui.tabpane.selected_tab_index == 1 then player_data.gui.track_inter_show.visible = true end
-    player_data.gui.track_inter_show.caption = player_data.track_interval_tick
-    player_data.gui.track_inter_slider.slider_value = player_data.track_interval_tick
-  end
-
-  --추적 항목 삭제하려다 딴거 누를 때
-  if event.element ~= player_data.gui.remove_checked_btn and player_data.gui.remove_confirm_frame.visible and event.element ~= player_data.gui.remove_confirm_frame then
-    player_data.gui.remove_confirm_frame.visible = false
-  end
-
-  --닫기 버튼 : FR : géré par GvvGuiMain (bouton fermer) / EN : handled by GvvGuiMain (close button)
-
-  --추적 항목 삭제 버튼
-  if event.element == player_data.gui.remove_checked_btn then
-    player_data.gui.remove_confirm_frame.visible = not player_data.gui.remove_confirm_frame.visible
-
-  --추적 항목 삭제 버튼 - 취소
-  elseif event.element == player_data.gui.remove_checked_cancel_btn then
-    player_data.gui.remove_confirm_frame.visible = false
-
-  --추적 항목 삭제 버튼 - 확인
-  elseif event.element == player_data.gui.remove_checked_confirm_btn then
-    local panel = player_data.gui.tracking_panel
-    local list = player_data.data.tracking_list
-    for _, elem in pairs(panel.children) do
-      if elem.header.check_to_remove.state then
-        list[elem.name] = nil
-        elem.destroy()
-      end
-    end
-
-  --추적 항목 이동 버튼
-  elseif event.element == player_data.gui.move_up_checked_btn or event.element == player_data.gui.move_down_checked_btn then
-    local panel = player_data.gui.tracking_panel
-    local list = player_data.data.tracking_list
-    local array = {}
-    for index, elem in pairs(panel.children) do
-      array[index] = {
-        index = index,
-        checked = elem.header.check_to_remove.state,
-        path_str = elem.name,
-        full_path = list[elem.name],
-        preinput = {
-          remchk = elem.header.check_to_remove.state,
-          value = elem.body['_gvv-mod_tracking_output_'].caption
-        }
-      }
-    end
-    if event.element == player_data.gui.move_up_checked_btn then
-      if event.button == defines.mouse_button_type.left then
-        array = Util.shift_checked(array, -1)
-      elseif event.button == defines.mouse_button_type.right then
-        array = Util.push_checked(array, -1)
-      end
-    elseif event.element == player_data.gui.move_down_checked_btn then
-      if event.button == defines.mouse_button_type.left then
-        array = Util.shift_checked(array, 1)
-      elseif event.button == defines.mouse_button_type.right then
-        array = Util.push_checked(array, 1)
-      end
-    end
-    for index, elem in pairs(panel.children) do
-      elem.destroy()
-    end
-    for index, v in ipairs(array) do
-      Tracking.draw(panel, v.path_str, v.full_path, v.preinput)
-    end
-
-  --추적 항목 체크 조정 버튼
-  elseif event.element == player_data.gui.check_process_btn then
-    local panel = player_data.gui.tracking_panel
-    local list = player_data.data.tracking_list
-    if event.button == defines.mouse_button_type.left then
-      for index, elem in pairs(panel.children) do
-        elem.header.check_to_remove.state = not elem.header.check_to_remove.state
-      end
-    elseif event.button == defines.mouse_button_type.right then
-      local something_checked = false
-      for index, elem in pairs(panel.children) do
-        if elem.header.check_to_remove.state then
-          something_checked = true
-          break
-        end
-      end
-      if something_checked then
-        for index, elem in pairs(panel.children) do
-          elem.header.check_to_remove.state = false
-        end
-      else
-        for index, elem in pairs(panel.children) do
-          elem.header.check_to_remove.state = true
-        end
-      end
-    end
-
-  --추적 항목 가져오기/내보내기 버튼
-  elseif event.element == player_data.gui.export_import_btn then
-    local panel = player_data.gui.tracking_panel
-    local list = player_data.data.tracking_list
-    if event.button == defines.mouse_button_type.left then
-      Gui.export_window(player_data)
-    elseif event.button == defines.mouse_button_type.right then
-      Gui.import_window(player_data)
-    end
-
-  --추적 항목 가져오기 버튼 - 가져오기 : FR : géré par GvvGuiDialog / EN : handled by GvvGuiDialog
-
-  --추적 갱신
-  elseif event.element == player_data.gui.track_refresh_btn then
-    Tracking.refresh_value(player_data)
+  -- FR : Suivi (intervalle, suppression, déplacement, cases, export / import, rafraîchir) : géré par GvvGuiTracking
+  -- EN : Tracking (interval, removal, moving, boxes, export / import, refresh): handled by GvvGuiTracking
 
   --진단, 정리, storage.report 비우기 : FR : gérés par GvvGuiHelp / EN : handled by GvvGuiHelp
 
-  --추적 간격 숫자 누를때
-  elseif event.element == player_data.gui.track_inter_show and event.button == defines.mouse_button_type.left then
-    player_data.gui.track_inter_show.visible = false
-    player_data.gui.track_inter_edit.visible = true
-    player_data.gui.track_inter_edit.text = player_data.track_interval_tick .. ''
-    player_data.gui.track_inter_edit.focus()
-    player_data.gui.track_inter_edit.select_all()
+  --추적 간격 숫자 누를때 : FR : géré par GvvGuiTracking / EN : handled by GvvGuiTracking
 
   --트리 항목 라벨을 좌클릭으로 선택할 때
-  elseif event.element.name == '_gvv-mod_key_label' and event.button == defines.mouse_button_type.left then
+  if event.element.name == '_gvv-mod_key_label' and event.button == defines.mouse_button_type.left then
     if Tree.ignore_in_help_page(player_data, event.element) then return end
     local category = Tree.get_tree_category(event.element)
     local tree_data
@@ -311,14 +191,14 @@ Gui_Event.on_gui_click = function(event)
       event.element.style = 'tracked-tree-item_gvv-mod'
       if Tree.ignore_in_help_page(player_data, event.element) then return end
       local full_path = Tree.track_full_path(player_data, event.element)
-      Tracking.add(player_data, full_path)
+      GvvGuiTracking(event):add(full_path)
     elseif event.element.style.name == 'tracked-tree-item_gvv-mod' then
       event.element.style = 'tree-item_gvv-mod'
     elseif event.element.style.name == 'tree-item-folder_gvv-mod' then
       event.element.style = 'tracked-tree-item-folder_gvv-mod'
       if Tree.ignore_in_help_page(player_data, event.element) then return end
       local full_path = Tree.track_full_path(player_data, event.element)
-      Tracking.add(player_data, full_path)
+      GvvGuiTracking(event):add(full_path)
     elseif event.element.style.name == 'tracked-tree-item-folder_gvv-mod' then
       event.element.style = 'tree-item-folder_gvv-mod'
     end
@@ -369,13 +249,7 @@ Gui_Event.on_gui_click = function(event)
   -- _gvv-mod_anycode_frame_, _gvv-mod_copy_tracking_code_frame_, _gvv-mod_edit_tracking_code_frame_ :
   -- FR : boutons gérés par GvvGuiDialog / EN : buttons handled by GvvGuiDialog
 
-  --tracking_panel 의 경로를 우클릭할 때
-  elseif event.element.name == '_gvv-mod_tracking_path_str_' and event.button == defines.mouse_button_type.right then
-    Gui.copyable_tracking_code(player_data, event.element.caption, event.element.parent.parent.name)
-
-  --tracking_panel 의 결과값을 우클릭할 때
-  elseif event.element.name == '_gvv-mod_tracking_output_' and event.button == defines.mouse_button_type.right then
-    Gui.copyable_tracking_code(player_data, event.element.caption)
+  --tracking_panel 의 경로 / 결과값을 우클릭할 때 : FR : géré par GvvGuiTracking / EN : handled by GvvGuiTracking
 
   --트리 갱신 버튼
   elseif event.element == player_data.gui.tree_refresh_btn then
@@ -431,16 +305,7 @@ Gui_Event.on_gui_click = function(event)
     Search_Tree.refresh(player_data, 'prop')
     Search_Tree.refresh(player_data, 'gobj')
 
-  --tracking_panel 의 빈 공간을 우클릭할 때 (이 조건은 가능한한 뒤에)
-  elseif player_data.gui.tracking_panel and player_data.gui.tabpane.selected_tab_index == 1 and Util.find_parent_gui(event.element, player_data.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.right then
-    local succ = Gui.put_anycode_in_tracking(player_data)
-
-  --tracking_panel 의 빈 공간을 휠클릭할 때 (이 조건은 가능한한 뒤에)
-  elseif player_data.gui.tracking_panel and player_data.gui.tabpane.selected_tab_index == 1 and Util.find_parent_gui(event.element, player_data.gui.tracking_panel.parent) and event.button == defines.mouse_button_type.middle then
-    local succ, elem = Util.find_parent_gui(event.element, player_data.gui.tracking_panel)
-    if succ then
-      elem.header.check_to_remove.state = not elem.header.check_to_remove.state
-    end
+  --tracking_panel 의 빈 공간을 우클릭 / 휠클릭할 때 : FR : géré par GvvGuiTracking / EN : handled by GvvGuiTracking
 
   --메인 프레임을 클릭할 때 (이 조건은 가장 마지막에)
   elseif Util.find_parent_gui(event.element, player_data.gui.frame) then
@@ -467,36 +332,15 @@ Gui_Event.on_gui_value_changed = function(event)
   if not storage.players then return end
   local player_data = storage.players[event.player_index]
   if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
-  -- FR : Redimensionnement : géré par GvvGuiMain / EN : Resizing: handled by GvvGuiMain
-  if event.element == player_data.gui.track_inter_slider then
-    player_data.track_interval_tick = player_data.gui.track_inter_slider.slider_value
-    player_data.gui.track_inter_show.caption = player_data.track_interval_tick
-  end
+  -- FR : Redimensionnement : géré par GvvGuiMain ; intervalle du suivi : géré par GvvGuiTracking
+  -- EN : Resizing: handled by GvvGuiMain; tracking interval: handled by GvvGuiTracking
 end
 
 Gui_Event.on_gui_confirmed = function(event)
   if not event.element then return end
   if event.element.player_index ~= event.player_index then return end
-  if not storage.players then return end
-  local player_data = storage.players[event.player_index]
-  if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
-  local player = game.get_player(event.player_index)
-
-  if event.element == player_data.gui.track_inter_edit then
-    if player_data.gui.track_inter_edit.text ~= '' then player_data.track_interval_tick = player_data.gui.track_inter_edit.text + 0 end
-    if player_data.track_interval_tick < 1 then player_data.track_interval_tick = 1 end
-    player_data.gui.track_inter_edit.visible = false
-    if player_data.gui.tabpane.selected_tab_index == 1 then player_data.gui.track_inter_show.visible = true end
-    player_data.gui.track_inter_show.caption = player_data.track_interval_tick
-    player_data.gui.track_inter_slider.slider_value = player_data.track_interval_tick
-  --elseif event.element.name == '_gvv-mod_anycode_code_' then
-    --Tracking.add(player_data, event.element.text)
-    --local top = Util.get_top_frame(event.element)
-    --if top and top.valid then
-    --  top.destroy()
-    --end
-    --Gui.change_tab(player_data, 1)
-  end
+  -- FR : Saisie de l'intervalle du suivi : gérée par GvvGuiTracking ; plus rien à traiter ici
+  -- EN : Tracking interval input: handled by GvvGuiTracking; nothing left to handle here
 end
 
 Gui_Event.on_gui_selected_tab_changed = function(event)
@@ -638,14 +482,8 @@ Gui_Event['refresh_gvv-mod'] = function(event)
     local pane = player_data.gui.tabpane
     local tab = pane.selected_tab_index
     if tab == 1 then
-      Gui_Event.on_gui_click{
-        element = player_data.gui.track_refresh_btn,
-        player_index = event.player_index,
-        button = defines.mouse_button_type.left,
-        alt = false,
-        control = false,
-        shift = false
-      }
+      -- FR : Onglet suivi : rafraîchissement par GvvGuiTracking / EN : Tracking tab: refresh through GvvGuiTracking
+      GvvGuiTracking(event):refreshValues()
     elseif tab > 1 and tab < 5 then
       Gui_Event.on_gui_click{
         element = player_data.gui.tree_refresh_btn,

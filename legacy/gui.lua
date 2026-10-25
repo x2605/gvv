@@ -3,7 +3,6 @@
 local Util = require(gvv.defines.lualib.common.util)
 local Tree = require(gvv.defines.legacy.tree)
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
-local Tracking = require(gvv.defines.legacy.tracking)
 
 local Gui = {}
 
@@ -26,77 +25,7 @@ end
 -- FR : Boutons propres aux onglets, dans flow-tools de la barre d'outils (repris de l'ancien open_main).
 -- EN : Tab-specific buttons, inside the toolbar flow-tools (taken from the old open_main).
 Gui.build_tools = function(g, topspace)
-  topspace.add{type = 'sprite-button', name = 'track_refresh_btn', sprite = 'utility/reset_white',
-    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.track-refresh"},
-  }
-  topspace.track_refresh_btn.style.width = 20
-  topspace.track_refresh_btn.style.height = 20
-  topspace.add{type = 'slider', name = 'track_inter_slider', minimum_value = 1, maximum_value = 180, value = g.track_interval_tick,
-    value_step = 1, discrete_slider = false, discrete_values = true, {"gvv-mod.track-interval-control"},
-  }
-  topspace.track_inter_slider.style.width = 70
-  topspace.add{type = 'label', name = 'track_inter_show', caption = g.track_interval_tick, tooltip = {"gvv-mod.track-interval-control"}}
-  if not script.get_event_handler(defines.events.on_tick) then
-    topspace.track_inter_show.style.font_color = {1,0.25,0.25}
-    topspace.track_inter_show.tooltip = {"gvv-mod.track-interval-control-off"}
-  end
-  topspace.add{type = 'textfield', name = 'track_inter_edit', text = g.track_interval_tick, tooltip = {"gvv-mod.track-interval-control"},
-    numeric = true, allow_decimal = false, allow_negative = false, lose_focus_on_confirm = true, clear_and_focus_on_right_click = true,
-  }
-  topspace.track_inter_edit.visible = false
-  topspace.track_inter_edit.style.width = 30
-  topspace.track_inter_edit.style.height = 20
-  topspace.track_inter_edit.style.right_margin = 5
-  topspace.add{type = 'sprite-button', name = 'remove_checked_btn', sprite = 'utility/trash_white',
-    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.remove-checked-button"},
-  }
-  topspace.remove_checked_btn.style.left_margin = 8
-  topspace.remove_checked_btn.style.width = 20
-  topspace.remove_checked_btn.style.height = 20
-  local rcf = topspace.add{type = 'frame', name = 'remove_confirm_frame'}
-  rcf.style.padding = 0
-  rcf.style.width = 48
-  rcf.style.left_margin = -50
-  rcf.style.right_margin = -4
-  rcf.style.top_margin = -1
-  rcf.style.bottom_margin = -15
-  rcf.add{type = 'sprite-button', name = 'remove_checked_confirm_btn', sprite = 'gvv-mod_red-check',
-    style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.remove-checked-button"},
-  }
-  rcf.remove_checked_confirm_btn.style.width = 18
-  rcf.remove_checked_confirm_btn.style.height = 18
-  rcf.add{type = 'sprite-button', name = 'remove_checked_cancel_btn', sprite = 'gvv-mod_green-close',
-    style = 'frame_action_button', mouse_button_filter = {'left'},
-  }
-  rcf.remove_checked_cancel_btn.style.width = 18
-  rcf.remove_checked_cancel_btn.style.height = 18
-  rcf.visible = false
-  topspace.add{type = 'sprite-button', name = 'move_up_checked_btn', sprite = 'gvv-mod_arrow-up',
-    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.move-up-checked"},
-  }
-  topspace.move_up_checked_btn.style.left_margin = 8
-  topspace.move_up_checked_btn.style.width = 20
-  topspace.move_up_checked_btn.style.height = 20
-  topspace.add{type = 'sprite-button', name = 'move_down_checked_btn', sprite = 'gvv-mod_arrow-down',
-    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.move-down-checked"},
-  }
-  topspace.move_down_checked_btn.style.left_margin = -3
-  topspace.move_down_checked_btn.style.width = 20
-  topspace.move_down_checked_btn.style.height = 20
-  topspace.add{type = 'sprite-button', name = 'check_process_btn', sprite = 'utility/check_mark_white',
-    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.check-process-btn"},
-  }
-  topspace.check_process_btn.style.left_margin = 2
-  topspace.check_process_btn.style.width = 20
-  topspace.check_process_btn.style.height = 20
-  topspace.add{type = 'sprite-button', name = 'export_import_btn', sprite = 'gvv-mod_export-import',
-    style = 'frame_action_button', mouse_button_filter = {'left', 'right'}, tooltip = {"gvv-mod.export-import-btn"},
-  }
-  topspace.export_import_btn.style.left_margin = 2
-  topspace.export_import_btn.style.width = 20
-  topspace.export_import_btn.style.height = 20
-
-
+  -- FR : Outils du suivi : construits par GvvGuiTracking (étape 3.4) / EN : Tracking tools: built by GvvGuiTracking (step 3.4)
   topspace.add{type = 'sprite-button', name = 'tree_refresh_btn', sprite = 'utility/reset_white',
     style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.tree-refresh"},
   }
@@ -117,18 +46,6 @@ Gui.build_tools = function(g, topspace)
   topspace.add{type = 'checkbox', name = 'chk_show_func', state = g.show_func, caption = 'method', tooltip = {"gvv-mod.show_func"}}
   topspace.chk_show_func.visible = false
 
-  g.gui.track_refresh_btn = topspace.track_refresh_btn -- 사용자 개체 등록
-  g.gui.track_inter_slider = topspace.track_inter_slider -- 사용자 개체 등록
-  g.gui.track_inter_show = topspace.track_inter_show -- 사용자 개체 등록
-  g.gui.track_inter_edit = topspace.track_inter_edit -- 사용자 개체 등록
-  g.gui.remove_confirm_frame = rcf -- 사용자 개체 등록
-  g.gui.remove_checked_confirm_btn = rcf.remove_checked_confirm_btn -- 사용자 개체 등록
-  g.gui.remove_checked_cancel_btn = rcf.remove_checked_cancel_btn -- 사용자 개체 등록
-  g.gui.remove_checked_btn = topspace.remove_checked_btn -- 사용자 개체 등록
-  g.gui.move_up_checked_btn = topspace.move_up_checked_btn -- 사용자 개체 등록
-  g.gui.move_down_checked_btn = topspace.move_down_checked_btn -- 사용자 개체 등록
-  g.gui.check_process_btn = topspace.check_process_btn -- 사용자 개체 등록
-  g.gui.export_import_btn = topspace.export_import_btn -- 사용자 개체 등록
   g.gui.tree_refresh_btn = topspace.tree_refresh_btn -- 사용자 개체 등록
   g.gui.search_btn = topspace.search_btn -- 사용자 개체 등록
   g.gui.chk_show_na = topspace.chk_show_na -- 사용자 개체 등록
@@ -208,18 +125,8 @@ local build_list_and_tree = function(cwrap, list_name, tree_name)
   return panel, sub_list, sub_tree
 end
 
--- FR : Onglet 1, suivi de variables (repris de l'ancien open_main).
--- EN : Tab 1, variable tracking (taken from the old open_main).
-Gui.build_tracking = function(g, cwrap1)
-  local panel1 = build_tab_wrap(cwrap1).add{type = 'scroll-pane', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-  local tracking_panel = panel1.add{type = 'flow', name = '_gvv-mod_tracking_panel_', direction = 'vertical', style = 'vflow_gvv-mod'}
-  tracking_panel.style.vertical_spacing = 0
-  tracking_panel.style.horizontally_stretchable = true
-  tracking_panel.style.vertically_stretchable = true
-  g.gui.tracking_panel = tracking_panel -- 사용자 개체 등록
-end
+-- FR : Onglet 1, suivi de variables : construit par classes/GvvGuiTracking.lua (étape 3.4)
+-- EN : Tab 1, variable tracking: built by classes/GvvGuiTracking.lua (step 3.4)
 
 -- FR : Onglet 2, storage et _G des mods (repris de l'ancien open_main).
 -- EN : Tab 2, mods storage and _G (taken from the old open_main).
@@ -271,35 +178,9 @@ Gui.fill_lists = function(g)
   end
 end
 
--- FR : Entrées du suivi : liste par défaut ou exemples à la première ouverture, sinon la liste du joueur (repris de l'ancien open_main).
--- EN : Tracking entries: default list or examples on first opening, otherwise the player's list (taken from the old open_main).
-Gui.fill_tracking = function(g, first_time)
-  local player = game.get_player(g.index)
-  if first_time then
-    if storage.meta_data.default_tracking_list then
-      local pc, ret
-      local panel = g.gui.tracking_panel
-      g.data.tracking_list = Util.deepcopytbl(storage.meta_data.default_tracking_list)
-      for k, v in pairs(g.data.tracking_list) do
-        pc, ret = pcall(function() Tracking.draw(panel, k, v) end)
-        if not pc then
-          player.print('[font=var-outline-gvv-mod]error caused when adding codes first time : '..k..'\n'..ret..'[/font]',{1,0.85,0.7,1})
-        end
-      end
-    else -- Example
-      pcall(function()
-      Tracking.add(g, '-- evolution factor --\nassert(function()\n  return game.forces.enemy.get_evolution_factor()\nend)()')
-      Tracking.add(g, '1+1 .. "   " .. tostring(game.tick) .. "   " .. util.formattime(game.ticks_played) --see __core__/lualib/util.lua for informations')
-      Tracking.add(g, '-- arithmetic sequence --\nassert(function()\n  local a = 0\n  for i = 0, 10 do\n    a = a + i\n  end\n  return a\nend)()')
-      end)
-    end
-  else
-    local panel = g.gui.tracking_panel
-    for k, v in pairs(g.data.tracking_list) do
-      Tracking.draw(panel, k, v)
-    end
-  end
-end
+-- FR : Entrées du suivi : affichées par GvvGuiTracking:fillEntries (étape 3.4)
+-- EN : Tracking entries: shown by GvvGuiTracking:fillEntries (step 3.4)
+
 -- 내용을 복사할 수 있는 미니 윈도우1
 -- FR : Petites fenêtres : maintenant construites par classes/GvvGuiDialog.lua (étape 3.2).
 --      Ces fonctions restent comme points d'entrée pour l'ancien code (/gdump, onglet suivi).
@@ -316,37 +197,9 @@ end
 
 -- 탭 변경
 Gui.change_tab = function(g, index)
-  local pane = g.gui.tabpane
-  local tab = pane.selected_tab_index
-  if pane.selected_tab_index ~= index then
-    tab = index
-    pane.selected_tab_index = index
-  end
-  if tab == 1 then
-    g.gui.track_refresh_btn.visible = true
-    g.gui.track_inter_slider.visible = true
-    g.gui.track_inter_edit.visible = false
-    g.gui.track_inter_show.visible = true
-    g.gui.remove_checked_btn.visible = true
-    g.gui.move_up_checked_btn.visible = true
-    g.gui.move_down_checked_btn.visible = true
-    g.gui.check_process_btn.visible = true
-    g.gui.export_import_btn.visible = true
-
-    g.gui.remove_confirm_frame.visible = false
-  else
-    g.gui.track_refresh_btn.visible = false
-    g.gui.track_inter_slider.visible = false
-    g.gui.track_inter_edit.visible = false
-    g.gui.track_inter_show.visible = false
-    g.gui.remove_checked_btn.visible = false
-    g.gui.move_up_checked_btn.visible = false
-    g.gui.move_down_checked_btn.visible = false
-    g.gui.check_process_btn.visible = false
-    g.gui.export_import_btn.visible = false
-
-    g.gui.remove_confirm_frame.visible = false
-  end
+  -- FR : Onglet sélectionné et outils du suivi : gérés par GvvGuiMain:changeTab et GvvGuiTracking (étape 3.4)
+  -- EN : Selected tab and tracking tools: handled by GvvGuiMain:changeTab and GvvGuiTracking (step 3.4)
+  local tab = index
   if tab == 2 then
     local mod_list = Util.get_accessible_mod_list()
     g.gui.sub_modlist.clear()

@@ -236,10 +236,13 @@ function GvvGuiMain:open()
     data.gui.frame = frame
     data.gui.tabpane = tabbed
 
-    -- FR : Contenu construit par l'ancien code : boutons des onglets, puis contenu de chaque onglet
-    -- EN : Content built by the old code: tab buttons, then each tab content
+    -- FR : Onglet suivi et ses outils (en premier dans la barre d'outils) : construits par sa propre classe (3.4)
+    -- EN : Tracking tab and its tools (first in the toolbar): built by its own class (3.4)
+    GvvGuiTracking(self.event):build(first_time)
+
+    -- FR : Contenu construit par l'ancien code : outils des arbres, puis contenu des onglets des arbres
+    -- EN : Content built by the old code: trees tools, then trees tabs content
     Legacy_Gui.build_tools(data, tools)
-    Legacy_Gui.build_tracking(data, contents.tracking)
     Legacy_Gui.build_storage(data, contents.storage)
     Legacy_Gui.build_property(data, contents.property)
     Legacy_Gui.build_luaobject(data, contents.luaobject)
@@ -247,10 +250,9 @@ function GvvGuiMain:open()
     -- EN : Help tab: built by its own class (3.3)
     GvvGuiHelp(self.event):build()
 
-    -- FR : Listes (mods, objets ajoutés, objets globaux) et entrées du suivi
-    -- EN : Lists (mods, added objects, global objects) and tracking entries
+    -- FR : Listes (mods, objets ajoutés, objets globaux)
+    -- EN : Lists (mods, added objects, global objects)
     Legacy_Gui.fill_lists(data)
-    Legacy_Gui.fill_tracking(data, first_time)
 
     return self
 end
@@ -345,7 +347,32 @@ function GvvGuiMain:action_change_tab()
         return
     end
 
-    -- FR : Ancien code (legacy/gui.lua), migré avec les onglets
-    -- EN : Old code (legacy/gui.lua), migrated with the tabs
-    Legacy_Gui.change_tab(data, tabbed.selected_tab_index)
+    self:changeTab(tabbed.selected_tab_index)
+end
+
+
+---FR : Affiche l'onglet donné (1 = suivi... 5 = aide) et les outils qui vont avec.
+---     Appelé au changement d'onglet, et par les petites fenêtres pour revenir au suivi.
+---EN : Shows the given tab (1 = tracking... 5 = help) and the tools that go with it.
+---     Called on tab change, and by the small windows to go back to the tracking.
+---@param tab_index integer
+---@return GvvGuiMain
+function GvvGuiMain:changeTab(tab_index)
+    local data = self:getData()
+    local tabbed = self:getElement("tabbed", "tabs")
+    if data == nil or tabbed == nil then
+        return self
+    end
+
+    -- FR : Onglet sélectionné
+    -- EN : Selected tab
+    if tabbed.selected_tab_index ~= tab_index then
+        tabbed.selected_tab_index = tab_index
+    end
+
+    -- FR : Outils du suivi (GvvGuiTracking), puis outils des arbres et liste des mods (ancien code, migré en 3.6)
+    -- EN : Tracking tools (GvvGuiTracking), then trees tools and mods list (old code, migrated in 3.6)
+    GvvGuiTracking(self.event):updateTools(tab_index)
+    Legacy_Gui.change_tab(data, tab_index)
+    return self
 end

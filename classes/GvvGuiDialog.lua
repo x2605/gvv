@@ -17,10 +17,6 @@
 local check = require(gvv.defines.lualib.common.check)
 local fGui = require(gvv.defines.gui.dialogs)
 ---------------------------------------------------------------------------------------------
--- FR : Ancien code, utilisé par les actions qui touchent au suivi (migré en 3.4)
--- EN : Old code, used by the actions that touch the tracking (migrated in 3.4)
-local Legacy_Gui = require(gvv.defines.legacy.gui)
-local Legacy_Tracking = require(gvv.defines.legacy.tracking)
 ---------------------------------------------------------------------------------------------
 
 -- FR : Noms des petites fenêtres d'avant 0.6, détruites si elles traînent encore
@@ -466,18 +462,14 @@ end
 ---EN : "export" window: the current tracking list, to copy. Replaces an export window already open.
 ---@return GvvGuiDialog
 function GvvGuiDialog:openExport()
-    local data = self:getData()
-    if data == nil then
+    if not self.isPresent then
         return self
     end
     self:destroyKind("export")
 
-    -- FR : Les codes des entrées, dans l'ordre affiché, séparés par « --[[]]-- »
-    -- EN : The entries codes, in display order, separated by "--[[]]--"
-    local text = ''
-    for _, entry in ipairs(data.gui.tracking_panel.children) do
-        text = text .. entry.name .. SEPARATOR
-    end
+    -- FR : Les codes des entrées, dans l'ordre affiché, séparés par « --[[]]-- » (GvvGuiTracking)
+    -- EN : The entries codes, in display order, separated by "--[[]]--" (GvvGuiTracking)
+    local text = GvvGuiTracking(self.event):exportText()
 
     local frame, inner, element = self:buildFrame("export", fGui.KINDS.export.title)
     local text_element = self:addReadOnlyText(inner, element, text, true)
@@ -677,9 +669,9 @@ function GvvGuiDialog:confirmAnycode()
     if data == nil or code == nil then
         return
     end
-    Legacy_Tracking.add(data, code.text)
+    GvvGuiTracking(self.event):add(code.text)
     self:action_close()
-    Legacy_Gui.change_tab(data, 1)
+    GvvGuiMain(self.event):changeTab(1)
 end
 
 
@@ -693,44 +685,12 @@ function GvvGuiDialog:confirmEdit()
         return
     end
 
-    local name = frame.tags.entry_name
-    local code = code_element.text
-    local panel = data.gui.tracking_panel
-    local list = data.data.tracking_list
-
-    -- FR : Les entrées situées après l'entrée modifiée sont mises de côté, puis retirées ;
-    --      l'entrée modifiée est retirée de la liste
-    -- EN : The entries after the edited entry are set aside, then removed;
-    --      the edited entry is removed from the list
-    local buffer = {}
-    local start_adding_buffer = false
-    for _, entry in ipairs(panel.children) do
-        if start_adding_buffer then
-            buffer[#buffer + 1] = {
-                path_str = entry.name,
-                full_path = list[entry.name],
-                preinput = {
-                    remchk = entry.header.check_to_remove.state,
-                    value = entry.body['_gvv-mod_tracking_output_'].caption,
-                },
-            }
-            entry.destroy()
-        elseif entry.name == name then
-            list[entry.name] = nil
-            entry.destroy()
-            start_adding_buffer = true
-        end
-    end
-
-    -- FR : Le nouveau code est ajouté, puis les entrées mises de côté sont redessinées après lui
-    -- EN : The new code is added, then the entries set aside are drawn again after it
-    Legacy_Tracking.add(data, code)
-    for _, saved in ipairs(buffer) do
-        Legacy_Tracking.draw(panel, saved.path_str, saved.full_path, saved.preinput)
-    end
+    -- FR : L'entrée garde sa place dans la liste (GvvGuiTracking:replaceEntry)
+    -- EN : The entry keeps its place in the list (GvvGuiTracking:replaceEntry)
+    GvvGuiTracking(self.event):replaceEntry(frame.tags.entry_name, code_element.text)
 
     self:action_close()
-    Legacy_Gui.change_tab(data, 1)
+    GvvGuiMain(self.event):changeTab(1)
 end
 
 
@@ -770,42 +730,11 @@ function GvvGuiDialog:confirmImport()
         end
     end
 
-    local panel = data.gui.tracking_panel
-    local panel_size, import_size = #panel.children, #import_codes
-    local duplicate_count, new_count = 0, 0
-
-    -- FR : Toutes les entrées existantes sont décochées
-    -- EN : All existing entries are unchecked
-    for index = 1, panel_size do
-        panel.children[index].header.check_to_remove.state = false
-    end
-
-    -- FR : Chaque code : déjà présent -> l'entrée existante est cochée ; nouveau -> ajouté
-    -- EN : Each code: already present -> the existing entry is checked; new -> added
-    for index = 1, import_size do
-        local duplicate = false
-        for existing = 1, panel_size do
-            if panel.children[existing].name == import_codes[index] then
-                duplicate = true
-                import_codes[index] = nil
-                panel.children[existing].header.check_to_remove.state = true
-                duplicate_count = duplicate_count + 1
-                break
-            end
-        end
-        if not duplicate then
-            Legacy_Tracking.add(data, import_codes[index])
-            new_count = new_count + 1
-        end
-    end
-
-    -- FR : Les nouvelles entrées sont cochées
-    -- EN : The new entries are checked
-    for index = panel_size + 1, #panel.children do
-        panel.children[index].header.check_to_remove.state = true
-    end
+    -- FR : Ajout au suivi : doublons cochés, nouveaux ajoutés et cochés (GvvGuiTracking:importCodes)
+    -- EN : Added to the tracking: duplicates checked, new ones added and checked (GvvGuiTracking:importCodes)
+    local new_count, duplicate_count = GvvGuiTracking(self.event):importCodes(import_codes)
 
     self:action_close()
-    Legacy_Gui.change_tab(data, 1)
+    GvvGuiMain(self.event):changeTab(1)
     self.player.print('(gvv) ' .. new_count .. ' new entries imported.  /  ' .. duplicate_count .. ' entries already exist.')
 end
