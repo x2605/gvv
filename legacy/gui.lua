@@ -18,111 +18,34 @@ local other_frames_to_close_when_closing_main = {
 }
 
 -- 메인 윈도우
+-- FR : Fenêtre principale : maintenant construite par classes/GvvGuiMain.lua (étape 3.1).
+--      Gui.open_main et Gui.close_main restent comme points d'entrée pour l'ancien code (/gvv, migrations).
+-- EN : Main window: now built by classes/GvvGuiMain.lua (step 3.1).
+--      Gui.open_main and Gui.close_main stay as entry points for the old code (/gvv, migrations).
 Gui.open_main = function(player_index)
-  local player = game.get_player(player_index)
-  local first_time = false
-  if not storage.players then storage.players = {} end
-  if not storage.players[player_index] then
-    storage.players[player_index] = {}
-    first_time = true
+  GvvGuiMain({player_index = player_index}):toggle()
+end
+
+-- 메인 윈도우 닫기
+Gui.close_main = function(g, ignore_save)
+  GvvGuiMain({player_index = g.index}):close(ignore_save)
+end
+
+-- FR : Ferme les petites fenêtres de gvv (copie, code, édition, export, import). Appelé par GvvGuiMain:close.
+-- EN : Closes gvv's small windows (copy, code, edit, export, import). Called by GvvGuiMain:close.
+Gui.close_dialogs = function(player)
+  local frame
+  for frame_name in pairs(other_frames_to_close_when_closing_main) do
+    frame = player.gui.screen[frame_name]
+    if frame and frame.valid then
+      frame.destroy()
+    end
   end
+end
 
-  local g = storage.players[player_index]
-  g.index = player_index
-
-  local frame = player.gui.screen['_gvv-mod_frame_']
-
-  --토글
-  if frame and frame.valid then
-    Gui.close_main(g)
-    return
-  end
-
-  frame = player.gui.screen.add{type = 'frame', name = '_gvv-mod_frame_', direction = 'vertical', style = 'frame_gvv-mod'}
-  if g.gui then
-    for k in pairs(g.gui) do g.gui[k] = nil end
-  end
-  g.gui = {frame = frame}
-
-  if not g.track_interval_tick then g.track_interval_tick = 60 end
-  if not g.last_width then g.last_width = 900 end
-  if not g.last_height then g.last_height = 600 end
-  if g.show_na == nil then g.show_na = true end
-  if g.show_nil == nil then g.show_nil = true end
-  if g.show_func == nil then g.show_func = false end
-  if not g.search_settings then g.search_settings = {} end
-  if not g.search_settings.glob then g.search_settings.glob = {} end
-  if not g.search_settings.prop then g.search_settings.prop = {} end
-  if not g.search_settings.gobj then g.search_settings.gobj = {} end
-  for k, v in pairs(g.search_settings) do
-    if not v.text then v.text = '' end
-    if v.key == nil then v.key = true end
-    if v.value == nil then v.value = false end
-    if v.regexp == nil then v.regexp = false end
-    if v.case == nil then v.case = false end
-  end
-  if g.show_search == nil then g.show_search = false end
-
-  if not g.data then g.data = {} end
-  if not g.data.docked_luaobj then g.data.docked_luaobj = {} end
-  if not g.data.tracking_list then g.data.tracking_list = {} end
-  if not g.data.search then g.data.search = {} end
-  if not g.data.search.glob then g.data.search.glob = {} end
-  if not g.data.search.prop then g.data.search.prop = {} end
-  if not g.data.search.gobj then g.data.search.gobj = {} end
-
-  g.tabs = {} --탭에서 열었던 하위 guielement
-  -- tab2:last_sub_mod, tab3:last_sub_obj, tab4:last_sub_gobj
-
-  frame.location = {0,0}
-  frame.style.width = g.last_width
-  frame.style.height = g.last_height
-  local top = frame.add{type = 'frame', style = 'frame-bg_gvv-mod'}
-  top.style.top_padding = 4
-  top.style.right_padding = 8
-  top.style.left_padding = 8
-  top.add{type = 'flow', name = 'header', direction = 'horizontal'}
-  top.header.drag_target = frame
-  top.header.style.vertically_stretchable = false
-  top.header.add{type = 'label', name = 'title', caption = {"",{"gvv-mod.title"},' - gvv ',storage.meta_data.version}, style = 'frame_title'}
-  top.header.title.drag_target = frame
-  local drag = top.header.add{type = 'empty-widget', name = 'dragspace', style = 'draggable_space_header'}
-  drag.drag_target = frame
-  drag.style.right_margin = 8
-  drag.style.height = 24
-  drag.style.horizontally_stretchable = true
-  drag.style.vertically_stretchable = true
-  local closebtn = top.header.add{type = 'sprite-button', name = 'closebtn', sprite = 'utility/close', style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.close-main-tooltip"}}
-  g.gui.closebtn = closebtn -- 사용자 개체 등록
-
-  local middle = frame.add{type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  middle.add{type = 'empty-widget', name = 'left', style = 'empty-frame-bg_gvv-mod'}
-  middle.left.style.width = 5
-  middle.left.style.vertically_stretchable = true
-  middle.add{type = 'frame', name = 'w', style = 'inside-wrap_gvv-mod'}
-  local innerframe = middle.w.add{type = 'frame', direction = 'vertical', style = 'inside_deep_frame_gvv-mod'}
-  middle.add{type = 'empty-widget', name = 'right', style = 'empty-frame-bg_gvv-mod'}
-  middle.right.style.width = 5
-  middle.right.style.vertically_stretchable = true
-
-  local bottom = frame.add{type = 'empty-widget', style = 'empty-frame-bg_gvv-mod'}
-  bottom.style.height = 5
-  bottom.style.horizontally_stretchable = true
-
-  local topspace = innerframe.add{type = 'flow', name = 'topspace', direction = 'horizontal'}
-  topspace.style.padding = 6
-  topspace.style.horizontal_spacing = 6
-  topspace.style.vertical_align = 'center'
-  topspace.add{type = 'label', caption = 'W : ', tooltip = {"gvv-mod.xresize"}}
-  topspace.add{type = 'slider', name = 'xresize', minimum_value = 550, maximum_value = 1750, value = g.last_width,
-    value_step = 25, discrete_slider = false, discrete_values = true, tooltip = {"gvv-mod.xresize"},
-  }
-  topspace.xresize.style.width = 80
-  topspace.add{type = 'label', caption = 'H : ', tooltip = {"gvv-mod.yresize"}}
-  topspace.add{type = 'slider', name = 'yresize', minimum_value = 275, maximum_value = 1475, value = g.last_height,
-    value_step = 25, discrete_slider = false, discrete_values = true, tooltip = {"gvv-mod.yresize"},
-  }
-  topspace.yresize.style.width = 80
+-- FR : Boutons propres aux onglets, dans flow-tools de la barre d'outils (repris de l'ancien open_main).
+-- EN : Tab-specific buttons, inside the toolbar flow-tools (taken from the old open_main).
+Gui.build_tools = function(g, topspace)
   topspace.add{type = 'sprite-button', name = 'track_refresh_btn', sprite = 'utility/reset_white',
     style = 'frame_action_button', mouse_button_filter = {'left'}, tooltip = {"gvv-mod.track-refresh"},
   }
@@ -214,8 +137,6 @@ Gui.open_main = function(player_index)
   topspace.add{type = 'checkbox', name = 'chk_show_func', state = g.show_func, caption = 'method', tooltip = {"gvv-mod.show_func"}}
   topspace.chk_show_func.visible = false
 
-  g.gui.xresize = topspace.xresize -- 사용자 개체 등록
-  g.gui.yresize = topspace.yresize -- 사용자 개체 등록
   g.gui.track_refresh_btn = topspace.track_refresh_btn -- 사용자 개체 등록
   g.gui.track_inter_slider = topspace.track_inter_slider -- 사용자 개체 등록
   g.gui.track_inter_show = topspace.track_inter_show -- 사용자 개체 등록
@@ -233,199 +154,154 @@ Gui.open_main = function(player_index)
   g.gui.chk_show_na = topspace.chk_show_na -- 사용자 개체 등록
   g.gui.chk_show_nil = topspace.chk_show_nil -- 사용자 개체 등록
   g.gui.chk_show_func = topspace.chk_show_func -- 사용자 개체 등록
+end
 
-  local vdiv, hdiv
+-- FR : Panneau de recherche d'un arbre (repris de l'ancien open_main). tree_name : 'glob', 'prop' ou 'gobj'.
+-- EN : Search panel of a tree (taken from the old open_main). tree_name: 'glob', 'prop' or 'gobj'.
+local build_search_panel = function(g, panel, tree_name)
+  local spanel = panel.add{type = 'flow', name = 'search_'..tree_name..'_wrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
+  spanel.style.width = 180
+  spanel.style.horizontally_stretchable = false
+  if not g.show_search then
+    spanel.visible = false
+  end
+  local vdiv = spanel.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
+  vdiv.style.width = 6
+  local vwrap = spanel.add{type = 'flow', name = 'vwrap', direction = 'vertical', style = 'vflow_gvv-mod'}
+  local swrap = vwrap.add{type = 'flow', name = 'swrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
+  local searchinput = swrap.add{type = 'textfield',
+    text = g.search_settings[tree_name].text, name = 'searchinput',
+  }
+  searchinput.style.minimal_width = 50
+  searchinput.style.maximal_width = 9999
+  searchinput.style.horizontally_stretchable = true
+  local filter_wrap = swrap.add{type = 'table', column_count = 2}
+  filter_wrap.style.horizontal_spacing = 0
+  filter_wrap.style.vertical_spacing = 0
+  local searchfilter_key = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-key"},
+    state = g.search_settings[tree_name].key, name = 'searchfilter_key',
+  }
+  local searchfilter_value = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-value"},
+    state = g.search_settings[tree_name].value, name = 'searchfilter_value',
+  }
+  local searchfilter_regexp = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-regexp"},
+    state = g.search_settings[tree_name].regexp, name = 'searchfilter_regexp',
+  }
+  local searchfilter_case = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-case"},
+    state = g.search_settings[tree_name].case, name = 'searchfilter_case',
+  }
+  local searchresult = vwrap.add{type = 'list-box', name = 'sresult', style = 'list_box-transparent_gvv-mod'}
+  searchresult.style.horizontally_stretchable = true
+  g.gui['search_'..tree_name..'_wrap'] = spanel -- 사용자 개체 등록
+  g.gui['search_'..tree_name..'_input'] = searchinput -- 사용자 개체 등록
+  g.gui['search_'..tree_name..'_fkey'] = searchfilter_key -- 사용자 개체 등록
+  g.gui['search_'..tree_name..'_fvalue'] = searchfilter_value -- 사용자 개체 등록
+  g.gui['search_'..tree_name..'_fregexp'] = searchfilter_regexp -- 사용자 개체 등록
+  g.gui['search_'..tree_name..'_fcase'] = searchfilter_case -- 사용자 개체 등록
+  g.gui['search_'..tree_name..'_result'] = searchresult -- 사용자 개체 등록
+end
 
-  local tabpane = innerframe.add{type = 'tabbed-pane', style = 'tabbed_pane_gvv-mod'}
-  tabpane.style.horizontally_stretchable = true
+-- FR : Contenu commun aux onglets : bande de fond en haut (« w » > « fill »). Renvoie le conteneur « w ».
+-- EN : Content shared by the tabs: background strip at the top ("w" > "fill"). Returns the "w" container.
+local build_tab_wrap = function(cwrap)
+  cwrap.add{type = 'flow', name = 'w', direction = 'vertical', style = 'vflow_gvv-mod'}
+  cwrap.w.add{type = 'empty-widget', name = 'fill', style = 'empty-tabbed_pane_frame-bg_gvv-mod'}
+  cwrap.w.fill.style.height = 8
+  return cwrap.w
+end
 
-  local tab1 = tabpane.add{type = 'tab', name = 'tab1', caption = {"gvv-mod.tab-filtered-view"}}
-  local cwrap1 = tabpane.add{type = 'flow', direction = 'vertical'}
-  cwrap1.style.horizontally_stretchable = true
-  cwrap1.style.vertically_stretchable = true
-  tabpane.add_tab(tab1,cwrap1)
-  cwrap1.add{type = 'flow', name = 'w', direction = 'vertical', style = 'vflow_gvv-mod'}
-  cwrap1.w.add{type = 'empty-widget', name = 'fill', style = 'empty-tabbed_pane_frame-bg_gvv-mod'}
-  cwrap1.w.fill.style.height = 8
-  local panel1 = cwrap1.w.add{type = 'scroll-pane', direction = 'vertical', vertical_scroll_policy='auto',
+-- FR : Liste à gauche + séparateur + arbre à droite (onglets storage, property, LuaObject, aide). Renvoie le panneau, la liste et l'arbre.
+-- EN : List on the left + divider + tree on the right (storage, property, LuaObject, help tabs). Returns the panel, the list and the tree.
+local build_list_and_tree = function(cwrap, list_name, tree_name)
+  local panel = build_tab_wrap(cwrap).add{type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod'}
+  local sub_list = panel.add{type = 'scroll-pane', name = list_name, direction = 'vertical', vertical_scroll_policy='auto',
+    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
+  }
+  sub_list.style.horizontally_stretchable = false
+  sub_list.style.horizontally_squashable = true
+  sub_list.style.maximal_width = 230
+  local vdiv = panel.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
+  vdiv.style.width = 6
+  local sub_tree = panel.add{type = 'scroll-pane', name = tree_name, direction = 'vertical', vertical_scroll_policy='auto',
+    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
+  }
+  return panel, sub_list, sub_tree
+end
+
+-- FR : Onglet 1, suivi de variables (repris de l'ancien open_main).
+-- EN : Tab 1, variable tracking (taken from the old open_main).
+Gui.build_tracking = function(g, cwrap1)
+  local panel1 = build_tab_wrap(cwrap1).add{type = 'scroll-pane', direction = 'vertical', vertical_scroll_policy='auto',
     horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
   }
   local tracking_panel = panel1.add{type = 'flow', name = '_gvv-mod_tracking_panel_', direction = 'vertical', style = 'vflow_gvv-mod'}
   tracking_panel.style.vertical_spacing = 0
   tracking_panel.style.horizontally_stretchable = true
   tracking_panel.style.vertically_stretchable = true
-
-  tabpane.selected_tab_index = 1
-
-  local tab2 = tabpane.add{type = 'tab', name = 'tab2', caption = 'storage'}
-  local cwrap2 = tabpane.add{type = 'flow', direction = 'vertical'}
-  cwrap2.style.horizontally_stretchable = true
-  cwrap2.style.vertically_stretchable = true
-  tabpane.add_tab(tab2,cwrap2)
-  cwrap2.add{type = 'flow', name = 'w', direction = 'vertical', style = 'vflow_gvv-mod'}
-  cwrap2.w.add{type = 'empty-widget', name = 'fill', style = 'empty-tabbed_pane_frame-bg_gvv-mod'}
-  cwrap2.w.fill.style.height = 8
-  local panel2 = cwrap2.w.add{type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  local sub_modlist = panel2.add{type = 'scroll-pane', name = '_gvv-mod_sub_modlist_', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-  sub_modlist.style.horizontally_stretchable = false
-  sub_modlist.style.horizontally_squashable = true
-  sub_modlist.style.maximal_width = 230
-  vdiv = panel2.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
-  vdiv.style.width = 6
-  local sub_globtree = panel2.add{type = 'scroll-pane', name = '_gvv-mod_sub_globtree_', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-
-  local tab3 = tabpane.add{type = 'tab', name = 'tab3', caption = 'property'}
-  local cwrap3 = tabpane.add{type = 'flow', direction = 'vertical'}
-  cwrap3.style.horizontally_stretchable = true
-  cwrap3.style.vertically_stretchable = true
-  tabpane.add_tab(tab3,cwrap3)
-  cwrap3.add{type = 'flow', name = 'w', direction = 'vertical', style = 'vflow_gvv-mod'}
-  cwrap3.w.add{type = 'empty-widget', name = 'fill', style = 'empty-tabbed_pane_frame-bg_gvv-mod'}
-  cwrap3.w.fill.style.height = 8
-  local panel3 = cwrap3.w.add{type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  local sub_objlist = panel3.add{type = 'scroll-pane', name = '_gvv-mod_sub_objlist_', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-  sub_objlist.style.horizontally_stretchable = false
-  sub_objlist.style.horizontally_squashable = true
-  sub_objlist.style.maximal_width = 230
-  vdiv = panel3.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
-  vdiv.style.width = 6
-  local sub_proptree = panel3.add{type = 'scroll-pane', name = '_gvv-mod_sub_proptree_', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-
-  g.gui.tabpane = tabpane -- 사용자 개체 등록
   g.gui.tracking_panel = tracking_panel -- 사용자 개체 등록
+end
+
+-- FR : Onglet 2, storage et _G des mods (repris de l'ancien open_main).
+-- EN : Tab 2, mods storage and _G (taken from the old open_main).
+Gui.build_storage = function(g, cwrap2)
+  local panel2, sub_modlist, sub_globtree = build_list_and_tree(cwrap2, '_gvv-mod_sub_modlist_', '_gvv-mod_sub_globtree_')
   g.gui.sub_modlist = sub_modlist -- 사용자 개체 등록
   g.gui.sub_globtree = sub_globtree -- 사용자 개체 등록
+  build_search_panel(g, panel2, 'glob')
+end
+
+-- FR : Onglet 3, objets Lua ajoutés (repris de l'ancien open_main).
+-- EN : Tab 3, added Lua objects (taken from the old open_main).
+Gui.build_property = function(g, cwrap3)
+  local panel3, sub_objlist, sub_proptree = build_list_and_tree(cwrap3, '_gvv-mod_sub_objlist_', '_gvv-mod_sub_proptree_')
   g.gui.sub_objlist = sub_objlist -- 사용자 개체 등록
   g.gui.sub_proptree = sub_proptree -- 사용자 개체 등록
+  build_search_panel(g, panel3, 'prop')
+end
 
-  local tab4 = tabpane.add{type = 'tab', name = 'tab4', caption = 'LuaObject'}
-  local cwrap4 = tabpane.add{type = 'flow', direction = 'vertical'}
-  cwrap4.style.horizontally_stretchable = true
-  cwrap4.style.vertically_stretchable = true
-  tabpane.add_tab(tab4,cwrap4)
-  cwrap4.add{type = 'flow', name = 'w', direction = 'vertical', style = 'vflow_gvv-mod'}
-  cwrap4.w.add{type = 'empty-widget', name = 'fill', style = 'empty-tabbed_pane_frame-bg_gvv-mod'}
-  cwrap4.w.fill.style.height = 8
-  local panel4 = cwrap4.w.add{type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  local sub_gobjlist = panel4.add{type = 'scroll-pane', name = '_gvv-mod_sub_gobjlist_', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-  sub_gobjlist.style.horizontally_stretchable = false
-  sub_gobjlist.style.horizontally_squashable = true
-  sub_gobjlist.style.maximal_width = 230
-  vdiv = panel4.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
-  vdiv.style.width = 6
-  local sub_gobjtree = panel4.add{type = 'scroll-pane', name = '_gvv-mod_sub_gobjtree_', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-
+-- FR : Onglet 4, objets globaux (repris de l'ancien open_main).
+-- EN : Tab 4, global objects (taken from the old open_main).
+Gui.build_luaobject = function(g, cwrap4)
+  local panel4, sub_gobjlist, sub_gobjtree = build_list_and_tree(cwrap4, '_gvv-mod_sub_gobjlist_', '_gvv-mod_sub_gobjtree_')
   g.gui.sub_gobjlist = sub_gobjlist -- 사용자 개체 등록
   g.gui.sub_gobjtree = sub_gobjtree -- 사용자 개체 등록
+  build_search_panel(g, panel4, 'gobj')
+end
 
-  local search_panels = {}
-  search_panels[1] = panel2.add{type = 'flow', name = 'search_glob_wrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  search_panels[2] = panel3.add{type = 'flow', name = 'search_prop_wrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  search_panels[3] = panel4.add{type = 'flow', name = 'search_gobj_wrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  local searchinput = {}
-  local searchfilter_key = {}
-  local searchfilter_value = {}
-  local searchfilter_regexp = {}
-  local searchfilter_case= {}
-  local searchresult = {}
-  local tree_names = {'glob', 'prop', 'gobj'}
-  for i = 1, 3 do
-    local spanel = search_panels[i]
-    spanel.style.width = 180
-    spanel.style.horizontally_stretchable = false
-    if not g.show_search then
-      spanel.visible = false
-    end
-    vdiv = spanel.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
-    vdiv.style.width = 6
-    local vwrap = spanel.add{type = 'flow', name = 'vwrap', direction = 'vertical', style = 'vflow_gvv-mod'}
-    local swrap = vwrap.add{type = 'flow', name = 'swrap', direction = 'horizontal', style = 'hflow_gvv-mod'}
-    searchinput[i] = swrap.add{type = 'textfield',
-      text = g.search_settings[tree_names[i] ].text, name = 'searchinput',
-    }
-    searchinput[i].style.minimal_width = 50
-    searchinput[i].style.maximal_width = 9999
-    searchinput[i].style.horizontally_stretchable = true
-    local filter_wrap = swrap.add{type = 'table', column_count = 2}
-    filter_wrap.style.horizontal_spacing = 0
-    filter_wrap.style.vertical_spacing = 0
-    searchfilter_key[i] = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-key"},
-      state = g.search_settings[tree_names[i] ].key, name = 'searchfilter_key',
-    }
-    searchfilter_value[i] = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-value"},
-      state = g.search_settings[tree_names[i] ].value, name = 'searchfilter_value',
-    }
-    searchfilter_regexp[i] = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-regexp"},
-      state = g.search_settings[tree_names[i] ].regexp, name = 'searchfilter_regexp',
-    }
-    searchfilter_case[i] = filter_wrap.add{type = 'checkbox', tooltip = {"gvv-mod.search-case"},
-      state = g.search_settings[tree_names[i] ].case, name = 'searchfilter_case',
-    }
-    searchresult[i] = vwrap.add{type = 'list-box', name = 'sresult', style = 'list_box-transparent_gvv-mod'}
-    searchresult[i].style.horizontally_stretchable = true
-    g.gui['search_'..tree_names[i]..'_wrap'] = search_panels[i] -- 사용자 개체 등록
-    g.gui['search_'..tree_names[i]..'_input'] = searchinput[i] -- 사용자 개체 등록
-    g.gui['search_'..tree_names[i]..'_fkey'] = searchfilter_key[i] -- 사용자 개체 등록
-    g.gui['search_'..tree_names[i]..'_fvalue'] = searchfilter_value[i] -- 사용자 개체 등록
-    g.gui['search_'..tree_names[i]..'_fregexp'] = searchfilter_regexp[i] -- 사용자 개체 등록
-    g.gui['search_'..tree_names[i]..'_fcase'] = searchfilter_case[i] -- 사용자 개체 등록
-    g.gui['search_'..tree_names[i]..'_result'] = searchresult[i] -- 사용자 개체 등록
-  end
-
-  local tab5 = tabpane.add{type = 'tab', name = 'tab5', caption = {"gvv-mod.help-tab"}}
-  local cwrap5 = tabpane.add{type = 'flow', direction = 'vertical'}
-  cwrap5.style.horizontally_stretchable = true
-  cwrap5.style.vertically_stretchable = true
-  tabpane.add_tab(tab5,cwrap5)
-  cwrap5.add{type = 'flow', name = 'w', direction = 'vertical', style = 'vflow_gvv-mod'}
-  cwrap5.w.add{type = 'empty-widget', name = 'fill', style = 'empty-tabbed_pane_frame-bg_gvv-mod'}
-  cwrap5.w.fill.style.height = 8
-  local panel5 = cwrap5.w.add{type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod'}
-  local sub_helplist = panel5.add{type = 'scroll-pane', name = '_gvv-mod_sub_helplist_', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-  sub_helplist.style.horizontally_stretchable = false
-  sub_helplist.style.horizontally_squashable = true
-  sub_helplist.style.maximal_width = 230
-  vdiv = panel5.add{type = 'empty-widget', style = 'vertical-divider_gvv-mod'}
-  vdiv.style.width = 6
-  local sub_helppanel = panel5.add{type = 'scroll-pane', name = '_gvv-mod_sub_helppanel_', direction = 'vertical', vertical_scroll_policy='auto',
-    horizontal_scroll_policy = 'auto', style='scroll_pane_gvv-mod',
-  }
-
+-- FR : Onglet 5, aide (repris de l'ancien open_main).
+-- EN : Tab 5, help (taken from the old open_main).
+Gui.build_help = function(g, cwrap5)
+  local panel5, sub_helplist, sub_helppanel = build_list_and_tree(cwrap5, '_gvv-mod_sub_helplist_', '_gvv-mod_sub_helppanel_')
   g.gui.sub_helplist = sub_helplist -- 사용자 개체 등록
   g.gui.sub_helppanel = sub_helppanel -- 사용자 개체 등록
+end
 
+-- FR : Remplit les listes de gauche : pages d'aide, mods accessibles, objets ajoutés, objets globaux (repris de l'ancien open_main).
+-- EN : Fills the left lists: help pages, accessible mods, added objects, global objects (taken from the old open_main).
+Gui.fill_lists = function(g)
   for i, v in ipairs(Help_Menu.page_list) do
-    local btn = sub_helplist.add{type = 'button', caption = v.caption, name = '_gvv-mod_c_sub_help_/'..v.name, mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
+    local btn = g.gui.sub_helplist.add{type = 'button', caption = v.caption, name = '_gvv-mod_c_sub_help_/'..v.name, mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
   end
 
   local mod_list = Util.get_accessible_mod_list()
   for i, v in ipairs(mod_list) do
-    local btn = sub_modlist.add{type = 'button', caption = v, name = '_gvv-mod_c_sub_mod_'..string.format('%d',i), mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
+    local btn = g.gui.sub_modlist.add{type = 'button', caption = v, name = '_gvv-mod_c_sub_mod_'..string.format('%d',i), mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
   end
 
   for k, v in pairs(g.data.docked_luaobj) do
     local caption = '('..tostring(v.index)..') '..Table_to_str.to_luaon(v.key, true)
-    local btn = sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(v.index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"",{"gvv-mod.obj-list-tooltip"},'\n',Table_to_str.path_to_lua_prop_path(v.tree_path)}}
+    local btn = g.gui.sub_objlist.add{type = 'button', caption = caption, name = '_gvv-mod_c_sub_obj_'..tostring(v.index), mouse_button_filter = {'left', 'right'}, style = 'c_sub_mod_gvv-mod', tooltip = {"",{"gvv-mod.obj-list-tooltip"},'\n',Table_to_str.path_to_lua_prop_path(v.tree_path)}}
   end
 
   for i, v in ipairs(gobjlist) do
-    local btn = sub_gobjlist.add{type = 'button', caption = v, name = '_gvv-mod_c_sub_obj_'..string.format('%d',i), mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
+    local btn = g.gui.sub_gobjlist.add{type = 'button', caption = v, name = '_gvv-mod_c_sub_obj_'..string.format('%d',i), mouse_button_filter = {'left'}, style = 'c_sub_mod_gvv-mod'}
   end
+end
 
+-- FR : Entrées du suivi : liste par défaut ou exemples à la première ouverture, sinon la liste du joueur (repris de l'ancien open_main).
+-- EN : Tracking entries: default list or examples on first opening, otherwise the player's list (taken from the old open_main).
+Gui.fill_tracking = function(g, first_time)
+  local player = game.get_player(g.index)
   if first_time then
     if storage.meta_data.default_tracking_list then
       local pc, ret
@@ -451,25 +327,6 @@ Gui.open_main = function(player_index)
     end
   end
 end
-
--- 메인 윈도우 닫기
-Gui.close_main = function(g, ignore_save)
-  local player = game.get_player(g.index)
-  local pc, ret
-  if not ignore_save then
-    pc, ret = pcall(function(g) Tree.save_on_quit(g) end, g)
-  end
-  g.gui.frame.destroy()
-  local frame
-  for frame_name in pairs(other_frames_to_close_when_closing_main) do
-    frame = player.gui.screen[frame_name]
-    if frame and frame.valid then
-      frame.destroy()
-    end
-  end
-  if not ignore_save and not pc then error(ret) end
-end
-
 -- 내용을 복사할 수 있는 미니 윈도우1
 Gui.copyable_dump = function(player_index, str, title)
   local player = game.get_player(player_index)

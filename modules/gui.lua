@@ -16,6 +16,7 @@ local Legacy_Gui_Event = require(gvv.defines.legacy.gui_event)
 -- FR : Fenêtres migrées, dans l'ordre où elles reçoivent les évènements
 -- EN : Migrated windows, in the order they receive events
 local gui_classes = {
+    GvvGuiMain,     -- FR : fenêtre principale (3.1) / EN : main window (3.1)
 }
 
 
@@ -76,9 +77,16 @@ module.events[defines.events.on_gui_selected_tab_changed] = dispatcher("on_gui_s
 module.events[defines.events.on_gui_checked_state_changed] = dispatcher("on_gui_checked_state_changed")
 module.events[defines.events.on_gui_text_changed] = dispatcher("on_gui_text_changed")
 module.events[defines.events.on_gui_selection_state_changed] = dispatcher("on_gui_selection_state_changed")
--- FR : Raccourcis clavier (custom-input), encore gérés par l'ancien code
--- EN : Keyboard shortcuts (custom-input), still handled by the old code
-module.events['toggle-main-frame_gvv-mod'] = Legacy_Gui_Event['toggle-main-frame_gvv-mod']
+-- FR : Raccourci Ctrl+Shift+V : ouvre ou ferme la fenêtre principale (admins seulement en multijoueur)
+-- EN : Ctrl+Shift+V shortcut: opens or closes the main window (admins only in multiplayer)
+module.events['toggle-main-frame_gvv-mod'] = protected(function(event)
+    local main = GvvGuiMain(event)
+    if main:canUseGvv() then
+        main:toggle()
+    end
+end)
+-- FR : Raccourci Shift+X (rafraîchir), encore géré par l'ancien code
+-- EN : Shift+X shortcut (refresh), still handled by the old code
 module.events['refresh_gvv-mod'] = Legacy_Gui_Event['refresh_gvv-mod']
 ---------------------------------------------------------------------------------------------
 return module

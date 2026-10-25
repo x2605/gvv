@@ -84,12 +84,10 @@ Gui_Event.on_gui_click = function(event)
     player_data.gui.remove_confirm_frame.visible = false
   end
 
-  --닫기 버튼
-  if event.element == player_data.gui.closebtn then
-    Gui.close_main(player_data)
+  --닫기 버튼 : FR : géré par GvvGuiMain (bouton fermer) / EN : handled by GvvGuiMain (close button)
 
   --추적 항목 삭제 버튼
-  elseif event.element == player_data.gui.remove_checked_btn then
+  if event.element == player_data.gui.remove_checked_btn then
     player_data.gui.remove_confirm_frame.visible = not player_data.gui.remove_confirm_frame.visible
 
   --추적 항목 삭제 버튼 - 취소
@@ -635,13 +633,8 @@ Gui_Event.on_gui_value_changed = function(event)
   if not storage.players then return end
   local player_data = storage.players[event.player_index]
   if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
-  if event.element == player_data.gui.xresize then
-    player_data.last_width = player_data.gui.xresize.slider_value
-    player_data.gui.frame.style.width = player_data.last_width
-  elseif event.element == player_data.gui.yresize then
-    player_data.last_height = player_data.gui.yresize.slider_value
-    player_data.gui.frame.style.height = player_data.last_height
-  elseif event.element == player_data.gui.track_inter_slider then
+  -- FR : Redimensionnement : géré par GvvGuiMain / EN : Resizing: handled by GvvGuiMain
+  if event.element == player_data.gui.track_inter_slider then
     player_data.track_interval_tick = player_data.gui.track_inter_slider.slider_value
     player_data.gui.track_inter_show.caption = player_data.track_interval_tick
   end
@@ -679,9 +672,7 @@ Gui_Event.on_gui_selected_tab_changed = function(event)
   local player_data = storage.players[event.player_index]
   if not player_data or not player_data.gui.frame or not player_data.gui.frame.valid then return end
 
-  if event.element == player_data.gui.tabpane then
-    Gui.change_tab(player_data, event.element.selected_tab_index)
-  end
+  -- FR : Changement d'onglet : géré par GvvGuiMain / EN : Tab change: handled by GvvGuiMain
 end
 
 Gui_Event.on_gui_checked_state_changed = function(event)
@@ -851,11 +842,8 @@ Gui_Event.on_gui_selection_state_changed = function(event)
 
 end
 
-Gui_Event['toggle-main-frame_gvv-mod'] = function(event)
-  local player = game.get_player(event.player_index)
-  if not player.admin and game.is_multiplayer() then return end
-  if player then Gui.open_main(event.player_index) end
-end
+-- FR : Raccourci Ctrl+Shift+V : géré par modules/gui.lua (GvvGuiMain:toggle)
+-- EN : Ctrl+Shift+V shortcut: handled by modules/gui.lua (GvvGuiMain:toggle)
 
 Gui_Event['refresh_gvv-mod'] = function(event)
   local player = game.get_player(event.player_index)

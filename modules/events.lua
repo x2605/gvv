@@ -2,7 +2,7 @@
 
 local Util = require(gvv.defines.lualib.common.util)
 local Tracking = require(gvv.defines.legacy.tracking)
-local Gui = require(gvv.defines.legacy.gui)
+local Migrations = require(gvv.defines.migrations)
 
 local Load = {}
 
@@ -28,41 +28,22 @@ if not _initiated_session_ then
   ------
 end
 
-local vless = function(str, a, b, c)
-  local A, B, C = str:match('^(%d+)%.(%d+)%.(%d+)$')
-  if A then A = A + 0 end
-  if B then B = B + 0 end
-  if C then C = C + 0 end
-  if not (A and B and C) then
-    return true
-  end
-  if (a == A and b == B and c >= C)
-    or (a == A and b > B)
-    or a > A
-    then
-    return true
-  end
-  return false
-end
+-- FR : Mise à jour de gvv (ou d'un autre mod) dans une partie existante.
+--      Les migrations (core/migrations.lua) s'exécutent quand gvv lui-même change de version ;
+--      elles remplacent l'ancienne migration 0.4, couverte par celle de 0.6.0.
+-- EN : gvv (or another mod) updated in an existing game.
+--      Migrations (core/migrations.lua) run when gvv itself changes version;
+--      they replace the old 0.4 migration, covered by the 0.6.0 one.
 Load.on_configuration_changed = function(data)
   Load.register_meta_data()
   Load.register_volatiles()
   Load.example_load()
-  if data.mod_changes then
-    local thismod = data.mod_changes['gvv']
-    if thismod then
-      if thismod.old_version and vless(thismod.old_version, 0, 4, 0) then
-        if storage.players then
-          for index, g in pairs(storage.players) do
-            pcall(function()
-              if g.gui and g.gui.frame and g.gui.frame.valid then
-                Gui.close_main(g, true)
-              end
-            end)
-          end
-        end
-      end
-    end
+
+  -- FR : Changement de version de gvv : old_version est absent si gvv vient d'être ajouté (rien à migrer)
+  -- EN : gvv version change: old_version is missing if gvv was just added (nothing to migrate)
+  local gvv_changes = data.mod_changes and data.mod_changes['gvv']
+  if gvv_changes and gvv_changes.old_version then
+    Migrations.run(gvv_changes.old_version)
   end
 end
 

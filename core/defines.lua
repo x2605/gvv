@@ -16,6 +16,7 @@ local defines = {
     -- FR : Démarrage du mod (control stage)
     -- EN : Mod bootstrap (control stage)
     setup = directory .. ".core.setup-classes",
+    migrations = directory .. ".core.migrations",
     event = "__core__.lualib.event_handler",
     -- FR : util de Factorio (copie profonde, formattime...)
     -- EN : Factorio's util (deep copy, formattime...)
@@ -33,6 +34,13 @@ local defines = {
         player = directory .. ".classes.GvvPlayer",
         gui = directory .. ".classes.GvvGui",
         gui_element = directory .. ".classes.GvvGuiElement",
+        gui_main = directory .. ".classes.GvvGuiMain",
+    },
+
+    -- FR : Description des fenêtres (getElement / getContent)
+    -- EN : Windows description (getElement / getContent)
+    gui = {
+        main = directory .. ".gui.main",
     },
 
     -- FR : Modules envoyés à l'event handler

@@ -121,3 +121,113 @@ function GvvPlayer:getData()
     -- EN : storage.players[index], without error if storage.players doesn't exist yet
     return check.getPath(storage, {"players", self.index})
 end
+
+
+---FR : Crée les données gvv du joueur si besoin, et complète les valeurs manquantes par leur valeur par défaut.
+---     Renvoie les données, et true si elles viennent d'être créées (première ouverture de gvv).
+---     Repris de l'ancien Gui.open_main (legacy/gui.lua), sans changement de valeurs.
+---EN : Creates the player's gvv data if needed, and fills missing values with their default value.
+---     Returns the data, and true if it was just created (first time gvv is opened).
+---     Taken from the old Gui.open_main (legacy/gui.lua), without changing values.
+---@return table? data
+---@return boolean first_time
+function GvvPlayer:initData()
+    -- FR : Joueur absent ou invalide : pas de données
+    -- EN : Missing or invalid player: no data
+    if not self.isPresent then
+        return nil, false
+    end
+
+    -- FR : Table de tous les joueurs, créée au premier joueur qui ouvre gvv
+    -- EN : Table of all players, created by the first player who opens gvv
+    if not storage.players then
+        storage.players = {}
+    end
+
+    -- FR : Données de ce joueur : créées à sa première ouverture de gvv
+    -- EN : This player's data: created the first time they open gvv
+    local first_time = false
+    if not storage.players[self.index] then
+        storage.players[self.index] = {}
+        first_time = true
+    end
+    local data = storage.players[self.index]
+    data.index = self.index
+
+    --------------------------------------------------
+    -- FR : Réglages de la fenêtre et de l'affichage
+    -- EN : Window and display settings
+    if not data.track_interval_tick then
+        data.track_interval_tick = 60       -- FR : intervalle du suivi (ticks) / EN : tracking interval (ticks)
+    end
+    if not data.last_width then
+        data.last_width = 900               -- FR : largeur de la fenêtre / EN : window width
+    end
+    if not data.last_height then
+        data.last_height = 600              -- FR : hauteur de la fenêtre / EN : window height
+    end
+    if data.show_na == nil then
+        data.show_na = true                 -- FR : afficher les n/a / EN : show n/a
+    end
+    if data.show_nil == nil then
+        data.show_nil = true                -- FR : afficher les nil / EN : show nil
+    end
+    if data.show_func == nil then
+        data.show_func = false              -- FR : afficher les méthodes / EN : show methods
+    end
+
+    --------------------------------------------------
+    -- FR : Réglages de la recherche, un par arbre (storage/_G, objets Lua, objets globaux)
+    -- EN : Search settings, one per tree (storage/_G, Lua objects, global objects)
+    if not data.search_settings then
+        data.search_settings = {}
+    end
+    for _, tree_name in ipairs({"glob", "prop", "gobj"}) do
+        if not data.search_settings[tree_name] then
+            data.search_settings[tree_name] = {}
+        end
+    end
+    for _, settings in pairs(data.search_settings) do
+        if not settings.text then
+            settings.text = ''              -- FR : texte cherché / EN : searched text
+        end
+        if settings.key == nil then
+            settings.key = true             -- FR : chercher dans les clés / EN : search in keys
+        end
+        if settings.value == nil then
+            settings.value = false          -- FR : chercher dans les valeurs / EN : search in values
+        end
+        if settings.regexp == nil then
+            settings.regexp = false         -- FR : motif Lua / EN : Lua pattern
+        end
+        if settings.case == nil then
+            settings.case = false           -- FR : respecter la casse / EN : case sensitive
+        end
+    end
+    if data.show_search == nil then
+        data.show_search = false            -- FR : panneau de recherche visible / EN : search panel visible
+    end
+
+    --------------------------------------------------
+    -- FR : Données de travail : objets ajoutés, liste de suivi, résultats de recherche
+    -- EN : Working data: added objects, tracking list, search results
+    if not data.data then
+        data.data = {}
+    end
+    if not data.data.docked_luaobj then
+        data.data.docked_luaobj = {}
+    end
+    if not data.data.tracking_list then
+        data.data.tracking_list = {}
+    end
+    if not data.data.search then
+        data.data.search = {}
+    end
+    for _, tree_name in ipairs({"glob", "prop", "gobj"}) do
+        if not data.data.search[tree_name] then
+            data.data.search[tree_name] = {}
+        end
+    end
+
+    return data, first_time
+end
