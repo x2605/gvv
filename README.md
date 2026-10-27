@@ -18,7 +18,7 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 
 ```
 - In case of savefile, extract "**control.lua**" from it first. Then, edit code and overwrite it at same location of "**control.lua**" inside of the zipped file.  
-- There is also a way to make the mod or map accessible temporarily without editing "**control.lua**", introduced in in-game GUI.
+- There is also a way to make the mod or map accessible temporarily without editing "**control.lua**", introduced in the in-game GUI.
 - Most of other helpful words are inside of **Helper** tab in **gvv** in-game GUI.  
 
 ### 사용 방법
