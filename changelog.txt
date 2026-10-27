@@ -15,6 +15,8 @@ Date: ????-??-??
     - Ritn mods architecture (step 3.5): tree search (magnifier button and one search panel per tree) rebuilt by classes/GvvGuiSearch.lua and gui/search.lua with gvv_search-type-name names; legacy/search_tree.lua removed. Same behaviour as before.
     - Ritn mods architecture (step 3.6a): one generic tree engine classes/GvvGuiTree.lua (gui/tree.lua elements, one configuration file per tab in gui/tree/), used by the storage tab (gui/tree/storage.lua) with gvv_tree_storage-type-name element names; row data in element tags instead of element references in storage.
     - Ritn mods architecture (step 3.6b): property and LuaObject tabs moved to the generic tree engine (gui/tree/property.lua, gui/tree/luaobject.lua), trees tools (refresh, n/a, nil, methods boxes) rebuilt by GvvGuiTree with gvv_trees-type-name names, legacy/gui_event.lua removed (Shift+X and the main window click handled by modules/gui.lua).
+    - GUI errors are now also written to factorio-current.log with the call stack (the chat keeps the short message).
+    - Development: gvv loads the RitnTest interface when the RitnTest mod is active (in-game tests through RCON, never installed by players).
     - The main gvv window now opens centred on screen (it used to open in the top left corner).
   Bugfixes:
     - Help tab diagnose / fix and remote.call(..., "c", ...) failed with "function diag ... is not found" for mods loading gvv through require("__gvv__.gvv")(): diag, fix and c were missing from that interface since 0.5.x. Restored, built from the console code templates.

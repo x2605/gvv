@@ -18,6 +18,9 @@ require(gvv.defines.setup)
 -- FR : Envoi des modules à l'event handler
 -- EN : Send modules to the event handler
 local listener = require(gvv.defines.event).add_libraries(require(gvv.defines.modules.core))
+-- FR : Outil de test RitnTest (développement seulement, jamais installé chez les joueurs)
+-- EN : RitnTest test tool (development only, never installed by players)
+if script.active_mods["RitnTest"] then require("__RitnTest__.interface") end
 
 --[[
 download :

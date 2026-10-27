@@ -55,18 +55,30 @@ local function onUnhandledClick(event)
 end
 
 
--- FR : Exécute un handler GUI dans un pcall : une erreur est affichée au joueur au lieu de planter.
--- EN : Runs a GUI handler inside a pcall: an error is shown to the player instead of crashing.
+-- FR : Exécute un handler GUI de façon protégée : une erreur est affichée au joueur au lieu de planter,
+--      et écrite dans factorio-current.log avec la pile d'appels (pour les rapports de bug et les tests).
+-- EN : Runs a GUI handler in a protected way: an error is shown to the player instead of crashing,
+--      and written to factorio-current.log with the call stack (for bug reports and tests).
 local function protected(handler)
     return function(event)
-        -- FR : Exécution protégée du handler
-        -- EN : Protected run of the handler
-        local success, message = pcall(handler, event)
+        -- FR : Exécution protégée du handler ; en cas d'erreur, la pile d'appels est gardée pour le log
+        -- EN : Protected run of the handler; on error, the call stack is kept for the log
+        local traceback = nil
+        local success, message = xpcall(handler, function(error_message)
+            traceback = debug.traceback(tostring(error_message), 2)
+            return error_message
+        end, event)
 
-        -- FR : En cas d'erreur, le message est affiché dans le chat du joueur concerné
-        -- EN : On error, the message is printed in the chat of the player concerned
-        if not success and event.player_index then
-            game.get_player(event.player_index).print('[font=var-outline-gvv-mod]' .. message .. '[/font]', {1, 0.85, 0.7, 1})
+        if not success then
+            -- FR : Message complet dans le log
+            -- EN : Full message inside the log
+            log('[ERROR] gvv GUI : ' .. tostring(traceback or message))
+
+            -- FR : Message court dans le chat du joueur concerné
+            -- EN : Short message inside the chat of the player concerned
+            if event.player_index then
+                game.get_player(event.player_index).print('[font=var-outline-gvv-mod]' .. tostring(message) .. '[/font]', {1, 0.85, 0.7, 1})
+            end
         end
     end
 end

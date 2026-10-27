@@ -326,6 +326,9 @@ function GvvGuiTracking:fillEntries(first_time)
         for path_str, full_path in pairs(data.data.tracking_list) do
             local drawn, message = pcall(self.drawEntry, self, path_str, full_path)
             if not drawn then
+                -- FR : Erreur écrite dans le log, puis affichée au joueur
+                -- EN : Error written to the log, then shown to the player
+                log('[ERROR] gvv tracking : ' .. path_str .. ' : ' .. tostring(message))
                 self.player.print('[font=var-outline-gvv-mod]error caused when adding codes first time : ' .. path_str .. '\n' .. message .. '[/font]', {1, 0.85, 0.7, 1})
             end
         end
