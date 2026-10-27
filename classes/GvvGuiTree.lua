@@ -40,6 +40,15 @@ local fGui = require(gvv.defines.gui.tree)
 -- EN : Trees, in the tabs order; each one has its configuration gui/tree/<name>.lua
 local TREE_NAMES = { "storage", "property", "luaobject" }
 
+-- FR : Configurations des arbres, chargées ici : Factorio interdit require pendant le jeu
+--      (seulement pendant le chargement de control.lua)
+-- EN : Trees configurations, loaded here: Factorio forbids require during the game
+--      (only while control.lua is being loaded)
+local CONFIGS = {}
+for _, tree_name in ipairs(TREE_NAMES) do
+    CONFIGS[tree_name] = require(gvv.defines.gui.trees[tree_name])
+end
+
 -- FR : Préfixe des noms des outils des arbres (gvv_trees-button-refresh...)
 -- EN : Names prefix of the trees tools (gvv_trees-button-refresh...)
 local TOOLS_NAME = "gvv_trees"
@@ -74,7 +83,7 @@ local DEFAULT_TREE_LIMIT = 500
 GvvGuiTree = gvv.classFactory.newclass(GvvGui, function(self, event, tree_name)
     -- FR : Configuration de l'onglet demandé
     -- EN : Configuration of the requested tab
-    local config = require(gvv.defines.gui.trees[tree_name])
+    local config = CONFIGS[tree_name]
 
     -- FR : Onglet dont l'élément racine est « flow-wrap » (ex. gvv_tree_storage-flow-wrap)
     -- EN : Tab whose root element is "flow-wrap" (e.g. gvv_tree_storage-flow-wrap)
@@ -132,7 +141,7 @@ function GvvGuiTree.fromEvent(event)
     -- FR : Arbre dont la configuration a ce préfixe
     -- EN : Tree whose configuration has this prefix
     for _, tree_name in ipairs(TREE_NAMES) do
-        if require(gvv.defines.gui.trees[tree_name]).gui_name == gui_name then
+        if CONFIGS[tree_name].gui_name == gui_name then
             return GvvGuiTree(event, tree_name)
         end
     end
@@ -150,7 +159,7 @@ end
 ---@return GvvGuiTree?
 function GvvGuiTree.fromTab(event, tab_index)
     for _, tree_name in ipairs(TREE_NAMES) do
-        if require(gvv.defines.gui.trees[tree_name]).tab_index == tab_index then
+        if CONFIGS[tree_name].tab_index == tab_index then
             return GvvGuiTree(event, tree_name)
         end
     end
