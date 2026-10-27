@@ -13,6 +13,15 @@ local defines = {
     name = name,
     directory = directory,
 
+    -- FR : Prototypes (data stage, chargés par data.lua)
+    -- EN : Prototypes (data stage, loaded by data.lua)
+    prototypes = {
+        custom_inputs = directory .. ".prototypes.custom-inputs",
+        sprites = directory .. ".prototypes.sprites",
+        fonts = directory .. ".prototypes.fonts",
+        styles = directory .. ".prototypes.styles",
+    },
+
     -- FR : Démarrage du mod (control stage)
     -- EN : Mod bootstrap (control stage)
     setup = directory .. ".core.setup-classes",
