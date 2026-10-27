@@ -23,7 +23,23 @@ local fGui = require(gvv.defines.gui.main)
 local LEGACY_FRAME_NAME = "_gvv-mod_frame_"
 
 
+---**EN**
+---
+---Description: gvv main window ("gvv_main", in `player.gui.screen`): opening, closing, tabs, resizing.
+---
+---⚠ Temporary wrapper, created on each event. Do not store the instance in `storage`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fenêtre principale de gvv (« gvv_main », dans `player.gui.screen`) : ouverture, fermeture, onglets, taille.
+---
+---⚠ Wrapper temporaire, créé à chaque évènement. Ne pas stocker l'instance dans `storage`.
 ---@class GvvGuiMain : GvvGui
+---@field object_name string     "GvvGuiMain"
+---@operator call(table): GvvGuiMain
+---@type GvvGuiMain
 GvvGuiMain = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Fenêtre « gvv_main », dont l'élément racine est « frame-main » (gvv_main-frame-main)
     -- EN : Window "gvv_main", whose root element is "frame-main" (gvv_main-frame-main)
@@ -50,20 +66,34 @@ GvvGuiMain = gvv.classFactory.newclass(GvvGui, function(self, event)
         ["tabbed-tabs-selected_tab_changed"] = "action_change_tab",         -- FR : changement d'onglet / EN : tab change
     }
     --------------------------------------------------
-end)
+end) --[[@as GvvGuiMain]]
 ----------------------------------------------------------------
 
 
----FR : Vrai si la fenêtre principale est ouverte.
----EN : True if the main window is open.
+---**EN**
+---
+---Description: True if the main window is open.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la fenêtre principale est ouverte.
 ---@return boolean
 function GvvGuiMain:isOpen()
     return self:getMainElement() ~= nil
 end
 
 
----FR : Ouvre la fenêtre si elle est fermée, la ferme si elle est ouverte (Ctrl+Shift+V, /gvv).
----EN : Opens the window if it is closed, closes it if it is open (Ctrl+Shift+V, /gvv).
+---**EN**
+---
+---Description: Opens the window if it is closed, closes it if it is open (Ctrl+Shift+V, /gvv).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ouvre la fenêtre si elle est fermée, la ferme si elle est ouverte (Ctrl+Shift+V, /gvv).
 ---@return GvvGuiMain
 function GvvGuiMain:toggle()
     -- FR : Joueur absent ou invalide : rien à faire
@@ -81,8 +111,15 @@ function GvvGuiMain:toggle()
 end
 
 
----FR : Construit et ouvre la fenêtre principale.
----EN : Builds and opens the main window.
+---**EN**
+---
+---Description: Builds and opens the main window.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Construit et ouvre la fenêtre principale.
 ---@return GvvGuiMain
 function GvvGuiMain:open()
     -- FR : Joueur absent, ou fenêtre déjà ouverte : rien à faire
@@ -242,10 +279,17 @@ function GvvGuiMain:open()
 end
 
 
----FR : Ferme la fenêtre principale et les petites fenêtres de gvv.
----     L'état des dossiers ouverts dans les arbres est sauvegardé, sauf si ignore_save est vrai.
----EN : Closes the main window and gvv's small windows.
----     The state of the folders opened in the trees is saved, unless ignore_save is true.
+---**EN**
+---
+---Description: Closes the main window and gvv's small windows.
+---The state of the folders opened in the trees is saved, unless ignore_save is true.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ferme la fenêtre principale et les petites fenêtres de gvv.
+---L'état des dossiers ouverts dans les arbres est sauvegardé, sauf si ignore_save est vrai.
 ---@param ignore_save? boolean
 ---@return GvvGuiMain
 function GvvGuiMain:close(ignore_save)
@@ -291,15 +335,29 @@ function GvvGuiMain:close(ignore_save)
 end
 
 
----FR : Bouton fermer.
----EN : Close button.
+---**EN**
+---
+---Description: Close button.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton fermer.
 function GvvGuiMain:action_close()
     self:close()
 end
 
 
----FR : Curseur de largeur ou de hauteur déplacé : la fenêtre prend la nouvelle taille, gardée pour la prochaine ouverture.
----EN : Width or height slider moved: the window takes the new size, kept for the next opening.
+---**EN**
+---
+---Description: Width or height slider moved: the window takes the new size, kept for the next opening.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Curseur de largeur ou de hauteur déplacé : la fenêtre prend la nouvelle taille, gardée pour la prochaine ouverture.
 function GvvGuiMain:action_resize()
     -- FR : Données du joueur et éléments concernés
     -- EN : Player data and elements concerned
@@ -323,8 +381,15 @@ function GvvGuiMain:action_resize()
 end
 
 
----FR : Onglet changé : l'ancien code affiche les bons boutons et met à jour l'onglet choisi.
----EN : Tab changed: the old code shows the right buttons and updates the chosen tab.
+---**EN**
+---
+---Description: Tab changed: the old code shows the right buttons and updates the chosen tab.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Onglet changé : l'ancien code affiche les bons boutons et met à jour l'onglet choisi.
 function GvvGuiMain:action_change_tab()
     -- FR : Données du joueur et panneau d'onglets
     -- EN : Player data and tabbed pane
@@ -341,10 +406,17 @@ function GvvGuiMain:action_change_tab()
 end
 
 
----FR : Affiche l'onglet donné (1 = suivi... 5 = aide) et les outils qui vont avec.
----     Appelé au changement d'onglet, et par les petites fenêtres pour revenir au suivi.
----EN : Shows the given tab (1 = tracking... 5 = help) and the tools that go with it.
----     Called on tab change, and by the small windows to go back to the tracking.
+---**EN**
+---
+---Description: Shows the given tab (1 = tracking... 5 = help) and the tools that go with it.
+---Called on tab change, and by the small windows to go back to the tracking.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Affiche l'onglet donné (1 = suivi... 5 = aide) et les outils qui vont avec.
+---Appelé au changement d'onglet, et par les petites fenêtres pour revenir au suivi.
 ---@param tab_index integer
 ---@return GvvGuiMain
 function GvvGuiMain:changeTab(tab_index)

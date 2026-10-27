@@ -21,14 +21,31 @@ local check = require(gvv.defines.lualib.common.check)
 ---------------------------------------------------------------------------------------------
 
 
+---**EN**
+---
+---Description: Wrapper of a LuaPlayer for gvv: copies the useful player fields (snapshot), gives access to the
+---player's gvv data (`storage.players[index]`) and to the right to use gvv. Base of every gvv window.
+---
+---⚠ Temporary wrapper, created on each event. Do not store the instance in `storage`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Wrapper d'un LuaPlayer pour gvv : copie les champs utiles du joueur (instantané), donne accès aux
+---données gvv du joueur (`storage.players[index]`) et au droit d'utiliser gvv. Base de toutes les fenêtres.
+---
+---⚠ Wrapper temporaire, créé à chaque évènement. Ne pas stocker l'instance dans `storage`.
 ---@class GvvPlayer
----@field object_name string
----@field isPresent boolean   Vrai si le joueur est valide / True if the player is valid
----@field player LuaPlayer
----@field index uint
----@field name string
----@field admin boolean
----@field connected boolean
+---@field object_name string     "GvvPlayer" (overridden by sub-classes)
+---@field isPresent boolean      True if the player is valid; otherwise methods do nothing
+---@field player LuaPlayer       Wrapped player (live reference)
+---@field index uint             Player index (key of `storage.players`)
+---@field name string            Player name (snapshot)
+---@field admin boolean          Admin flag (snapshot)
+---@field connected boolean      Connected flag (snapshot)
+---@operator call(LuaPlayer?): GvvPlayer
+---@type GvvPlayer
 GvvPlayer = gvv.classFactory.newclass(function(self, LuaPlayer)
     -- FR : Nom de la classe, utile dans les logs
     -- EN : Class name, useful in logs
@@ -54,14 +71,21 @@ GvvPlayer = gvv.classFactory.newclass(function(self, LuaPlayer)
     self.admin = LuaPlayer.admin            -- FR : admin ? (droit d'utiliser gvv en multijoueur) / EN : admin? (right to use gvv in multiplayer)
     self.connected = LuaPlayer.connected    -- FR : connecté ? / EN : connected?
     --------------------------------------------------
-end)
+end) --[[@as GvvPlayer]]
 ----------------------------------------------------------------
 
 
----FR : Affiche un message au joueur. Une table est affichée avec serpent, une autre valeur avec tostring.
----     Un texte localisé ({"clé", ...}) est affiché tel quel.
----EN : Prints a message to the player. A table is printed with serpent, any other value with tostring.
----     A localised string ({"key", ...}) is printed as is.
+---**EN**
+---
+---Description: Prints a message to the player. A table is printed with serpent, any other value with tostring.
+---A localised string ({"key", ...}) is printed as is.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Affiche un message au joueur. Une table est affichée avec serpent, une autre valeur avec tostring.
+---Un texte localisé ({"clé", ...}) est affiché tel quel.
 ---@param text any
 ---@param color? Color
 ---@return GvvPlayer
@@ -89,8 +113,15 @@ function GvvPlayer:print(text, color)
 end
 
 
----FR : Vrai si le joueur peut utiliser gvv : toujours en solo, seulement les admins en multijoueur.
----EN : True if the player can use gvv: always in single player, only admins in multiplayer.
+---**EN**
+---
+---Description: True if the player can use gvv: always in single player, only admins in multiplayer.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si le joueur peut utiliser gvv : toujours en solo, seulement les admins en multijoueur.
 ---@return boolean
 function GvvPlayer:canUseGvv()
     -- FR : Joueur absent ou invalide : pas le droit
@@ -105,10 +136,17 @@ function GvvPlayer:canUseGvv()
 end
 
 
----FR : Données gvv du joueur (storage.players[index]), ou nil si elles n'existent pas encore
----     (le joueur n'a jamais ouvert gvv).
----EN : The player's gvv data (storage.players[index]), or nil if it does not exist yet
----     (the player never opened gvv).
+---**EN**
+---
+---Description: The player's gvv data (storage.players[index]), or nil if it does not exist yet
+---(the player never opened gvv).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Données gvv du joueur (storage.players[index]), ou nil si elles n'existent pas encore
+---(le joueur n'a jamais ouvert gvv).
 ---@return table?
 function GvvPlayer:getData()
     -- FR : Joueur absent ou invalide : pas de données
@@ -123,12 +161,19 @@ function GvvPlayer:getData()
 end
 
 
----FR : Crée les données gvv du joueur si besoin, et complète les valeurs manquantes par leur valeur par défaut.
----     Renvoie les données, et true si elles viennent d'être créées (première ouverture de gvv).
----     Repris de l'ancien Gui.open_main (legacy/gui.lua), sans changement de valeurs.
----EN : Creates the player's gvv data if needed, and fills missing values with their default value.
----     Returns the data, and true if it was just created (first time gvv is opened).
----     Taken from the old Gui.open_main (legacy/gui.lua), without changing values.
+---**EN**
+---
+---Description: Creates the player's gvv data if needed, and fills missing values with their default value.
+---Returns the data, and true if it was just created (first time gvv is opened).
+---Taken from the old Gui.open_main (legacy/gui.lua), without changing values.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Crée les données gvv du joueur si besoin, et complète les valeurs manquantes par leur valeur par défaut.
+---Renvoie les données, et true si elles viennent d'être créées (première ouverture de gvv).
+---Repris de l'ancien Gui.open_main (legacy/gui.lua), sans changement de valeurs.
 ---@return table? data
 ---@return boolean first_time
 function GvvPlayer:initData()

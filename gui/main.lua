@@ -36,9 +36,16 @@ local TABS = {
 }
 
 
----FR : Description de chaque élément de la fenêtre.
----EN : Description of each element of the window.
----@param gui_name string  Préfixe des noms (« gvv_main ») / Names prefix ("gvv_main")
+---**EN**
+---
+---Description: Description of each element of the window.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Description de chaque élément de la fenêtre.
+---@param gui_name string  Names prefix ("gvv_main")
 ---@return table
 local function getElement(gui_name)
     local element = {
@@ -120,8 +127,15 @@ local function getElement(gui_name)
 end
 
 
----FR : Chemin de chaque élément depuis player.gui.screen (sans le préfixe gui_name, ajouté par GvvGui:getElement).
----EN : Path of each element from player.gui.screen (without the gui_name prefix, added by GvvGui:getElement).
+---**EN**
+---
+---Description: Path of each element from player.gui.screen (without the gui_name prefix, added by GvvGui:getElement).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Chemin de chaque élément depuis player.gui.screen (sans le préfixe gui_name, ajouté par GvvGui:getElement).
 ---@return table
 local function getContent()
     -- FR : Renvoie une copie du chemin base, prolongée par le nom donné

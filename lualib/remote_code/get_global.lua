@@ -1,3 +1,13 @@
+---**EN**
+---
+---Description: Template of the code that returns a transportable copy of `storage` (console / copy_code).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Modèle du code qui renvoie une copie transportable de `storage` (console / copy_code).
+---@return string  Lua code starting with "=function"
 return function() return [[=function()
   local G,_,s,cp,wr,kn=storage,true,{}
   local B={}

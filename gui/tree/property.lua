@@ -21,6 +21,16 @@ local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 ---------------------------------------------------------------------------------------------
 
 
+---**EN**
+---
+---Description: Configuration of the property tab: added Lua objects.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Configuration de l'onglet property : objets Lua ajoutés.
+---@type GvvTreeConfig
 local config = {
     -- FR : Préfixe des noms des éléments de cet arbre
     -- EN : Names prefix of this tree elements
@@ -62,8 +72,17 @@ local config = {
 -- EN : ADDED OBJECTS
 ---------------------------------------------------------------------------------------------
 
--- FR : Objets ajoutés du joueur (data.data.docked_luaobj), créés si besoin
--- EN : Player's added objects (data.data.docked_luaobj), created if needed
+---**EN**
+---
+---Description: Player's added objects (data.data.docked_luaobj), created if needed
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Objets ajoutés du joueur (data.data.docked_luaobj), créés si besoin
+---@param tree GvvGuiTree
+---@return table<integer, table>  data.data.docked_luaobj
 local function getDocked(tree)
     local data = tree:getData().data
 
@@ -76,8 +95,17 @@ local function getDocked(tree)
 end
 
 
--- FR : Un objet Lua est-il encore utilisable ? (objet sans champ valid : considéré valide)
--- EN : Is a Lua object still usable? (object without a valid field: considered valid)
+---**EN**
+---
+---Description: Is a Lua object still usable? (object without a valid field: considered valid)
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Un objet Lua est-il encore utilisable ? (objet sans champ valid : considéré valide)
+---@param value any
+---@return boolean
 local function isUsableObject(value)
     -- FR : Pas un objet Lua : non
     -- EN : Not a Lua object: no
@@ -102,8 +130,18 @@ local function isUsableObject(value)
 end
 
 
--- FR : Message quand un objet n'existe plus ; where : texte qui dit de quel objet il s'agit
--- EN : Message when an object no longer exists; where: text that tells which object it is
+---**EN**
+---
+---Description: Message when an object no longer exists; where: text that tells which object it is
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Message quand un objet n'existe plus ; where : texte qui dit de quel objet il s'agit
+---@param value any
+---@param where string
+---@return string
 local function objectGoneMessage(value, where)
     -- FR : Nom de classe de l'objet s'il se lit encore, sinon « LuaObject »
     -- EN : Class name of the object if it can still be read, otherwise "LuaObject"
@@ -118,8 +156,17 @@ local function objectGoneMessage(value, where)
 end
 
 
--- FR : Numéro de l'objet dans le nom d'une racine : « (3) ... » donne 3
--- EN : Object number inside a root name: "(3) ..." gives 3
+---**EN**
+---
+---Description: Object number inside a root name: "(3) ..." gives 3
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Numéro de l'objet dans le nom d'une racine : « (3) ... » donne 3
+---@param root_key string
+---@return integer?
 local function indexOf(root_key)
     return tonumber(root_key:match('^[(](%d+)[)] '))
 end
@@ -130,8 +177,15 @@ end
 -- EN : FUNCTIONS READ BY THE ENGINE
 ---------------------------------------------------------------------------------------------
 
----FR : Éléments de la liste de gauche : les objets ajoutés, « (numéro) clé », avec leur chemin en infobulle.
----EN : Left list elements: the added objects, "(number) key", with their path as tooltip.
+---**EN**
+---
+---Description: Left list elements: the added objects, "(number) key", with their path as tooltip.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Éléments de la liste de gauche : les objets ajoutés, « (numéro) clé », avec leur chemin en infobulle.
 ---@param tree GvvGuiTree
 ---@return table[]
 function config.getItems(tree)
@@ -150,12 +204,19 @@ function config.getItems(tree)
 end
 
 
----FR : Racine à afficher pour l'objet choisi. L'objet est relu par son chemin : s'il n'existe plus,
----     il est retiré de la liste et une erreur est levée (message affiché dans le chat).
----EN : Root to show for the chosen object. The object is read again through its path: if it no longer
----     exists, it is removed from the list and an error is raised (message shown in the chat).
+---**EN**
+---
+---Description: Root to show for the chosen object. The object is read again through its path: if it no longer
+---exists, it is removed from the list and an error is raised (message shown in the chat).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Racine à afficher pour l'objet choisi. L'objet est relu par son chemin : s'il n'existe plus,
+---il est retiré de la liste et une erreur est levée (message affiché dans le chat).
 ---@param tree GvvGuiTree
----@param index integer  Numéro de l'objet / Object number
+---@param index integer  Object number
 ---@return table[]  { key, caption, bottom_padding }
 function config.getRoots(tree, index)
     local docked = getDocked(tree)[index]
@@ -192,10 +253,17 @@ function config.getRoots(tree, index)
 end
 
 
----FR : Données d'une racine : l'objet ajouté (relu par getRoots juste avant le dessin).
----EN : Data of a root: the added object (read again by getRoots just before drawing).
+---**EN**
+---
+---Description: Data of a root: the added object (read again by getRoots just before drawing).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Données d'une racine : l'objet ajouté (relu par getRoots juste avant le dessin).
 ---@param tree GvvGuiTree
----@param root_key string  « (numéro) chemin » / "(number) path"
+---@param root_key string  "(number) path"
 ---@return any
 function config.read(tree, root_key)
     local docked = getDocked(tree)[indexOf(root_key)]
@@ -209,8 +277,15 @@ function config.read(tree, root_key)
 end
 
 
----FR : Aucun dossier bloqué dans cet arbre.
----EN : No blocked folder in this tree.
+---**EN**
+---
+---Description: No blocked folder in this tree.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Aucun dossier bloqué dans cet arbre.
 ---@param tree GvvGuiTree
 ---@param path table
 ---@return boolean
@@ -219,8 +294,15 @@ function config.isBlocked(tree, path)
 end
 
 
----FR : Chemin complet pour le suivi : le chemin de l'objet ajouté, prolongé par les clés sous la racine.
----EN : Full path for the tracking: the added object path, extended with the keys under the root.
+---**EN**
+---
+---Description: Full path for the tracking: the added object path, extended with the keys under the root.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Chemin complet pour le suivi : le chemin de l'objet ajouté, prolongé par les clés sous la racine.
 ---@param tree GvvGuiTree
 ---@param path table
 ---@return table
@@ -243,8 +325,15 @@ function config.fullPath(tree, path)
 end
 
 
----FR : Oublie un objet ajouté (clic droit sur son bouton). Le moteur retire ensuite son bouton et son arbre.
----EN : Forgets an added object (right click on its button). The engine then removes its button and its tree.
+---**EN**
+---
+---Description: Forgets an added object (right click on its button). The engine then removes its button and its tree.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Oublie un objet ajouté (clic droit sur son bouton). Le moteur retire ensuite son bouton et son arbre.
 ---@param tree GvvGuiTree
 ---@param index integer
 function config.forget(tree, index)
@@ -252,16 +341,23 @@ function config.forget(tree, index)
 end
 
 
----FR : Ajoute un objet Lua à la liste (clic droit sur une valeur objet Lua dans un arbre), puis l'affiche
----     dans l'onglet property. Un objet déjà ajouté (même chemin) n'est pas ajouté deux fois.
----     Renvoie le numéro de l'objet. Repris de l'ancien Tree.register_object.
----EN : Adds a Lua object to the list (right click on a Lua object value in a tree), then shows it
----     in the property tab. An object already added (same path) is not added twice.
----     Returns the object number. Taken from the old Tree.register_object.
----@param tree GvvGuiTree   Arbre property / property tree
----@param key any           Clé de la valeur / Value key
----@param full_path table   Chemin complet de la valeur / Value full path
----@param caption string    Texte de la valeur (message si l'objet a disparu) / Value text (message if the object is gone)
+---**EN**
+---
+---Description: Adds a Lua object to the list (right click on a Lua object value in a tree), then shows it
+---in the property tab. An object already added (same path) is not added twice.
+---Returns the object number. Taken from the old Tree.register_object.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ajoute un objet Lua à la liste (clic droit sur une valeur objet Lua dans un arbre), puis l'affiche
+---dans l'onglet property. Un objet déjà ajouté (même chemin) n'est pas ajouté deux fois.
+---Renvoie le numéro de l'objet. Repris de l'ancien Tree.register_object.
+---@param tree GvvGuiTree   property tree
+---@param key any           Value key
+---@param full_path table   Value full path
+---@param caption string    Value text (message if the object is gone)
 ---@return integer
 function config.addObject(tree, key, full_path, caption)
     local docked = getDocked(tree)

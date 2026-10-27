@@ -34,10 +34,19 @@ local TOKEN_EMPTY_STRING = ""
 -- EN : table.unpack (Lua 5.2, Factorio) or unpack (Lua 5.1): gives back the values of a list
 local unpack_results = table.unpack or unpack
 
--- FR : Range toutes les valeurs reçues dans une liste, avec leur nombre exact dans n
---      (# ne suffit pas : il s'arrête au premier nil)
--- EN : Stores all received values in a list, with their exact count in n
---      (# is not enough: it stops at the first nil)
+---**EN**
+---
+---Description: Stores all received values in a list, with their exact count in n
+---(# is not enough: it stops at the first nil)
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Range toutes les valeurs reçues dans une liste, avec leur nombre exact dans n
+---(# ne suffit pas : il s'arrête au premier nil)
+---@param ... any
+---@return table  { n = count, ... }
 local function pack_results(...)
     return {n = select("#", ...), ...}
 end
@@ -47,16 +56,30 @@ end
 -- NIL
 ---------------------------------------------------------------------------------------------
 
----FR : Vrai si la valeur est nil.
----EN : True if the value is nil.
+---**EN**
+---
+---Description: True if the value is nil.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la valeur est nil.
 ---@param value any
 ---@return boolean
 local function isNil(value)
     return value == nil
 end
 
----FR : Vrai si la valeur n'est pas nil (false compris : false n'est pas nil).
----EN : True if the value is not nil (false included: false is not nil).
+---**EN**
+---
+---Description: True if the value is not nil (false included: false is not nil).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la valeur n'est pas nil (false compris : false n'est pas nil).
 ---@param value any
 ---@return boolean
 local function isNotNil(value)
@@ -68,36 +91,64 @@ end
 -- STRING
 ---------------------------------------------------------------------------------------------
 
----FR : Vrai si la valeur est une chaîne de caractères.
----EN : True if the value is a string.
+---**EN**
+---
+---Description: True if the value is a string.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la valeur est une chaîne de caractères.
 ---@param value any
 ---@return boolean
 local function isString(value)
     return type(value) == "string"
 end
 
----FR : Vrai si la valeur est nil ou une chaîne vide. Une chaîne d'espaces n'est pas vide.
----EN : True if the value is nil or an empty string. A string of spaces is not empty.
+---**EN**
+---
+---Description: True if the value is nil or an empty string. A string of spaces is not empty.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la valeur est nil ou une chaîne vide. Une chaîne d'espaces n'est pas vide.
 ---@param value any
 ---@return boolean
 local function isEmptyString(value)
     return value == nil or value == TOKEN_EMPTY_STRING
 end
 
----FR : Vrai si la valeur est une chaîne non vide.
----EN : True if the value is a non-empty string.
+---**EN**
+---
+---Description: True if the value is a non-empty string.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la valeur est une chaîne non vide.
 ---@param value any
 ---@return boolean
 local function isNotEmptyString(value)
     return isString(value) and value ~= TOKEN_EMPTY_STRING
 end
 
----FR : Renvoie la valeur, ou la valeur par défaut si elle est nil ou une chaîne vide.
----     Différence avec RitnLib : un nombre ou un booléen est gardé tel quel.
----EN : Returns the value, or the default value if it is nil or an empty string.
----     Difference with RitnLib: a number or a boolean is kept as is.
+---**EN**
+---
+---Description: Returns the value, or the default value if it is nil or an empty string.
+---Difference with RitnLib: a number or a boolean is kept as is.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Renvoie la valeur, ou la valeur par défaut si elle est nil ou une chaîne vide.
+---Différence avec RitnLib : un nombre ou un booléen est gardé tel quel.
 ---@param value any
----@param default? any  Valeur par défaut, "" si absente / Default value, "" if missing
+---@param default? any  Default value, "" if missing
 ---@return any
 local function defaultValue(value, default)
     -- FR : Sans valeur par défaut donnée : chaîne vide
@@ -117,10 +168,17 @@ local function defaultValue(value, default)
     return value
 end
 
----FR : Vrai si la chaîne commence par le texte donné. Le texte est comparé tel quel
----     (différence avec RitnLib : pas de motif Lua, donc ".", "(", "%"... sans effet spécial).
----EN : True if the string starts with the given text. The text is compared as is
----     (difference with RitnLib: no Lua pattern, so ".", "(", "%"... have no special effect).
+---**EN**
+---
+---Description: True if the string starts with the given text. The text is compared as is
+---(difference with RitnLib: no Lua pattern, so ".", "(", "%"... have no special effect).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la chaîne commence par le texte donné. Le texte est comparé tel quel
+---(différence avec RitnLib : pas de motif Lua, donc ".", "(", "%"... sans effet spécial).
 ---@param str any
 ---@param start any
 ---@return boolean
@@ -141,16 +199,30 @@ end
 -- TABLE
 ---------------------------------------------------------------------------------------------
 
----FR : Vrai si la valeur est une table Lua (un objet Lua de Factorio n'en est pas une).
----EN : True if the value is a Lua table (a Factorio Lua object is not one).
+---**EN**
+---
+---Description: True if the value is a Lua table (a Factorio Lua object is not one).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la valeur est une table Lua (un objet Lua de Factorio n'en est pas une).
 ---@param value any
 ---@return boolean
 local function isTable(value)
     return type(value) == "table"
 end
 
----FR : Nombre d'éléments de la table (toutes les clés, pas seulement 1, 2, 3...), -1 si ce n'est pas une table.
----EN : Number of elements in the table (all keys, not only 1, 2, 3...), -1 if it is not a table.
+---**EN**
+---
+---Description: Number of elements in the table (all keys, not only 1, 2, 3...), -1 if it is not a table.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Nombre d'éléments de la table (toutes les clés, pas seulement 1, 2, 3...), -1 si ce n'est pas une table.
 ---@param value any
 ---@return integer
 local function length(value)
@@ -165,8 +237,15 @@ local function length(value)
     return table_size(value)
 end
 
----FR : Vrai si ce n'est pas une table, ou si la table est vide.
----EN : True if it is not a table, or if the table is empty.
+---**EN**
+---
+---Description: True if it is not a table, or if the table is empty.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si ce n'est pas une table, ou si la table est vide.
 ---@param value any
 ---@return boolean
 local function isEmpty(value)
@@ -175,16 +254,30 @@ local function isEmpty(value)
     return length(value) <= 0
 end
 
----FR : Vrai si c'est une table avec au moins un élément.
----EN : True if it is a table with at least one element.
+---**EN**
+---
+---Description: True if it is a table with at least one element.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si c'est une table avec au moins un élément.
 ---@param value any
 ---@return boolean
 local function isNotEmpty(value)
     return not isEmpty(value)
 end
 
----FR : Vrai si la table contient la clé (même si sa valeur est false).
----EN : True if the table contains the key (even if its value is false).
+---**EN**
+---
+---Description: True if the table contains the key (even if its value is false).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la table contient la clé (même si sa valeur est false).
 ---@param value any
 ---@param key any
 ---@return boolean
@@ -205,8 +298,15 @@ end
 -- LUA OBJECTS (Factorio)
 ---------------------------------------------------------------------------------------------
 
----FR : Vrai si la valeur est un objet Lua de Factorio (LuaEntity, LuaPlayer...), valide ou non.
----EN : True if the value is a Factorio Lua object (LuaEntity, LuaPlayer...), valid or not.
+---**EN**
+---
+---Description: True if the value is a Factorio Lua object (LuaEntity, LuaPlayer...), valid or not.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la valeur est un objet Lua de Factorio (LuaEntity, LuaPlayer...), valide ou non.
 ---@param value any
 ---@return boolean
 local function isLuaObject(value)
@@ -222,8 +322,15 @@ local function isLuaObject(value)
     return ok and isString(name)
 end
 
----FR : Vrai si la valeur est un objet Lua encore utilisable (non détruit).
----EN : True if the value is a Lua object still usable (not destroyed).
+---**EN**
+---
+---Description: True if the value is a Lua object still usable (not destroyed).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la valeur est un objet Lua encore utilisable (non détruit).
 ---@param value any
 ---@return boolean
 local function isValidLuaObject(value)
@@ -239,10 +346,17 @@ local function isValidLuaObject(value)
     return ok and valid ~= false
 end
 
----FR : Type de la valeur : le nom de classe pour un objet Lua (« LuaEntity »), sinon type() (« table », « nil »...).
----     Différence avec RitnLib : une chaîne renvoie bien « string ».
----EN : Type of the value: the class name for a Lua object ("LuaEntity"), otherwise type() ("table", "nil"...).
----     Difference with RitnLib: a string does return "string".
+---**EN**
+---
+---Description: Type of the value: the class name for a Lua object ("LuaEntity"), otherwise type() ("table", "nil"...).
+---Difference with RitnLib: a string does return "string".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Type de la valeur : le nom de classe pour un objet Lua (« LuaEntity »), sinon type() (« table », « nil »...).
+---Différence avec RitnLib : une chaîne renvoie bien « string ».
 ---@param value any
 ---@return string
 local function dataType(value)
@@ -262,11 +376,18 @@ end
 -- PROTECTED ACCESS / ACCÈS PROTÉGÉ
 ---------------------------------------------------------------------------------------------
 
----FR : Lit value[key] sans jamais lever d'erreur (nil, objet invalide, clé inconnue d'un objet Lua...).
----EN : Reads value[key] without ever raising an error (nil, invalid object, unknown key of a Lua object...).
+---**EN**
+---
+---Description: Reads value[key] without ever raising an error (nil, invalid object, unknown key of a Lua object...).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Lit value[key] sans jamais lever d'erreur (nil, objet invalide, clé inconnue d'un objet Lua...).
 ---@param value any
 ---@param key any
----@return any  nil si la lecture est impossible / nil if reading is impossible
+---@return any  nil if reading is impossible
 local function tryGet(value, key)
     -- FR : Clé nil : rien à lire
     -- EN : nil key: nothing to read
@@ -293,14 +414,21 @@ local function tryGet(value, key)
     return nil
 end
 
----FR : Suit un chemin de clés depuis root et renvoie la valeur trouvée, ou nil dès qu'une étape manque.
----     from : index du premier élément du chemin à suivre (1 par défaut ; 2 pour les chemins de l'arbre,
----     dont le premier élément est le nom de la racine).
----     Ex. getPath(storage, {"players", 1, "data"}) lit storage.players[1].data.
----EN : Follows a path of keys from root and returns the value found, or nil as soon as a step is missing.
----     from : index of the first path element to follow (1 by default; 2 for tree paths,
----     whose first element is the root name).
----     E.g. getPath(storage, {"players", 1, "data"}) reads storage.players[1].data.
+---**EN**
+---
+---Description: Follows a path of keys from root and returns the value found, or nil as soon as a step is missing.
+---from : index of the first path element to follow (1 by default; 2 for tree paths,
+---whose first element is the root name).
+---E.g. getPath(storage, {"players", 1, "data"}) reads storage.players[1].data.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Suit un chemin de clés depuis root et renvoie la valeur trouvée, ou nil dès qu'une étape manque.
+---from : index du premier élément du chemin à suivre (1 par défaut ; 2 pour les chemins de l'arbre,
+---dont le premier élément est le nom de la racine).
+---Ex. getPath(storage, {"players", 1, "data"}) lit storage.players[1].data.
 ---@param root any
 ---@param path table
 ---@param from? integer
@@ -330,12 +458,19 @@ local function getPath(root, path, from)
     return value
 end
 
----FR : Exécute funcTry dans un pcall et renvoie ses résultats. En cas d'erreur, l'écrit dans le log,
----     puis appelle funcCatch(message) s'il est donné et renvoie ses résultats.
----     Différence avec RitnLib : les résultats sont renvoyés, et funcCatch reçoit le message d'erreur.
----EN : Runs funcTry inside a pcall and returns its results. On error, writes it to the log,
----     then calls funcCatch(message) if given and returns its results.
----     Difference with RitnLib: results are returned, and funcCatch receives the error message.
+---**EN**
+---
+---Description: Runs funcTry inside a pcall and returns its results. On error, writes it to the log,
+---then calls funcCatch(message) if given and returns its results.
+---Difference with RitnLib: results are returned, and funcCatch receives the error message.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Exécute funcTry dans un pcall et renvoie ses résultats. En cas d'erreur, l'écrit dans le log,
+---puis appelle funcCatch(message) s'il est donné et renvoie ses résultats.
+---Différence avec RitnLib : les résultats sont renvoyés, et funcCatch reçoit le message d'erreur.
 ---@param funcTry function
 ---@param funcCatch? fun(message: string): ...
 ---@return ...

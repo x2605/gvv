@@ -18,6 +18,16 @@ local Util = require(gvv.defines.lualib.common.util)
 local G_PREFIX = "_G:"
 
 
+---**EN**
+---
+---Description: Configuration of the storage tab: mods storage and _G, read through remote.call.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Configuration de l'onglet storage : storage et _G des mods, lus par remote.call.
+---@type GvvTreeConfig
 local config = {
     -- FR : Préfixe des noms des éléments de cet arbre
     -- EN : Names prefix of this tree elements
@@ -54,10 +64,17 @@ local config = {
 }
 
 
----FR : Éléments de la liste de gauche : les mods qui chargent l'interface gvv (level compris).
----     Chaque élément : value (gardée dans les tags du bouton), caption.
----EN : Left list elements: the mods that load the gvv interface (level included).
----     Each element: value (kept in the button tags), caption.
+---**EN**
+---
+---Description: Left list elements: the mods that load the gvv interface (level included).
+---Each element: value (kept in the button tags), caption.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Éléments de la liste de gauche : les mods qui chargent l'interface gvv (level compris).
+---Chaque élément : value (gardée dans les tags du bouton), caption.
 ---@param tree GvvGuiTree
 ---@return table[]
 function config.getItems(tree)
@@ -72,8 +89,15 @@ function config.getItems(tree)
 end
 
 
----FR : Racines à afficher pour le mod choisi : son _G, puis son storage (avec une marge en bas).
----EN : Roots to show for the chosen mod: its _G, then its storage (with a bottom margin).
+---**EN**
+---
+---Description: Roots to show for the chosen mod: its _G, then its storage (with a bottom margin).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Racines à afficher pour le mod choisi : son _G, puis son storage (avec une marge en bas).
 ---@param tree GvvGuiTree
 ---@param mod_name string
 ---@return table[]  { key, caption, bottom_padding }
@@ -93,10 +117,17 @@ function config.getRoots(tree, mod_name)
 end
 
 
----FR : Données d'une racine : le _G ou le storage du mod, par remote.call. Peut lever une erreur.
----EN : Data of a root: the mod _G or storage, through remote.call. May raise an error.
+---**EN**
+---
+---Description: Data of a root: the mod _G or storage, through remote.call. May raise an error.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Données d'une racine : le _G ou le storage du mod, par remote.call. Peut lever une erreur.
 ---@param tree GvvGuiTree
----@param root_key string  « _G:<mod> » ou « <mod> » / "_G:<mod>" or "<mod>"
+---@param root_key string  "_G:<mod>" or "<mod>"
 ---@return any
 function config.read(tree, root_key)
     local mod_name = root_key:match('^' .. G_PREFIX .. '(.*)$')
@@ -107,10 +138,17 @@ function config.read(tree, root_key)
 end
 
 
----FR : Chemin dont le dossier ne doit pas s'ouvrir : les données des joueurs de gvv lui-même
----     (elles contiennent les éléments de l'interface).
----EN : Path whose folder must not open: gvv's own players data
----     (it holds the interface elements).
+---**EN**
+---
+---Description: Path whose folder must not open: gvv's own players data
+---(it holds the interface elements).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Chemin dont le dossier ne doit pas s'ouvrir : les données des joueurs de gvv lui-même
+---(elles contiennent les éléments de l'interface).
 ---@param tree GvvGuiTree
 ---@param path table
 ---@return boolean
@@ -119,8 +157,15 @@ function config.isBlocked(tree, path)
 end
 
 
----FR : Chemin complet pour le suivi : le même chemin (il commence déjà par le mod ou « _G:<mod> »).
----EN : Full path for the tracking: the same path (it already starts with the mod or "_G:<mod>").
+---**EN**
+---
+---Description: Full path for the tracking: the same path (it already starts with the mod or "_G:<mod>").
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Chemin complet pour le suivi : le même chemin (il commence déjà par le mod ou « _G:<mod> »).
 ---@param tree GvvGuiTree
 ---@param path table
 ---@return table

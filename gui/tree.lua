@@ -25,9 +25,46 @@
 ---------------------------------------------------------------------------------------------
 
 
----FR : Description des éléments d'un onglet d'arbre et de ses lignes.
----EN : Description of the elements of a tree tab and its rows.
----@param gui_name string  Préfixe des noms (gui_name de la configuration) / Names prefix (configuration gui_name)
+---**EN**
+---
+---Description: Shape of a tree tab configuration (`gui/tree/storage.lua`, `property.lua`, `luaobject.lua`), read by the
+---engine GvvGuiTree. Every function receives the tree (GvvGuiTree) first.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Forme de la configuration d'un onglet d'arbre (`gui/tree/storage.lua`, `property.lua`, `luaobject.lua`), lue
+---par le moteur GvvGuiTree. Chaque fonction reçoit d'abord l'arbre (GvvGuiTree).
+---@class GvvTreeConfig
+---@field gui_name string                 Element names prefix (e.g. "gvv_tree_storage")
+---@field tab string                      Main window tab ("storage", "property", "luaobject")
+---@field tab_index integer               Tab number (2 to 4)
+---@field search "glob"|"prop"|"gobj"     Tree name for GvvGuiSearch
+---@field opened string                   Key of the kept opened folders (data.data.opened_data[opened])
+---@field last_selection string           Key of the last chosen element (data.tabs[last_selection])
+---@field prop_allowed boolean            Lua objects open as properties folders
+---@field item_buttons string[]           Mouse buttons of the list buttons
+---@field refill_on_tab boolean           List filled again each time the tab is displayed
+---@field getItems fun(tree: GvvGuiTree): {value: any, caption: LocalisedString, tooltip: LocalisedString?}[]
+---@field getRoots fun(tree: GvvGuiTree, selection: any): {key: string, caption: LocalisedString, bottom_padding: boolean}[]
+---@field read fun(tree: GvvGuiTree, root_key: string): any
+---@field isBlocked fun(tree: GvvGuiTree, path: table): boolean
+---@field fullPath fun(tree: GvvGuiTree, path: table): table
+---@field forget? fun(tree: GvvGuiTree, item: any)                               Removes a list element (property)
+---@field addObject? fun(tree: GvvGuiTree, key: any, full_path: table, caption: string): integer   Adds a Lua object (property)
+
+
+---**EN**
+---
+---Description: Description of the elements of a tree tab and its rows.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Description des éléments d'un onglet d'arbre et de ses lignes.
+---@param gui_name string  Names prefix (configuration gui_name)
 ---@return table
 local function getElement(gui_name)
     local element = {
@@ -87,13 +124,20 @@ local function getElement(gui_name)
 end
 
 
----FR : Description des outils des arbres, dans la barre d'outils de la fenêtre principale :
----     bouton de rafraîchissement (onglets 2 à 4), cases n/a, nil et méthodes (onglets property et LuaObject).
----     Cachés au départ : GvvGuiTree.changeTab les affiche selon l'onglet.
----EN : Description of the trees tools, inside the main window toolbar:
----     refresh button (tabs 2 to 4), n/a, nil and methods boxes (property and LuaObject tabs).
----     Hidden at first: GvvGuiTree.changeTab shows them according to the tab.
----@param tools_name string  Préfixe des noms des outils (« gvv_trees ») / Tools names prefix ("gvv_trees")
+---**EN**
+---
+---Description: Description of the trees tools, inside the main window toolbar:
+---refresh button (tabs 2 to 4), n/a, nil and methods boxes (property and LuaObject tabs).
+---Hidden at first: GvvGuiTree.changeTab shows them according to the tab.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Description des outils des arbres, dans la barre d'outils de la fenêtre principale :
+---bouton de rafraîchissement (onglets 2 à 4), cases n/a, nil et méthodes (onglets property et LuaObject).
+---Cachés au départ : GvvGuiTree.changeTab les affiche selon l'onglet.
+---@param tools_name string  Tools names prefix ("gvv_trees")
 ---@return table
 local function getTools(tools_name)
     local element = {

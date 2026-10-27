@@ -1,3 +1,15 @@
+---**EN**
+---
+---Description: Template of the code of the `c` interface function: runs Lua code inside the mod; the arguments are
+---kept for the call in `storage[#storage+1]` of the mod, then removed.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Modèle du code de la fonction d'interface `c` : exécute du code Lua dans le mod ; les arguments sont
+---gardés le temps de l'appel dans `storage[#storage+1]` du mod, puis retirés.
+---@return string  Lua code starting with "=function"
 return function() return [[=function(t,...)
   local i=#storage+1
   storage[i]=table.pack(...)

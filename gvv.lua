@@ -34,6 +34,21 @@ local exclude_classes = {
 --      Elle appelle wrap_object et capture toute erreur éventuelle.
 -- EN : Function that wraps object copying using pcall to avoid runtime errors.
 --      It calls wrap_object and safely catches any possible errors.
+
+---**EN**
+---
+---Description: Protected copy of a value: calls `wrap_object` inside a pcall; an error gives `{["<ERROR>"] = "<message>"}`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Copie protégée d'une valeur : appelle `wrap_object` dans un pcall ; une erreur donne `{["<ERROR>"] = "<message>"}`.
+---@param o any
+---@param parents table[]  Tables already crossed (recursion detection)
+---@param is_key boolean?
+---@param counters table?  Counters of the key names, per type
+---@return any
 local function copy_object(o, parents, is_key, counters)
   local success, res = pcall(function() return wrap_object(o, parents, is_key, counters) end)
   if success then
@@ -48,6 +63,19 @@ end
 --      counters : compteurs propres à la table parcourue, pour garder des clés uniques.
 -- EN : Text name of a non-copyable key, numbered per type within the table: <table_1>, <table_2>, <LuaEntity_1>...
 --      counters : counters of the table being copied, to keep keys unique.
+
+---**EN**
+---
+---Description: Text name of a key that can't be sent by remote.call, numbered per type inside the same table.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Nom texte d'une clé que remote.call ne peut pas transmettre, numéroté par type dans la même table.
+---@param counters table
+---@param name string  Type name (e.g. "table", "LuaEntity")
+---@return string  e.g. "<table_1>"
 local function key_name(counters, name)
   counters[name] = (counters[name] or 0) + 1
   return "<" .. name .. "_" .. counters[name] .. ">"
@@ -62,6 +90,28 @@ end
 --      - Avoids cycles by checking recursion (parents).
 --      - Replaces non-copyable keys or values (function, userdata, thread, nil) with text representation.
 --      - For Factorio userdata, if it's a key or an excluded class, replaces it with a tag.
+
+---**EN**
+---
+---Description: Builds a copy of a value that remote.call can send: Lua objects are kept (except excluded classes, written
+---as text), tables are copied (recursion -> "<recursive table>"), functions / threads / nil become text.
+---
+---Assigned to the local declared at the top of the file (forward declaration): not a global.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Construit une copie d'une valeur transmissible par remote.call : les objets Lua sont gardés (sauf classes
+---exclues, écrites en texte), les tables sont copiées (récursion -> « <recursive table> »), fonctions / threads / nil
+---deviennent du texte.
+---
+---Affectée au local déclaré en haut du fichier (déclaration anticipée) : ce n'est pas un global.
+---@param obj any
+---@param parents table[]
+---@param is_key boolean?
+---@param counters table?
+---@return any
 function wrap_object(obj, parents, is_key, counters)
   local obj_type = type(obj)
   local representation
@@ -143,8 +193,17 @@ end
 local diag_n_fix_code = require("__gvv__.lualib.remote_code.diag_n_fix")
 local lua_command_code = require("__gvv__.lualib.remote_code.lua_command")
 
--- FR : Transforme un modèle « =function() ... end, » en fonction utilisable
--- EN : Turns a "=function() ... end," template into a usable function
+---**EN**
+---
+---Description: Turns a "=function() ... end," template into a usable function
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Transforme un modèle « =function() ... end, » en fonction utilisable
+---@param template string
+---@return function
 local function functionFromTemplate(template)
   local code = template:gsub('^%s*=', 'return ', 1)
   code = code:gsub(',%s*$', '')

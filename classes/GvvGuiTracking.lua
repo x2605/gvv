@@ -42,9 +42,27 @@ local COLOR_ERROR = { r = 1.000, g = 0.630, b = 0.259 }
 local COLOR_TICK_OFF = {1, 0.25, 0.25}
 
 
+---**EN**
+---
+---Description: Variable tracking tab ("gvv_tracking") and its tools: entries (Lua codes evaluated again at each
+---refresh), moving, removing, export / import, automatic refresh (on_tick).
+---
+---⚠ Temporary wrapper, created on each event. Do not store the instance in `storage`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Onglet suivi de variables (« gvv_tracking ») et ses outils : entrées (codes Lua réévalués à chaque
+---rafraîchissement), déplacement, suppression, export / import, rafraîchissement automatique (on_tick).
+---
+---⚠ Wrapper temporaire, créé à chaque évènement. Ne pas stocker l'instance dans `storage`.
 ---@class GvvGuiTracking : GvvGui
----@field specs table              Description des éléments (gui/tracking.lua) / Elements description (gui/tracking.lua)
----@field tools LuaGuiElement?     Barre d'outils de la fenêtre principale (gvv_main-flow-tools) / Main window toolbar
+---@field object_name string     "GvvGuiTracking"
+---@field specs table            Elements description (gui/tracking.lua)
+---@field tools LuaGuiElement?   Main window toolbar (gvv_main-flow-tools)
+---@operator call(table): GvvGuiTracking
+---@type GvvGuiTracking
 GvvGuiTracking = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Onglet « gvv_tracking », dont l'élément racine est « flow-wrap » (gvv_tracking-flow-wrap)
     -- EN : "gvv_tracking" tab, whose root element is "flow-wrap" (gvv_tracking-flow-wrap)
@@ -85,7 +103,7 @@ GvvGuiTracking = gvv.classFactory.newclass(GvvGui, function(self, event)
         ["label-output"] = "action_copy_output",                        -- FR : valeur d'une entrée / EN : entry value
     }
     --------------------------------------------------
-end)
+end) --[[@as GvvGuiTracking]]
 ----------------------------------------------------------------
 
 
@@ -94,10 +112,17 @@ end)
 -- EN : ELEMENTS ACCESS
 ---------------------------------------------------------------------------------------------
 
----FR : Outil de la barre d'outils, par sa partie « type-name » (ex. « button-refresh »), ou nil.
----     Les boutons de confirmation sont dans le cadre frame-confirm.
----EN : Toolbar tool, by its "type-name" part (e.g. "button-refresh"), or nil.
----     The confirmation buttons are inside the frame-confirm frame.
+---**EN**
+---
+---Description: Toolbar tool, by its "type-name" part (e.g. "button-refresh"), or nil.
+---The confirmation buttons are inside the frame-confirm frame.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Outil de la barre d'outils, par sa partie « type-name » (ex. « button-refresh »), ou nil.
+---Les boutons de confirmation sont dans le cadre frame-confirm.
 ---@param type_name string
 ---@return LuaGuiElement?
 function GvvGuiTracking:getTool(type_name)
@@ -111,16 +136,30 @@ function GvvGuiTracking:getTool(type_name)
 end
 
 
----FR : Panneau qui contient les entrées du suivi, ou nil (fenêtre fermée).
----EN : Panel that holds the tracking entries, or nil (window closed).
+---**EN**
+---
+---Description: Panel that holds the tracking entries, or nil (window closed).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Panneau qui contient les entrées du suivi, ou nil (fenêtre fermée).
 ---@return LuaGuiElement?
 function GvvGuiTracking:getPanel()
     return self:getElement("flow", "panel")
 end
 
 
----FR : Entrées du suivi, dans l'ordre affiché : { element, path (code), checked (case cochée), value (valeur affichée) }.
----EN : Tracking entries, in display order: { element, path (code), checked (checked box), value (displayed value) }.
+---**EN**
+---
+---Description: Tracking entries, in display order: { element, path (code), checked (checked box), value (displayed value) }.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Entrées du suivi, dans l'ordre affiché : { element, path (code), checked (case cochée), value (valeur affichée) }.
 ---@return table[]
 function GvvGuiTracking:getEntries()
     local entries = {}
@@ -140,8 +179,15 @@ function GvvGuiTracking:getEntries()
 end
 
 
----FR : Case à cocher d'une entrée.
----EN : Checkbox of an entry.
+---**EN**
+---
+---Description: Checkbox of an entry.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Case à cocher d'une entrée.
 ---@param entry LuaGuiElement
 ---@return LuaGuiElement
 function GvvGuiTracking:getEntryCheckbox(entry)
@@ -149,8 +195,15 @@ function GvvGuiTracking:getEntryCheckbox(entry)
 end
 
 
----FR : Label de la valeur d'une entrée.
----EN : Value label of an entry.
+---**EN**
+---
+---Description: Value label of an entry.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Label de la valeur d'une entrée.
 ---@param entry LuaGuiElement
 ---@return LuaGuiElement
 function GvvGuiTracking:getEntryOutput(entry)
@@ -158,8 +211,15 @@ function GvvGuiTracking:getEntryOutput(entry)
 end
 
 
----FR : Entrée qui contient l'élément (en remontant jusqu'au panneau), ou nil.
----EN : Entry that contains the element (walking up to the panel), or nil.
+---**EN**
+---
+---Description: Entry that contains the element (walking up to the panel), or nil.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Entrée qui contient l'élément (en remontant jusqu'au panneau), ou nil.
 ---@param element LuaGuiElement
 ---@return LuaGuiElement?
 function GvvGuiTracking:findEntry(element)
@@ -175,8 +235,15 @@ function GvvGuiTracking:findEntry(element)
 end
 
 
----FR : Vrai si l'élément est dans la zone défilante de l'onglet suivi.
----EN : True if the element is inside the scrolling area of the tracking tab.
+---**EN**
+---
+---Description: True if the element is inside the scrolling area of the tracking tab.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si l'élément est dans la zone défilante de l'onglet suivi.
 ---@param element LuaGuiElement
 ---@return boolean
 function GvvGuiTracking:isInTab(element)
@@ -192,8 +259,15 @@ function GvvGuiTracking:isInTab(element)
 end
 
 
----FR : Vrai si l'onglet suivi est l'onglet affiché.
----EN : True if the tracking tab is the displayed tab.
+---**EN**
+---
+---Description: True if the tracking tab is the displayed tab.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si l'onglet suivi est l'onglet affiché.
 ---@return boolean
 function GvvGuiTracking:isTabSelected()
     local tabbed = GvvGuiMain(self.event):getElement("tabbed", "tabs")
@@ -206,10 +280,17 @@ end
 -- EN : BUILDING
 ---------------------------------------------------------------------------------------------
 
----FR : Construit les outils (barre d'outils) et l'onglet, puis affiche les entrées. Appelé par GvvGuiMain:open.
----     first_time : première ouverture de gvv par ce joueur (liste par défaut ou exemples).
----EN : Builds the tools (toolbar) and the tab, then shows the entries. Called by GvvGuiMain:open.
----     first_time: first time this player opens gvv (default list or examples).
+---**EN**
+---
+---Description: Builds the tools (toolbar) and the tab, then shows the entries. Called by GvvGuiMain:open.
+---first_time: first time this player opens gvv (default list or examples).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Construit les outils (barre d'outils) et l'onglet, puis affiche les entrées. Appelé par GvvGuiMain:open.
+---first_time : première ouverture de gvv par ce joueur (liste par défaut ou exemples).
 ---@param first_time boolean
 ---@return GvvGuiTracking
 function GvvGuiTracking:build(first_time)
@@ -225,8 +306,15 @@ function GvvGuiTracking:build(first_time)
 end
 
 
----FR : Outils du suivi dans la barre d'outils (repris de l'ancien Gui.build_tools).
----EN : Tracking tools inside the toolbar (taken from the old Gui.build_tools).
+---**EN**
+---
+---Description: Tracking tools inside the toolbar (taken from the old Gui.build_tools).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Outils du suivi dans la barre d'outils (repris de l'ancien Gui.build_tools).
 function GvvGuiTracking:buildTools()
     local data = self:getData()
     local specs = self.specs
@@ -296,8 +384,15 @@ function GvvGuiTracking:buildTools()
 end
 
 
----FR : Contenu de l'onglet : bande de fond, zone défilante, panneau des entrées (repris de l'ancien Gui.build_tracking).
----EN : Tab content: background strip, scrolling area, entries panel (taken from the old Gui.build_tracking).
+---**EN**
+---
+---Description: Tab content: background strip, scrolling area, entries panel (taken from the old Gui.build_tracking).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Contenu de l'onglet : bande de fond, zone défilante, panneau des entrées (repris de l'ancien Gui.build_tracking).
 function GvvGuiTracking:buildTab()
     local wrap = self.gui[1].add(self.specs.flow.wrap)
     local fill = wrap.add(self.specs.empty.fill)
@@ -311,10 +406,17 @@ function GvvGuiTracking:buildTab()
 end
 
 
----FR : Affiche les entrées : à la première ouverture, la liste par défaut des paramètres ou les exemples ;
----     sinon la liste du joueur (repris de l'ancien Gui.fill_tracking).
----EN : Shows the entries: on first opening, the default list from the settings or the examples;
----     otherwise the player's list (taken from the old Gui.fill_tracking).
+---**EN**
+---
+---Description: Shows the entries: on first opening, the default list from the settings or the examples;
+---otherwise the player's list (taken from the old Gui.fill_tracking).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Affiche les entrées : à la première ouverture, la liste par défaut des paramètres ou les exemples ;
+---sinon la liste du joueur (repris de l'ancien Gui.fill_tracking).
 ---@param first_time boolean
 function GvvGuiTracking:fillEntries(first_time)
     local data = self:getData()
@@ -350,12 +452,19 @@ function GvvGuiTracking:fillEntries(first_time)
 end
 
 
----FR : Dessine une entrée à la fin du panneau (repris de l'ancien Tracking.draw).
----     full_path : chemin dans l'arbre (table) ou code Lua (texte). preinput : état à reprendre
----     { remchk = case cochée, value = valeur affichée } (déplacement, modification).
----EN : Draws an entry at the end of the panel (taken from the old Tracking.draw).
----     full_path: path in the tree (table) or Lua code (text). preinput: state to take back
----     { remchk = checked box, value = displayed value } (moving, edit).
+---**EN**
+---
+---Description: Draws an entry at the end of the panel (taken from the old Tracking.draw).
+---full_path: path in the tree (table) or Lua code (text). preinput: state to take back
+---{ remchk = checked box, value = displayed value } (moving, edit).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Dessine une entrée à la fin du panneau (repris de l'ancien Tracking.draw).
+---full_path : chemin dans l'arbre (table) ou code Lua (texte). preinput : état à reprendre
+---{ remchk = case cochée, value = valeur affichée } (déplacement, modification).
 ---@param path_str string
 ---@param full_path table|string
 ---@param preinput? table
@@ -423,10 +532,17 @@ end
 -- EN : ENTRIES HANDLING (also used by the tree and the small windows)
 ---------------------------------------------------------------------------------------------
 
----FR : Ajoute une entrée au suivi, si elle n'y est pas déjà (repris de l'ancien Tracking.add).
----     full_path : chemin dans l'arbre (table) ou code Lua (texte).
----EN : Adds an entry to the tracking, if it isn't already there (taken from the old Tracking.add).
----     full_path: path in the tree (table) or Lua code (text).
+---**EN**
+---
+---Description: Adds an entry to the tracking, if it isn't already there (taken from the old Tracking.add).
+---full_path: path in the tree (table) or Lua code (text).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ajoute une entrée au suivi, si elle n'y est pas déjà (repris de l'ancien Tracking.add).
+---full_path : chemin dans l'arbre (table) ou code Lua (texte).
 ---@param full_path table|string
 ---@param preinput? table
 ---@return GvvGuiTracking
@@ -459,8 +575,15 @@ function GvvGuiTracking:add(full_path, preinput)
 end
 
 
----FR : Supprime toutes les entrées puis les redessine dans l'ordre donné (liste de getEntries).
----EN : Removes all entries then draws them again in the given order (list from getEntries).
+---**EN**
+---
+---Description: Removes all entries then draws them again in the given order (list from getEntries).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Supprime toutes les entrées puis les redessine dans l'ordre donné (liste de getEntries).
 ---@param entries table[]
 function GvvGuiTracking:redraw(entries)
     local list = self:getData().data.tracking_list
@@ -473,8 +596,15 @@ function GvvGuiTracking:redraw(entries)
 end
 
 
----FR : Remplace le code d'une entrée, en gardant sa place dans la liste (fenêtre de modification).
----EN : Replaces the code of an entry, keeping its place in the list (edit window).
+---**EN**
+---
+---Description: Replaces the code of an entry, keeping its place in the list (edit window).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Remplace le code d'une entrée, en gardant sa place dans la liste (fenêtre de modification).
 ---@param old_path string
 ---@param new_code string
 function GvvGuiTracking:replaceEntry(old_path, new_code)
@@ -504,10 +634,17 @@ function GvvGuiTracking:replaceEntry(old_path, new_code)
 end
 
 
----FR : Importe une liste de codes : les codes déjà suivis sont cochés, les nouveaux ajoutés et cochés,
----     les autres décochés. Renvoie le nombre de nouveaux codes et de codes déjà présents.
----EN : Imports a list of codes: already tracked codes are checked, new ones added and checked,
----     the others unchecked. Returns the number of new codes and of codes already present.
+---**EN**
+---
+---Description: Imports a list of codes: already tracked codes are checked, new ones added and checked,
+---the others unchecked. Returns the number of new codes and of codes already present.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Importe une liste de codes : les codes déjà suivis sont cochés, les nouveaux ajoutés et cochés,
+---les autres décochés. Renvoie le nombre de nouveaux codes et de codes déjà présents.
 ---@param codes string[]
 ---@return integer new_count
 ---@return integer duplicate_count
@@ -549,8 +686,15 @@ function GvvGuiTracking:importCodes(codes)
 end
 
 
----FR : Codes des entrées dans l'ordre affiché, séparés par « --[[]]-- » (fenêtre d'export).
----EN : Entries codes in display order, separated by "--[[]]--" (export window).
+---**EN**
+---
+---Description: Entries codes in display order, separated by "--[[]]--" (export window).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Codes des entrées dans l'ordre affiché, séparés par « --[[]]-- » (fenêtre d'export).
 ---@return string
 function GvvGuiTracking:exportText()
     local text = ''
@@ -566,10 +710,17 @@ end
 -- EN : VALUES
 ---------------------------------------------------------------------------------------------
 
----FR : Recalcule la valeur de chaque entrée (repris de l'ancien Tracking.refresh_value).
----     Une entrée en erreur affiche le message en orange.
----EN : Computes again the value of each entry (taken from the old Tracking.refresh_value).
----     An entry in error shows the message in orange.
+---**EN**
+---
+---Description: Computes again the value of each entry (taken from the old Tracking.refresh_value).
+---An entry in error shows the message in orange.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Recalcule la valeur de chaque entrée (repris de l'ancien Tracking.refresh_value).
+---Une entrée en erreur affiche le message en orange.
 ---@return GvvGuiTracking
 function GvvGuiTracking:refreshValues()
     local data = self:getData()
@@ -606,10 +757,17 @@ function GvvGuiTracking:refreshValues()
 end
 
 
----FR : Rafraîchissement automatique (on_tick) : pour chaque joueur connecté dont gvv est ouvert sur
----     l'onglet suivi, à son intervalle. Enregistré ou retiré selon le paramètre « on_tick » du mod.
----EN : Automatic refresh (on_tick): for each connected player whose gvv is open on the tracking tab,
----     at their interval. Registered or removed according to the mod "on_tick" setting.
+---**EN**
+---
+---Description: Automatic refresh (on_tick): for each connected player whose gvv is open on the tracking tab,
+---at their interval. Registered or removed according to the mod "on_tick" setting.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Rafraîchissement automatique (on_tick) : pour chaque joueur connecté dont gvv est ouvert sur
+---l'onglet suivi, à son intervalle. Enregistré ou retiré selon le paramètre « on_tick » du mod.
 function GvvGuiTracking.onTick()
     if not storage.players then
         return
@@ -626,8 +784,15 @@ function GvvGuiTracking.onTick()
 end
 
 
----FR : Couleur du nombre de l'intervalle : rouge si on_tick est désactivé (paramètre du mod), sinon blanc.
----EN : Interval number colour: red if on_tick is disabled (mod setting), otherwise white.
+---**EN**
+---
+---Description: Interval number colour: red if on_tick is disabled (mod setting), otherwise white.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Couleur du nombre de l'intervalle : rouge si on_tick est désactivé (paramètre du mod), sinon blanc.
 ---@return GvvGuiTracking
 function GvvGuiTracking:updateTickWarning()
     local label = self:getTool("label-interval")
@@ -645,8 +810,15 @@ function GvvGuiTracking:updateTickWarning()
 end
 
 
----FR : Outils du suivi visibles seulement sur l'onglet suivi (index 1). Appelé à chaque changement d'onglet.
----EN : Tracking tools visible only on the tracking tab (index 1). Called on each tab change.
+---**EN**
+---
+---Description: Tracking tools visible only on the tracking tab (index 1). Called on each tab change.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Outils du suivi visibles seulement sur l'onglet suivi (index 1). Appelé à chaque changement d'onglet.
 ---@param tab_index integer
 ---@return GvvGuiTracking
 function GvvGuiTracking:updateTools(tab_index)
@@ -677,12 +849,19 @@ end
 -- EN : CLICK (before and after the actions)
 ---------------------------------------------------------------------------------------------
 
----FR : Clic : d'abord ce que l'ancien code faisait à chaque clic (valider l'intervalle en cours de saisie,
----     cacher la confirmation de suppression), puis les actions ; enfin, dans l'onglet suivi,
----     clic droit dans le vide : saisie d'un code ; clic molette sur une entrée : cocher / décocher.
----EN : Click: first what the old code did on each click (confirm the interval being typed,
----     hide the removal confirmation), then the actions; finally, inside the tracking tab,
----     right click on empty space: code input; middle click on an entry: check / uncheck.
+---**EN**
+---
+---Description: Click: first what the old code did on each click (confirm the interval being typed,
+---hide the removal confirmation), then the actions; finally, inside the tracking tab,
+---right click on empty space: code input; middle click on an entry: check / uncheck.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Clic : d'abord ce que l'ancien code faisait à chaque clic (valider l'intervalle en cours de saisie,
+---cacher la confirmation de suppression), puis les actions ; enfin, dans l'onglet suivi,
+---clic droit dans le vide : saisie d'un code ; clic molette sur une entrée : cocher / décocher.
 ---@return boolean
 function GvvGuiTracking:on_gui_click(...)
     -- FR : Onglet suivi absent (fenêtre fermée) : rien à faire
@@ -740,15 +919,29 @@ end
 -- EN : ACTIONS
 ---------------------------------------------------------------------------------------------
 
----FR : Bouton rafraîchir.
----EN : Refresh button.
+---**EN**
+---
+---Description: Refresh button.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton rafraîchir.
 function GvvGuiTracking:action_refresh()
     self:refreshValues()
 end
 
 
----FR : Curseur de l'intervalle : nouvel intervalle, affiché à côté.
----EN : Interval slider: new interval, shown next to it.
+---**EN**
+---
+---Description: Interval slider: new interval, shown next to it.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Curseur de l'intervalle : nouvel intervalle, affiché à côté.
 function GvvGuiTracking:action_interval_slider()
     local data = self:getData()
     data.track_interval_tick = self.element.slider_value
@@ -756,8 +949,15 @@ function GvvGuiTracking:action_interval_slider()
 end
 
 
----FR : Clic gauche sur le nombre de l'intervalle : il est remplacé par la saisie.
----EN : Left click on the interval number: it is replaced by the input.
+---**EN**
+---
+---Description: Left click on the interval number: it is replaced by the input.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Clic gauche sur le nombre de l'intervalle : il est remplacé par la saisie.
 function GvvGuiTracking:action_interval_edit()
     if self.event.button ~= defines.mouse_button_type.left then
         return
@@ -772,15 +972,29 @@ function GvvGuiTracking:action_interval_edit()
 end
 
 
----FR : Intervalle saisi puis Entrée.
----EN : Interval typed then Enter.
+---**EN**
+---
+---Description: Interval typed then Enter.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Intervalle saisi puis Entrée.
 function GvvGuiTracking:action_interval_confirm()
     self:applyIntervalInput()
 end
 
 
----FR : Applique l'intervalle saisi (1 au minimum), cache la saisie et met à jour le nombre et le curseur.
----EN : Applies the typed interval (1 at least), hides the input and updates the number and the slider.
+---**EN**
+---
+---Description: Applies the typed interval (1 at least), hides the input and updates the number and the slider.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Applique l'intervalle saisi (1 au minimum), cache la saisie et met à jour le nombre et le curseur.
 function GvvGuiTracking:applyIntervalInput()
     local data = self:getData()
     local edit = self:getTool("textfield-interval")
@@ -807,16 +1021,30 @@ function GvvGuiTracking:applyIntervalInput()
 end
 
 
----FR : Bouton supprimer : affiche ou cache la confirmation.
----EN : Remove button: shows or hides the confirmation.
+---**EN**
+---
+---Description: Remove button: shows or hides the confirmation.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton supprimer : affiche ou cache la confirmation.
 function GvvGuiTracking:action_remove()
     local confirm = self:getTool("frame-confirm")
     confirm.visible = not confirm.visible
 end
 
 
----FR : Confirmation : supprime les entrées cochées.
----EN : Confirmation: removes the checked entries.
+---**EN**
+---
+---Description: Confirmation: removes the checked entries.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Confirmation : supprime les entrées cochées.
 function GvvGuiTracking:action_confirm_remove()
     local list = self:getData().data.tracking_list
     for _, entry in ipairs(self:getEntries()) do
@@ -828,15 +1056,29 @@ function GvvGuiTracking:action_confirm_remove()
 end
 
 
----FR : Annulation : cache la confirmation.
----EN : Cancel: hides the confirmation.
+---**EN**
+---
+---Description: Cancel: hides the confirmation.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Annulation : cache la confirmation.
 function GvvGuiTracking:action_cancel_remove()
     self:getTool("frame-confirm").visible = false
 end
 
 
----FR : Monter / descendre les entrées cochées : clic gauche d'un cran, clic droit tout en haut / en bas.
----EN : Move the checked entries up / down: left click by one step, right click to the top / bottom.
+---**EN**
+---
+---Description: Move the checked entries up / down: left click by one step, right click to the top / bottom.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Monter / descendre les entrées cochées : clic gauche d'un cran, clic droit tout en haut / en bas.
 function GvvGuiTracking:action_move()
     -- FR : Sens : -1 vers le haut, 1 vers le bas
     -- EN : Direction: -1 up, 1 down
@@ -855,10 +1097,17 @@ function GvvGuiTracking:action_move()
 end
 
 
----FR : Cases à cocher : clic gauche inverse toutes les cases ; clic droit décoche tout si une case
----     est cochée, sinon coche tout.
----EN : Checkboxes: left click inverts all boxes; right click unchecks all if a box is checked,
----     otherwise checks all.
+---**EN**
+---
+---Description: Checkboxes: left click inverts all boxes; right click unchecks all if a box is checked,
+---otherwise checks all.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Cases à cocher : clic gauche inverse toutes les cases ; clic droit décoche tout si une case
+---est cochée, sinon coche tout.
 function GvvGuiTracking:action_check()
     local entries = self:getEntries()
 
@@ -881,8 +1130,15 @@ function GvvGuiTracking:action_check()
 end
 
 
----FR : Exporter (clic gauche) / importer (clic droit) : ouvre la petite fenêtre correspondante.
----EN : Export (left click) / import (right click): opens the matching small window.
+---**EN**
+---
+---Description: Export (left click) / import (right click): opens the matching small window.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Exporter (clic gauche) / importer (clic droit) : ouvre la petite fenêtre correspondante.
 function GvvGuiTracking:action_export_import()
     if self.event.button == defines.mouse_button_type.left then
         GvvGuiDialog(self.event):openExport()
@@ -892,8 +1148,15 @@ function GvvGuiTracking:action_export_import()
 end
 
 
----FR : Clic droit sur le code d'une entrée : fenêtre de copie, avec le bouton « modifier ».
----EN : Right click on an entry code: copy window, with the "edit" button.
+---**EN**
+---
+---Description: Right click on an entry code: copy window, with the "edit" button.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Clic droit sur le code d'une entrée : fenêtre de copie, avec le bouton « modifier ».
 function GvvGuiTracking:action_copy_path()
     if self.event.button ~= defines.mouse_button_type.right then
         return
@@ -903,8 +1166,15 @@ function GvvGuiTracking:action_copy_path()
 end
 
 
----FR : Clic droit sur la valeur d'une entrée : fenêtre de copie.
----EN : Right click on an entry value: copy window.
+---**EN**
+---
+---Description: Right click on an entry value: copy window.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Clic droit sur la valeur d'une entrée : fenêtre de copie.
 function GvvGuiTracking:action_copy_output()
     if self.event.button ~= defines.mouse_button_type.right then
         return

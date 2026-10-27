@@ -24,9 +24,16 @@
 local GUI_NAME = "gvv_help"
 
 
----FR : Description des éléments de l'onglet (cadre de l'onglet et éléments réutilisés par les pages).
----EN : Description of the tab elements (tab frame and elements reused by the pages).
----@param gui_name string  Préfixe des noms (« gvv_help ») / Names prefix ("gvv_help")
+---**EN**
+---
+---Description: Description of the tab elements (tab frame and elements reused by the pages).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Description des éléments de l'onglet (cadre de l'onglet et éléments réutilisés par les pages).
+---@param gui_name string  Names prefix ("gvv_help")
 ---@return table
 local function getElement(gui_name)
     return {
@@ -95,8 +102,15 @@ local function getElement(gui_name)
 end
 
 
----FR : Bouton d'une page dans la liste : nommé button-page_<nom>, le nom de la page est aussi dans ses tags.
----EN : Button of a page in the list: named button-page_<name>, the page name is also in its tags.
+---**EN**
+---
+---Description: Button of a page in the list: named button-page_<name>, the page name is also in its tags.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton d'une page dans la liste : nommé button-page_<nom>, le nom de la page est aussi dans ses tags.
 ---@param gui_name string
 ---@param page table  { name, caption }
 ---@return table
@@ -106,8 +120,15 @@ local function getPageButton(gui_name, page)
 end
 
 
----FR : Chemin de chaque élément de l'onglet depuis gui[1] (gvv_main-flow-help).
----EN : Path of each tab element from gui[1] (gvv_main-flow-help).
+---**EN**
+---
+---Description: Path of each tab element from gui[1] (gvv_main-flow-help).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Chemin de chaque élément de l'onglet depuis gui[1] (gvv_main-flow-help).
 ---@return table
 local function getContent()
     return {

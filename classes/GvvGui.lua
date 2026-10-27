@@ -41,14 +41,38 @@ local check = require(gvv.defines.lualib.common.check)
 local NAME_PATTERN = "^([^-]+)-([^-]+)-([^-]+)$"
 
 
+---**EN**
+---
+---Description: Base class of gvv windows (copied from RitnLib `RitnLibGui`). Splits element names `gui_name-type-name`
+---and calls the method linked to the action in `gui_action`.
+---
+---Extension contract: each window (sub-class) fills `gui[1]` (its container), `content` (element paths)
+---and `gui_action` (action -> method), and writes its `action_*` methods.
+---
+---⚠ Temporary wrapper, created on each event. Do not store the instance in `storage`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Classe de base des fenêtres de gvv (copiée de `RitnLibGui` de RitnLib). Découpe les noms d'éléments
+---`gui_name-type-name` et appelle la méthode liée à l'action dans `gui_action`.
+---
+---Contrat d'extension : chaque fenêtre (sous-classe) remplit `gui[1]` (son conteneur), `content` (chemins
+---des éléments) et `gui_action` (action -> méthode), et écrit ses méthodes `action_*`.
+---
+---⚠ Wrapper temporaire, créé à chaque évènement. Ne pas stocker l'instance dans `storage`.
 ---@class GvvGui : GvvPlayer
----@field event table          Évènement reçu / Received event
----@field element LuaGuiElement? Élément de l'évènement / Event element
----@field gui_name string      Préfixe des noms de la fenêtre (ex. gvv_main) / Window names prefix (e.g. gvv_main)
----@field main_gui string      type-name de l'élément racine (ex. frame-main) / type-name of the root element (e.g. frame-main)
----@field gui LuaGuiElement[]  gui[1] : conteneur de la fenêtre / gui[1]: window container
----@field content table        Chemins des éléments depuis gui[1] / Element paths from gui[1]
----@field gui_action table<string, string|function> Action -> méthode / Action -> method
+---@field object_name string                          "GvvGui" (overridden by sub-classes)
+---@field event table                                 Received event (or `{player_index = ...}`)
+---@field element LuaGuiElement?                      Event element
+---@field gui_name string                             Window names prefix (e.g. gvv_main)
+---@field main_gui string                             type-name of the root element (e.g. frame-main)
+---@field gui LuaGuiElement[]                         gui[1]: window container (filled by the sub-class)
+---@field content table                               Element paths from gui[1] (filled by the sub-class)
+---@field gui_action table<string, string|function>   Action -> method (filled by the sub-class)
+---@operator call(table, string?, string?): GvvGui
+---@type GvvGui
 GvvGui = gvv.classFactory.newclass(GvvPlayer, function(self, event, gui_name, main_gui)
     -- FR : Le joueur vient de l'évènement (event.player_index) ; sans évènement, pas de joueur
     -- EN : The player comes from the event (event.player_index); without event, no player
@@ -85,14 +109,21 @@ GvvGui = gvv.classFactory.newclass(GvvPlayer, function(self, event, gui_name, ma
     self.content = {}
     self.gui_action = {}
     --------------------------------------------------
-end)
+end) --[[@as GvvGui]]
 ----------------------------------------------------------------
 
 
----FR : Découpe un nom d'élément en gui_name, type court et name.
----     Renvoie nil si le nom ne suit pas le format (ex. les anciens noms « _gvv-mod_... »).
----EN : Splits an element name into gui_name, short type and name.
----     Returns nil if the name doesn't follow the format (e.g. the old "_gvv-mod_..." names).
+---**EN**
+---
+---Description: Splits an element name into gui_name, short type and name.
+---Returns nil if the name doesn't follow the format (e.g. the old "_gvv-mod_..." names).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Découpe un nom d'élément en gui_name, type court et name.
+---Renvoie nil si le nom ne suit pas le format (ex. les anciens noms « _gvv-mod_... »).
 ---@param name any
 ---@return string? gui_name
 ---@return string? short_type
@@ -110,10 +141,17 @@ function GvvGui.splitName(name)
 end
 
 
----FR : Élément racine de la fenêtre (gui_name-main_gui dans gui[1]), ou nil s'il n'existe pas
----     (fenêtre fermée).
----EN : Root element of the window (gui_name-main_gui inside gui[1]), or nil if it doesn't exist
----     (window closed).
+---**EN**
+---
+---Description: Root element of the window (gui_name-main_gui inside gui[1]), or nil if it doesn't exist
+---(window closed).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Élément racine de la fenêtre (gui_name-main_gui dans gui[1]), ou nil s'il n'existe pas
+---(fenêtre fermée).
 ---@return LuaGuiElement?
 function GvvGui:getMainElement()
     -- FR : Conteneur absent ou invalide : la fenêtre ne peut pas exister
@@ -128,10 +166,17 @@ function GvvGui:getMainElement()
 end
 
 
----FR : Retrouve un élément par son chemin dans self.content (chaque étape est préfixée par gui_name).
----     Renvoie nil dès qu'une étape manque, sans erreur.
----EN : Finds an element through its path in self.content (each step is prefixed by gui_name).
----     Returns nil as soon as a step is missing, without error.
+---**EN**
+---
+---Description: Finds an element through its path in self.content (each step is prefixed by gui_name).
+---Returns nil as soon as a step is missing, without error.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Retrouve un élément par son chemin dans self.content (chaque étape est préfixée par gui_name).
+---Renvoie nil dès qu'une étape manque, sans erreur.
 ---@param element_type string
 ---@param element_name? string
 ---@return LuaGuiElement?
@@ -181,8 +226,15 @@ function GvvGui:getElement(element_type, element_name)
 end
 
 
----FR : Appelle la méthode associée à l'action. Renvoie true si une méthode a été appelée.
----EN : Calls the method linked to the action. Returns true if a method was called.
+---**EN**
+---
+---Description: Calls the method linked to the action. Returns true if a method was called.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Appelle la méthode associée à l'action. Renvoie true si une méthode a été appelée.
 ---@param action string
 ---@return boolean
 function GvvGui:actionGui(action, ...)
@@ -216,10 +268,17 @@ function GvvGui:actionGui(action, ...)
 end
 
 
----FR : Traite l'évènement si l'élément appartient à cette fenêtre. suffix distingue les évènements autres
----     que le clic (ex. « listbox-mods-selection_state_changed »). Renvoie true si l'évènement a été traité.
----EN : Handles the event if the element belongs to this window. suffix tells apart events other
----     than the click (e.g. "listbox-mods-selection_state_changed"). Returns true if the event was handled.
+---**EN**
+---
+---Description: Handles the event if the element belongs to this window. suffix tells apart events other
+---than the click (e.g. "listbox-mods-selection_state_changed"). Returns true if the event was handled.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Traite l'évènement si l'élément appartient à cette fenêtre. suffix distingue les évènements autres
+---que le clic (ex. « listbox-mods-selection_state_changed »). Renvoie true si l'évènement a été traité.
 ---@param suffix? string
 ---@return boolean
 function GvvGui:dispatch(suffix, ...)
@@ -265,57 +324,113 @@ end
 -- EN : One entry point per GUI event. Each returns true if the event was handled.
 ---------------------------------------------------------------------------------------------
 
----FR : Clic sur un élément. Action sans suffixe (ex. « button-close »).
----EN : Click on an element. Action without suffix (e.g. "button-close").
+---**EN**
+---
+---Description: Click on an element. Action without suffix (e.g. "button-close").
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Clic sur un élément. Action sans suffixe (ex. « button-close »).
 ---@return boolean
 function GvvGui:on_gui_click(...)
     return self:dispatch(nil, ...)
 end
 
----FR : Fermeture d'un élément (Échap, ou player.opened remplacé). Action « type-name-closed ».
----EN : Element closed (Escape, or player.opened replaced). Action "type-name-closed".
+---**EN**
+---
+---Description: Element closed (Escape, or player.opened replaced). Action "type-name-closed".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fermeture d'un élément (Échap, ou player.opened remplacé). Action « type-name-closed ».
 ---@return boolean
 function GvvGui:on_gui_closed(...)
     return self:dispatch("closed", ...)
 end
 
----FR : Validation d'un champ texte (Entrée). Action « type-name-confirmed ».
----EN : Text field confirmed (Enter). Action "type-name-confirmed".
+---**EN**
+---
+---Description: Text field confirmed (Enter). Action "type-name-confirmed".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Validation d'un champ texte (Entrée). Action « type-name-confirmed ».
 ---@return boolean
 function GvvGui:on_gui_confirmed(...)
     return self:dispatch("confirmed", ...)
 end
 
----FR : Valeur d'un curseur modifiée. Action « type-name-value_changed ».
----EN : Slider value changed. Action "type-name-value_changed".
+---**EN**
+---
+---Description: Slider value changed. Action "type-name-value_changed".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Valeur d'un curseur modifiée. Action « type-name-value_changed ».
 ---@return boolean
 function GvvGui:on_gui_value_changed(...)
     return self:dispatch("value_changed", ...)
 end
 
----FR : Texte d'un champ modifié. Action « type-name-text_changed ».
----EN : Field text changed. Action "type-name-text_changed".
+---**EN**
+---
+---Description: Field text changed. Action "type-name-text_changed".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte d'un champ modifié. Action « type-name-text_changed ».
 ---@return boolean
 function GvvGui:on_gui_text_changed(...)
     return self:dispatch("text_changed", ...)
 end
 
----FR : Case à cocher ou bouton radio modifié. Action « type-name-checked_state_changed ».
----EN : Checkbox or radio button changed. Action "type-name-checked_state_changed".
+---**EN**
+---
+---Description: Checkbox or radio button changed. Action "type-name-checked_state_changed".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Case à cocher ou bouton radio modifié. Action « type-name-checked_state_changed ».
 ---@return boolean
 function GvvGui:on_gui_checked_state_changed(...)
     return self:dispatch("checked_state_changed", ...)
 end
 
----FR : Sélection modifiée dans une liste ou un menu déroulant. Action « type-name-selection_state_changed ».
----EN : Selection changed in a list or drop-down. Action "type-name-selection_state_changed".
+---**EN**
+---
+---Description: Selection changed in a list or drop-down. Action "type-name-selection_state_changed".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Sélection modifiée dans une liste ou un menu déroulant. Action « type-name-selection_state_changed ».
 ---@return boolean
 function GvvGui:on_gui_selection_state_changed(...)
     return self:dispatch("selection_state_changed", ...)
 end
 
----FR : Onglet sélectionné modifié. Action « type-name-selected_tab_changed ».
----EN : Selected tab changed. Action "type-name-selected_tab_changed".
+---**EN**
+---
+---Description: Selected tab changed. Action "type-name-selected_tab_changed".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Onglet sélectionné modifié. Action « type-name-selected_tab_changed ».
 ---@return boolean
 function GvvGui:on_gui_selected_tab_changed(...)
     return self:dispatch("selected_tab_changed", ...)

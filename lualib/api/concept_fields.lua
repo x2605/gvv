@@ -9,6 +9,16 @@
   Used in luaobj_prop.lua
 ]]
 
+---**EN**
+---
+---Description: Concept (LuaStruct) -> list of its fields, for the structures that can't be walked by pairs.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Concept (LuaStruct) -> liste de ses champs, pour les structures non parcourables par pairs.
+---@type table<string, string[]>
 local concept_fields = {
   PollutionMapSettings = {
     "enabled",

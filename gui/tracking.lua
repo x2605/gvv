@@ -26,9 +26,16 @@
 local GUI_NAME = "gvv_tracking"
 
 
----FR : Description des éléments de l'onglet, des outils et d'une entrée.
----EN : Description of the tab, tools and entry elements.
----@param gui_name string  Préfixe des noms (« gvv_tracking ») / Names prefix ("gvv_tracking")
+---**EN**
+---
+---Description: Description of the tab, tools and entry elements.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Description des éléments de l'onglet, des outils et d'une entrée.
+---@param gui_name string  Names prefix ("gvv_tracking")
 ---@return table
 local function getElement(gui_name)
     local element = {
@@ -120,10 +127,17 @@ local function getElement(gui_name)
 end
 
 
----FR : Chemins des éléments de l'onglet depuis gui[1] (gvv_main-flow-tracking).
----     Les outils sont cherchés directement dans gvv_main-flow-tools (voir GvvGuiTracking:getTool).
----EN : Paths of the tab elements from gui[1] (gvv_main-flow-tracking).
----     Tools are looked up directly in gvv_main-flow-tools (see GvvGuiTracking:getTool).
+---**EN**
+---
+---Description: Paths of the tab elements from gui[1] (gvv_main-flow-tracking).
+---Tools are looked up directly in gvv_main-flow-tools (see GvvGuiTracking:getTool).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Chemins des éléments de l'onglet depuis gui[1] (gvv_main-flow-tracking).
+---Les outils sont cherchés directement dans gvv_main-flow-tools (voir GvvGuiTracking:getTool).
 ---@return table
 local function getContent()
     return {

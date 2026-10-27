@@ -49,10 +49,26 @@ local MOD_STRING_FORMS = {
 }
 
 
+---**EN**
+---
+---Description: Help tab ("gvv_help"): pages list, page drawing (gui/help_pages.lua), diagnose / fix of a mod.
+---
+---⚠ Temporary wrapper, created on each event. Do not store the instance in `storage`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Onglet aide (« gvv_help ») : liste des pages, dessin d'une page (gui/help_pages.lua), diagnostic / réparation d'un mod.
+---
+---⚠ Wrapper temporaire, créé à chaque évènement. Ne pas stocker l'instance dans `storage`.
 ---@class GvvGuiHelp : GvvGui
----@field specs table               Description des éléments (gui/help.lua) / Elements description (gui/help.lua)
----@field top LuaGuiElement?        Page en cours d'écriture / Page being written
----@field pointer LuaGuiElement?    Conteneur où s'ajoutent les éléments / Container where elements are added
+---@field object_name string     "GvvGuiHelp"
+---@field specs table            Elements description (gui/help.lua)
+---@field top LuaGuiElement?     Page being written
+---@field pointer LuaGuiElement? Container where elements are added
+---@operator call(table): GvvGuiHelp
+---@type GvvGuiHelp
 GvvGuiHelp = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Onglet « gvv_help », dont l'élément racine est « flow-wrap » (gvv_help-flow-wrap)
     -- EN : "gvv_help" tab, whose root element is "flow-wrap" (gvv_help-flow-wrap)
@@ -91,12 +107,19 @@ GvvGuiHelp = gvv.classFactory.newclass(GvvGui, function(self, event)
         self.gui_action["button-page_" .. page.name] = "action_open_page"
     end
     --------------------------------------------------
-end)
+end) --[[@as GvvGuiHelp]]
 ----------------------------------------------------------------
 
 
----FR : Construit l'onglet aide (liste des pages et panneau de page vide). Appelé par GvvGuiMain:open.
----EN : Builds the help tab (pages list and empty page panel). Called by GvvGuiMain:open.
+---**EN**
+---
+---Description: Builds the help tab (pages list and empty page panel). Called by GvvGuiMain:open.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Construit l'onglet aide (liste des pages et panneau de page vide). Appelé par GvvGuiMain:open.
 ---@return GvvGuiHelp
 function GvvGuiHelp:build()
     -- FR : Conteneur absent (fenêtre principale fermée) : rien à construire
@@ -134,8 +157,15 @@ function GvvGuiHelp:build()
 end
 
 
----FR : Affiche une page : vide le panneau, puis la page s'écrit avec les méthodes add* ci-dessous.
----EN : Shows a page: empties the panel, then the page writes itself with the add* methods below.
+---**EN**
+---
+---Description: Shows a page: empties the panel, then the page writes itself with the add* methods below.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Affiche une page : vide le panneau, puis la page s'écrit avec les méthodes add* ci-dessous.
 ---@param page_name string
 ---@return GvvGuiHelp
 function GvvGuiHelp:drawPage(page_name)
@@ -162,8 +192,15 @@ end
 -- EN : PAGES WRITING (called by gui/help_pages.lua). Each method returns the created element.
 ---------------------------------------------------------------------------------------------
 
----FR : Ajoute un élément quelconque (description) dans le conteneur actuel.
----EN : Adds any element (description) into the current container.
+---**EN**
+---
+---Description: Adds any element (description) into the current container.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ajoute un élément quelconque (description) dans le conteneur actuel.
 ---@param spec table
 ---@return LuaGuiElement
 function GvvGuiHelp:add(spec)
@@ -171,8 +208,20 @@ function GvvGuiHelp:add(spec)
 end
 
 
--- FR : Label sur plusieurs lignes, qui prend toute la largeur (commun à addText, addTitle, addSubtitle)
--- EN : Multi-line label, taking the whole width (shared by addText, addTitle, addSubtitle)
+---**EN**
+---
+---Description: Multi-line label, taking the whole width (shared by addText, addTitle, addSubtitle)
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Label sur plusieurs lignes, qui prend toute la largeur (commun à addText, addTitle, addSubtitle)
+---@param self GvvGuiHelp
+---@param caption LocalisedString
+---@param tooltip? LocalisedString
+---@param style? string
+---@return LuaGuiElement label
 local function addLabel(self, caption, tooltip, style)
     local label = self.pointer.add{ type = 'label', caption = caption, tooltip = tooltip, style = style }
     label.style.horizontally_stretchable = true
@@ -180,8 +229,15 @@ local function addLabel(self, caption, tooltip, style)
     return label
 end
 
----FR : Paragraphe (texte localisé ou texte simple), avec une infobulle facultative.
----EN : Paragraph (localised or plain text), with an optional tooltip.
+---**EN**
+---
+---Description: Paragraph (localised or plain text), with an optional tooltip.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Paragraphe (texte localisé ou texte simple), avec une infobulle facultative.
 ---@param caption LocalisedString
 ---@param tooltip? LocalisedString
 ---@return LuaGuiElement
@@ -189,16 +245,30 @@ function GvvGuiHelp:addText(caption, tooltip)
     return addLabel(self, caption, tooltip, nil)
 end
 
----FR : Titre de page.
----EN : Page title.
+---**EN**
+---
+---Description: Page title.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Titre de page.
 ---@param caption LocalisedString
 ---@return LuaGuiElement
 function GvvGuiHelp:addTitle(caption)
     return addLabel(self, caption, nil, 'frame_title')
 end
 
----FR : Sous-titre, légèrement décalé à droite.
----EN : Subtitle, slightly shifted to the right.
+---**EN**
+---
+---Description: Subtitle, slightly shifted to the right.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Sous-titre, légèrement décalé à droite.
 ---@param caption LocalisedString
 ---@return LuaGuiElement
 function GvvGuiHelp:addSubtitle(caption)
@@ -207,8 +277,15 @@ function GvvGuiHelp:addSubtitle(caption)
     return label
 end
 
----FR : Ligne de séparation horizontale.
----EN : Horizontal separator line.
+---**EN**
+---
+---Description: Horizontal separator line.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ligne de séparation horizontale.
 ---@return LuaGuiElement
 function GvvGuiHelp:addLine()
     local line = self.pointer.add{ type = 'line', direction = 'horizontal' }
@@ -216,8 +293,15 @@ function GvvGuiHelp:addLine()
     return line
 end
 
----FR : Ouvre un conteneur horizontal : les éléments suivants s'y ajoutent, jusqu'à closeContainer.
----EN : Opens a horizontal container: the next elements are added into it, until closeContainer.
+---**EN**
+---
+---Description: Opens a horizontal container: the next elements are added into it, until closeContainer.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ouvre un conteneur horizontal : les éléments suivants s'y ajoutent, jusqu'à closeContainer.
 ---@return LuaGuiElement
 function GvvGuiHelp:openRow()
     local row = self.pointer.add{ type = 'flow', direction = 'horizontal', style = 'hflow_gvv-mod' }
@@ -226,8 +310,15 @@ function GvvGuiHelp:openRow()
     return row
 end
 
----FR : Ouvre un conteneur vertical (spec : description d'un flow nommé, facultative).
----EN : Opens a vertical container (spec: description of a named flow, optional).
+---**EN**
+---
+---Description: Opens a vertical container (spec: description of a named flow, optional).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ouvre un conteneur vertical (spec : description d'un flow nommé, facultative).
 ---@param spec? table
 ---@return LuaGuiElement
 function GvvGuiHelp:openColumn(spec)
@@ -237,8 +328,15 @@ function GvvGuiHelp:openColumn(spec)
     return column
 end
 
----FR : Revient au conteneur parent (sans remonter au-delà de la page).
----EN : Goes back to the parent container (without going above the page).
+---**EN**
+---
+---Description: Goes back to the parent container (without going above the page).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Revient au conteneur parent (sans remonter au-delà de la page).
 ---@return LuaGuiElement
 function GvvGuiHelp:closeContainer()
     if self.pointer ~= self.top then
@@ -247,12 +345,19 @@ function GvvGuiHelp:closeContainer()
     return self.pointer
 end
 
----FR : Code à copier, en lecture seule (texte d'origine rangé dans les tags) : sur une ligne,
----     ou sur plusieurs (hauteur adaptée, 400 au plus). linked : conteneur nommé « flow-copy »,
----     retrouvé par les menus et listes qui changent ce code.
----EN : Code to copy, read-only (original text stored in the tags): on one line,
----     or on several (adapted height, 400 at most). linked: container named "flow-copy",
----     found by the menus and lists that change this code.
+---**EN**
+---
+---Description: Code to copy, read-only (original text stored in the tags): on one line,
+---or on several (adapted height, 400 at most). linked: container named "flow-copy",
+---found by the menus and lists that change this code.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Code à copier, en lecture seule (texte d'origine rangé dans les tags) : sur une ligne,
+---ou sur plusieurs (hauteur adaptée, 400 au plus). linked : conteneur nommé « flow-copy »,
+---retrouvé par les menus et listes qui changent ce code.
 ---@param text string
 ---@param linked? boolean
 ---@return LuaGuiElement
@@ -297,8 +402,15 @@ function GvvGuiHelp:addCopyable(text, linked)
     return text_element
 end
 
----FR : Remplace le texte d'un code à copier (et sa copie dans les tags).
----EN : Replaces the text of a code to copy (and its copy in the tags).
+---**EN**
+---
+---Description: Replaces the text of a code to copy (and its copy in the tags).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Remplace le texte d'un code à copier (et sa copie dans les tags).
 ---@param text_element LuaGuiElement
 ---@param text string
 function GvvGuiHelp:setCopyableText(text_element, text)
@@ -306,8 +418,15 @@ function GvvGuiHelp:setCopyableText(text_element, text)
     text_element.tags = { text = text }
 end
 
----FR : Bouton de démonstration d'une ligne d'arbre (clic droit : style « suivi » ou non).
----EN : Demonstration button of a tree row (right click: "tracked" style or not).
+---**EN**
+---
+---Description: Demonstration button of a tree row (right click: "tracked" style or not).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton de démonstration d'une ligne d'arbre (clic droit : style « suivi » ou non).
 ---@param caption string
 ---@param style string
 ---@param mouse_filter string[]
@@ -326,8 +445,15 @@ end
 -- EN : ACTIONS
 ---------------------------------------------------------------------------------------------
 
----FR : Bouton d'une page dans la liste : affiche la page (son nom est dans les tags du bouton).
----EN : Page button in the list: shows the page (its name is in the button tags).
+---**EN**
+---
+---Description: Page button in the list: shows the page (its name is in the button tags).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton d'une page dans la liste : affiche la page (son nom est dans les tags du bouton).
 function GvvGuiHelp:action_open_page()
     local page_name = check.tryGet(self.element.tags, "page")
     if page_name ~= nil then
@@ -336,8 +462,15 @@ function GvvGuiHelp:action_open_page()
 end
 
 
----FR : Texte à copier modifié par le joueur : on remet le texte d'origine (tags) et on le sélectionne.
----EN : Text to copy modified by the player: put the original text back (tags) and select it.
+---**EN**
+---
+---Description: Text to copy modified by the player: put the original text back (tags) and select it.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte à copier modifié par le joueur : on remet le texte d'origine (tags) et on le sélectionne.
 function GvvGuiHelp:action_restore_text()
     local original = check.tryGet(self.element.tags, "text")
     if original ~= nil then
@@ -347,15 +480,35 @@ function GvvGuiHelp:action_restore_text()
 end
 
 
--- FR : Code à copier lié au menu ou à la liste : dans le conteneur « flow-copy » du même parent
--- EN : Code to copy linked to the menu or list: inside the "flow-copy" container of the same parent
+---**EN**
+---
+---Description: Code to copy linked to the menu or list: inside the "flow-copy" container of the same parent
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Code à copier lié au menu ou à la liste : dans le conteneur « flow-copy » du même parent
+---@param self GvvGuiHelp
+---@param parent LuaGuiElement
+---@return LuaGuiElement?
 local function linkedCopyable(self, parent)
     local flow = check.tryGet(parent, self.gui_name .. "-flow-copy")
     return check.tryGet(flow, self.gui_name .. "-textfield-text") or check.tryGet(flow, self.gui_name .. "-textbox-text")
 end
 
--- FR : Change le code à copier, puis le sélectionne (prêt à copier)
--- EN : Changes the code to copy, then selects it (ready to copy)
+---**EN**
+---
+---Description: Changes the code to copy, then selects it (ready to copy)
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Change le code à copier, puis le sélectionne (prêt à copier)
+---@param self GvvGuiHelp
+---@param text_element LuaGuiElement
+---@param text string
 local function showLinkedCode(self, text_element, text)
     if text_element == nil then
         return
@@ -365,22 +518,43 @@ local function showLinkedCode(self, text_element, text)
     text_element.select_all()
 end
 
----FR : Menu du code d'activation (page console 1) : code d'activation pour le mod choisi.
----EN : Enabling code menu (console 1 page): enabling code for the chosen mod.
+---**EN**
+---
+---Description: Enabling code menu (console 1 page): enabling code for the chosen mod.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Menu du code d'activation (page console 1) : code d'activation pour le mod choisi.
 function GvvGuiHelp:action_enable_mod()
     local mod_name = self.element.items[self.element.selected_index]
     showLinkedCode(self, linkedCopyable(self, self.element.parent), Copy_Code.in_console_enable(mod_name))
 end
 
----FR : Menu du code de désactivation (page console 1) : code de désactivation pour le mod choisi.
----EN : Disabling code menu (console 1 page): disabling code for the chosen mod.
+---**EN**
+---
+---Description: Disabling code menu (console 1 page): disabling code for the chosen mod.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Menu du code de désactivation (page console 1) : code de désactivation pour le mod choisi.
 function GvvGuiHelp:action_disable_mod()
     local mod_name = self.element.items[self.element.selected_index]
     showLinkedCode(self, linkedCopyable(self, self.element.parent), Copy_Code.in_console_disable(mod_name))
 end
 
----FR : Listes de la page console 2 : écrit le nom du mod choisi sous la forme choisie.
----EN : Console 2 page lists: writes the chosen mod name in the chosen form.
+---**EN**
+---
+---Description: Console 2 page lists: writes the chosen mod name in the chosen form.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Listes de la page console 2 : écrit le nom du mod choisi sous la forme choisie.
 function GvvGuiHelp:action_mod_string()
     -- FR : Les deux listes : « option » est dans la ligne, « mod » dans la colonne flow-mod_list de cette ligne
     -- EN : Both lists: "option" is in the row, "mod" in the flow-mod_list column of this row
@@ -408,29 +582,59 @@ function GvvGuiHelp:action_mod_string()
 end
 
 
--- FR : Nom du mod saisi dans la page dépannage (champ au-dessus des boutons)
--- EN : Mod name typed in the troubleshooting page (field above the buttons)
+---**EN**
+---
+---Description: Mod name typed in the troubleshooting page (field above the buttons)
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Nom du mod saisi dans la page dépannage (champ au-dessus des boutons)
+---@param self GvvGuiHelp
+---@return string
 local function typedModName(self)
     local field = check.tryGet(self.element.parent.parent, self.gui_name .. "-textfield-mod")
     return check.tryGet(field, "text") or ''
 end
 
----FR : Bouton diagnostic : diagnostic du storage du mod saisi (lualib/common/doctor.lua).
----EN : Diagnose button: diagnosis of the typed mod storage (lualib/common/doctor.lua).
+---**EN**
+---
+---Description: Diagnose button: diagnosis of the typed mod storage (lualib/common/doctor.lua).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton diagnostic : diagnostic du storage du mod saisi (lualib/common/doctor.lua).
 function GvvGuiHelp:action_diagnose()
     self:runDoctor('diag')
 end
 
----FR : Bouton nettoyage : nettoyage du storage du mod saisi (lualib/common/doctor.lua).
----EN : Fix button: cleaning of the typed mod storage (lualib/common/doctor.lua).
+---**EN**
+---
+---Description: Fix button: cleaning of the typed mod storage (lualib/common/doctor.lua).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton nettoyage : nettoyage du storage du mod saisi (lualib/common/doctor.lua).
 function GvvGuiHelp:action_fix()
     self:runDoctor('fix')
 end
 
----FR : Lance le diagnostic ('diag') ou le nettoyage ('fix') sur le mod saisi.
----     Champ vide : un message demande le nom du mod (avant : erreur « "____gvv" interface is not found »).
----EN : Runs the diagnosis ('diag') or the fixing ('fix') on the typed mod.
----     Empty field: a message asks for the mod name (before: error ""____gvv" interface is not found").
+---**EN**
+---
+---Description: Runs the diagnosis ('diag') or the fixing ('fix') on the typed mod.
+---Empty field: a message asks for the mod name (before: error ""____gvv" interface is not found").
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Lance le diagnostic ('diag') ou le nettoyage ('fix') sur le mod saisi.
+---Champ vide : un message demande le nom du mod (avant : erreur « "____gvv" interface is not found »).
 ---@param action string
 function GvvGuiHelp:runDoctor(action)
     -- FR : Nom du mod sans espaces autour ; vide : on le demande
@@ -443,15 +647,29 @@ function GvvGuiHelp:runDoctor(action)
     Doctor.take_a_look(self:getData(), mod_name, action)
 end
 
----FR : Bouton d'effacement de storage.report.
----EN : storage.report clearing button.
+---**EN**
+---
+---Description: storage.report clearing button.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton d'effacement de storage.report.
 function GvvGuiHelp:action_clear_report()
     storage.report = {}
     self.player.print('(gvv) storage.report is cleared.')
 end
 
----FR : Bouton de démonstration : le clic droit passe du style normal au style « suivi », et inversement.
----EN : Demonstration button: right click switches from the normal style to the "tracked" style, and back.
+---**EN**
+---
+---Description: Demonstration button: right click switches from the normal style to the "tracked" style, and back.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton de démonstration : le clic droit passe du style normal au style « suivi », et inversement.
 function GvvGuiHelp:action_demo()
     if self.event.button ~= defines.mouse_button_type.right then
         return

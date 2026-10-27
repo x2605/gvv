@@ -29,10 +29,18 @@ local gui_classes = {
 }
 
 
--- FR : Clic que personne n'a traité : s'il est dans la fenêtre principale, les petites fenêtres
---      concernées se ferment (anycode seulement si vide). Repris de l'ancien Gui_Event.on_gui_click.
--- EN : Click nobody handled: if it is inside the main window, the small windows
---      concerned close (anycode only if empty). Taken from the old Gui_Event.on_gui_click.
+---**EN**
+---
+---Description: Click nobody handled: if it is inside the main window, the small windows
+---concerned close (anycode only if empty). Taken from the old Gui_Event.on_gui_click.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Clic que personne n'a traité : s'il est dans la fenêtre principale, les petites fenêtres
+---concernées se ferment (anycode seulement si vide). Repris de l'ancien Gui_Event.on_gui_click.
+---@param event EventData.on_gui_click
 local function onUnhandledClick(event)
     local frame = GvvGuiMain(event):getMainElement()
 
@@ -55,10 +63,19 @@ local function onUnhandledClick(event)
 end
 
 
--- FR : Exécute un handler GUI de façon protégée : une erreur est affichée au joueur au lieu de planter,
---      et écrite dans factorio-current.log avec la pile d'appels (pour les rapports de bug et les tests).
--- EN : Runs a GUI handler in a protected way: an error is shown to the player instead of crashing,
---      and written to factorio-current.log with the call stack (for bug reports and tests).
+---**EN**
+---
+---Description: Runs a GUI handler in a protected way: an error is shown to the player instead of crashing,
+---and written to factorio-current.log with the call stack (for bug reports and tests).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Exécute un handler GUI de façon protégée : une erreur est affichée au joueur au lieu de planter,
+---et écrite dans factorio-current.log avec la pile d'appels (pour les rapports de bug et les tests).
+---@param handler fun(event: table)
+---@return fun(event: table)
 local function protected(handler)
     return function(event)
         -- FR : Exécution protégée du handler ; en cas d'erreur, la pile d'appels est gardée pour le log
@@ -84,10 +101,19 @@ local function protected(handler)
 end
 
 
--- FR : Construit le handler d'un évènement GUI : fenêtres migrées d'abord, puis ancien code.
---      method_name : nom de la méthode à appeler, ex. « on_gui_click ».
--- EN : Builds the handler of a GUI event: migrated windows first, then old code.
---      method_name : name of the method to call, e.g. "on_gui_click".
+---**EN**
+---
+---Description: Builds the handler of a GUI event: migrated windows first, then old code.
+---method_name : name of the method to call, e.g. "on_gui_click".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Construit le handler d'un évènement GUI : fenêtres migrées d'abord, puis ancien code.
+---method_name : nom de la méthode à appeler, ex. « on_gui_click ».
+---@param method_name string  e.g. "on_gui_click"
+---@return fun(event: table)
 local function dispatcher(method_name)
     return protected(function(event)
         -- FR : Chaque fenêtre migrée reçoit l'évènement ; la première qui le traite (true) arrête la recherche
@@ -111,6 +137,8 @@ end
 ---------------------------------------------------------------------------------------------
 -- FR : Module envoyé à l'event handler (core/modules.lua)
 -- EN : Module sent to the event handler (core/modules.lua)
+
+---@type GvvModule
 local module = {events = {}}
 ---------------------------------------------------------------------------------------------
 -- FR : Évènements GUI

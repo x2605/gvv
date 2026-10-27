@@ -33,8 +33,15 @@ local pages = {
     { name = 'tips', caption = {"gvv-mod-help.tips"} },
 }
 
----FR : Page par son nom, ou nil.
----EN : Page by its name, or nil.
+---**EN**
+---
+---Description: Page by its name, or nil.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Page par son nom, ou nil.
 ---@param name string
 ---@return table?
 local function getPage(name)
@@ -46,20 +53,46 @@ local function getPage(name)
     return nil
 end
 
--- FR : Texte en gras, pour les mots mis en valeur dans les paragraphes
--- EN : Bold text, for the words highlighted in the paragraphs
+---**EN**
+---
+---Description: Bold text, for the words highlighted in the paragraphs
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte en gras, pour les mots mis en valeur dans les paragraphes
+---@param text LocalisedString
+---@return LocalisedString
 local function bold(text)
     return {"", '[font=default-bold]', text, '[/font]'}
 end
 
--- FR : Nom de l'onglet suivi en gras, souvent cité
--- EN : Tracking tab name in bold, often quoted
+---**EN**
+---
+---Description: Tracking tab name in bold, often quoted
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Nom de l'onglet suivi en gras, souvent cité
+---@return LocalisedString
 local function trackingTabName()
     return bold({"gvv-mod.tab-filtered-view"})
 end
 
--- FR : Premier mod (autre que level et gvv) qui charge l'interface gvv, sinon default_name
--- EN : First mod (other than level and gvv) that loads the gvv interface, otherwise default_name
+---**EN**
+---
+---Description: First mod (other than level and gvv) that loads the gvv interface, otherwise default_name
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Premier mod (autre que level et gvv) qui charge l'interface gvv, sinon default_name
+---@param default_name string
+---@return string
 local function exampleModName(default_name)
     for name in pairs(script.active_mods) do
         -- FR : Lecture protégée : le mod n'a peut-être pas d'interface gvv

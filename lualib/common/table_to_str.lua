@@ -18,6 +18,17 @@ local lua_escapes = {
   ['\\'] = '\\\\', ['"'] = '\\"', ["'"] = "\\'", ['\a'] = '\\a', ['\b'] = '\\b',
   ['\f'] = '\\f', ['\n'] = '\\n', ['\r'] = '\\r', ['\t'] = '\\t', ['\v'] = '\\v',
 }
+---**EN**
+---
+---Description: Escapes a string for a Lua string literal (control characters, quotes, backslash).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Échappe une chaîne pour un littéral Lua (caractères de contrôle, guillemets, barre oblique inverse).
+---@param s string
+---@return string
 local esc = function(s)
   return (s:gsub('[%c\\"\']', function(c)
     return lua_escapes[c] or string.format('\\%03d', c:byte())
@@ -30,14 +41,34 @@ local json_escapes = {
   ['\\'] = '\\\\', ['"'] = '\\"', ['\b'] = '\\b', ['\f'] = '\\f',
   ['\n'] = '\\n', ['\r'] = '\\r', ['\t'] = '\\t',
 }
+---**EN**
+---
+---Description: Escapes a string for JSON (\uXXXX for control characters).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Échappe une chaîne pour le JSON (\uXXXX pour les caractères de contrôle).
+---@param s string
+---@return string
 local esc_json = function(s)
   return (s:gsub('[%c\\"]', function(c)
     return json_escapes[c] or string.format('\\u%04x', c:byte())
   end))
 end
 
--- FR : Nombres spéciaux en Lua : l'infini et NaN n'ont pas d'écriture littérale
--- EN : Special numbers in Lua: infinity and NaN have no literal form
+---**EN**
+---
+---Description: Special numbers in Lua: infinity and NaN have no literal form
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Nombres spéciaux en Lua : l'infini et NaN n'ont pas d'écriture littérale
+---@param n number
+---@return string
 local number_to_lua = function(n)
   if n ~= n then return '0/0' end
   if n == math.huge then return 'math.huge' end
@@ -45,13 +76,33 @@ local number_to_lua = function(n)
   return tostring(n)
 end
 
--- FR : Nombres spéciaux en JSON : l'infini et NaN n'existent pas, on écrit null
--- EN : Special numbers in JSON: infinity and NaN do not exist, write null
+---**EN**
+---
+---Description: Special numbers in JSON: infinity and NaN do not exist, write null
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Nombres spéciaux en JSON : l'infini et NaN n'existent pas, on écrit null
+---@param n number
+---@return string
 local number_to_json = function(n)
   if n ~= n or n == math.huge or n == -math.huge then return 'null' end
   return tostring(n)
 end
 
+---**EN**
+---
+---Description: Lua key name: as is if it is a valid identifier, otherwise `["..."]` (reserved words included).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Nom de clé Lua : tel quel si c'est un identifiant valide, sinon `["..."]` (mots réservés compris).
+---@param k string
+---@return string
 local keyname = function(k)
   if k ~= k:match('^[%a_][%a%d_]*') or lua_keywords[k] then
     return '["'..k..'"]'
@@ -63,13 +114,36 @@ end
 -- EN : Text shown instead of a table already being converted (circular reference)
 local recursive_text = '<recursive table>'
 
+---**EN**
+---
+---Description: Converts a value to JSON or Lua object notation (`/gdump-json`, `/gdump-luaon`).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Convertit une valeur en JSON ou en notation objet Lua (`/gdump-json`, `/gdump-luaon`).
+---@param obj any
+---@param lang "json"|"luaon"
+---@return string?
 Table_to_str.to_lang = function(obj, lang)
   if lang == 'json' then return Table_to_str.to_json(obj) end
   if lang == 'luaon' then return Table_to_str.to_luaon(obj) end
 end
 
--- FR : seen : tables en cours de conversion sur le chemin actuel, pour détecter les références circulaires
--- EN : seen : tables being converted on the current path, to detect circular references
+---**EN**
+---
+---Description: seen : tables being converted on the current path, to detect circular references
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: seen : tables en cours de conversion sur le chemin actuel, pour détecter les références circulaires
+---@param obj any
+---@param as_key? boolean
+---@param seen? table
+---@return string
 Table_to_str.to_json = function(obj, as_key, seen)
   local s = {}
   local t = type(obj)
@@ -105,6 +179,21 @@ Table_to_str.to_json = function(obj, as_key, seen)
   end
 end
 
+---**EN**
+---
+---Description: Converts a value to Lua object notation (valid Lua: reserved keys as ["end"], inf / NaN as math.huge / 0/0,
+---recursive tables as "<recursive table>").
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Convertit une valeur en notation objet Lua (Lua valide : clés réservées en ["end"], inf / NaN en math.huge / 0/0,
+---tables récursives en « <recursive table> »).
+---@param obj any
+---@param as_key? boolean
+---@param seen? table  Tables already crossed (recursion)
+---@return string
 Table_to_str.to_luaon = function(obj, as_key, seen)
   local s = {}
   local t = type(obj)
@@ -150,6 +239,17 @@ Table_to_str.to_luaon = function(obj, as_key, seen)
   end
 end
 
+---**EN**
+---
+---Description: Raw text of a key (no rich text), used to build paths.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte brut d'une clé (sans texte enrichi), pour construire des chemins.
+---@param obj any
+---@return string
 Table_to_str.to_key_raw_string = function(obj)
   local s = {}
   local t = type(obj)
@@ -179,6 +279,19 @@ Table_to_str.to_key_raw_string = function(obj)
   end
 end
 
+---**EN**
+---
+---Description: Rich text of a value or a key, as shown in the trees (colours per type).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte enrichi d'une valeur ou d'une clé, comme affiché dans les arbres (couleurs par type).
+---@param obj any
+---@param as_key? boolean
+---@param seen? table
+---@return string
 Table_to_str.to_richtext = function(obj, as_key, seen)
   local s = {}
   local t = type(obj)
@@ -222,6 +335,18 @@ Table_to_str.to_richtext = function(obj, as_key, seen)
   end
 end
 
+---**EN**
+---
+---Description: Lua code of a tree path, e.g. `remote.call("__mod__gvv","storage").players[1]`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Code Lua d'un chemin d'arbre, ex. `remote.call("__mod__gvv","storage").players[1]`.
+---@param path_tbl table  Full path (first key: mod, "_G:<mod>" or "*<global>")
+---@param front_to_remote_call? boolean  Start with the remote.call(...) that reads the root
+---@return string
 Table_to_str.path_to_lua_prop_path = function(path_tbl, front_to_remote_call)
   local s = {}
   local t
@@ -257,6 +382,17 @@ Table_to_str.path_to_lua_prop_path = function(path_tbl, front_to_remote_call)
   return table.concat(s)
 end
 
+---**EN**
+---
+---Description: Short text of a key (tracking).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte court d'une clé (suivi).
+---@param k any
+---@return string
 Table_to_str.key_to_str = function(k)
   local t = type(k)
   if t == 'table' then
@@ -274,6 +410,17 @@ Table_to_str.key_to_str = function(k)
   end
 end
 
+---**EN**
+---
+---Description: Text of a value inside a table (one level).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte d'une valeur dans une table (un niveau).
+---@param v any
+---@return string
 local table_part_value_to_str = function(v)
   local s = {'{'}
   for k in pairs(v) do
@@ -289,6 +436,17 @@ local table_part_value_to_str = function(v)
   s[#s + 1] = '}'
   return table.concat(s)
 end
+---**EN**
+---
+---Description: Text of a value as shown in the tracking (tables on one level).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte d'une valeur comme affiché dans le suivi (tables sur un niveau).
+---@param v any
+---@return string
 Table_to_str.value_to_str = function(v)
   local t = type(v)
   if t == 'userdata' and v.object_name then

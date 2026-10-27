@@ -10,6 +10,17 @@ local changeable_setting_list = {
 }
 
 -- /gvv
+
+---**EN**
+---
+---Description: /gvv: opens / closes the main window (admins only in multiplayer).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: /gvv : ouvre / ferme la fenêtre principale (admins seulement en multijoueur).
+---@param data CustomCommandData
 Commands.gvv = function(data)
   local player
   if data.player_index then
@@ -27,16 +38,50 @@ Commands.gvv = function(data)
 end
 
 -- /gdump-json
+
+---**EN**
+---
+---Description: /gdump-json [mod]: storage of the mod (or the map) in JSON.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: /gdump-json [mod] : storage du mod (ou de la carte) en JSON.
+---@param data CustomCommandData
 Commands.gdump_json = function(data)
   Commands.gdump(data, 'json')
 end
 
 -- /gdump-luaon
+
+---**EN**
+---
+---Description: /gdump-luaon and /gdump [mod]: storage of the mod (or the map) in Lua object notation.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: /gdump-luaon et /gdump [mod] : storage du mod (ou de la carte) en notation objet Lua.
+---@param data CustomCommandData
 Commands.gdump_luaon = function(data)
   Commands.gdump(data, 'luaon')
 end
 
 -- /gdump
+
+---**EN**
+---
+---Description: Shared part of the /gdump commands: small window for a player, console output otherwise.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Partie commune des commandes /gdump : petite fenêtre pour un joueur, sortie console sinon.
+---@param data CustomCommandData
+---@param lang "json"|"luaon"
 Commands.gdump = function(data, lang)
   local rmt_glob, player, mod_name
   if data.player_index then
@@ -95,6 +140,17 @@ Commands.gdump = function(data, lang)
 end
 
 -- /gmods
+
+---**EN**
+---
+---Description: /gmods: list of the loaded mods and of the mods readable by gvv.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: /gmods : liste des mods chargés et des mods lisibles par gvv.
+---@param data CustomCommandData
 Commands.gmods = function(data)
   local s = {}
   local rmt_glob_str = {}
@@ -127,6 +183,19 @@ Commands.gmods = function(data)
 end
 
 -- 모드 설정 변경시
+
+---**EN**
+---
+---Description: Mod setting changed: "enable-on-tick" registers or removes on_tick (tracking refresh) and updates the
+---interval colour for every player.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Paramètre du mod modifié : « enable-on-tick » enregistre ou retire on_tick (rafraîchissement du suivi) et met
+---à jour la couleur de l'intervalle pour chaque joueur.
+---@param event EventData.on_runtime_mod_setting_changed
 Commands.when_change_mod_settings = function(event)
   if not changeable_setting_list[event.setting] then return end
   local setting_name = event.setting:match('^gvv%-mod_(.*)')
@@ -176,10 +245,17 @@ Commands.when_change_mod_settings = function(event)
 end
 
 ---------------------------------------------------------------------------------------------
--- FR : Enregistrement des commandes de la console, appelé une fois par session par l'event handler
---      (dans on_init ou on_load).
--- EN : Console commands registration, called once per session by the event handler
---      (in on_init or on_load).
+---**EN**
+---
+---Description: Console commands registration, called once per session by the event handler
+---(in on_init or on_load).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Enregistrement des commandes de la console, appelé une fois par session par l'event handler
+---(dans on_init ou on_load).
 local function add_commands()
   -- FR : Liste des commandes : nom, aide affichée par /help, fonction appelée
   -- EN : Commands list: name, help shown by /help, called function
@@ -207,6 +283,8 @@ end
 ---------------------------------------------------------------------------------------------
 -- FR : Module envoyé à l'event handler (core/modules.lua)
 -- EN : Module sent to the event handler (core/modules.lua)
+
+---@type GvvModule
 local module = {events = {}}
 ---------------------------------------------------------------------------------------------
 -- FR : Commandes de la console

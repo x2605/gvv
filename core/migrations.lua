@@ -14,8 +14,15 @@ local check = require(gvv.defines.lualib.common.check)
 ---------------------------------------------------------------------------------------------
 
 
----FR : Découpe une version « 0.5.21 » en nombres {0, 5, 21}. Renvoie nil si le format est inconnu.
----EN : Splits a "0.5.21" version into numbers {0, 5, 21}. Returns nil if the format is unknown.
+---**EN**
+---
+---Description: Splits a "0.5.21" version into numbers {0, 5, 21}. Returns nil if the format is unknown.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Découpe une version « 0.5.21 » en nombres {0, 5, 21}. Renvoie nil si le format est inconnu.
 ---@param version any
 ---@return integer[]?
 local function parseVersion(version)
@@ -35,10 +42,17 @@ local function parseVersion(version)
 end
 
 
----FR : Vrai si la version old est plus ancienne que la version target.
----     Une ancienne version illisible est considérée comme plus ancienne (la migration s'exécute).
----EN : True if version old is older than version target.
----     An unreadable old version is considered older (the migration runs).
+---**EN**
+---
+---Description: True if version old is older than version target.
+---An unreadable old version is considered older (the migration runs).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Vrai si la version old est plus ancienne que la version target.
+---Une ancienne version illisible est considérée comme plus ancienne (la migration s'exécute).
 ---@param old any
 ---@param target string
 ---@return boolean
@@ -126,8 +140,15 @@ local migration_list = {
 }
 
 
----FR : Exécute les migrations plus récentes que old_version (l'ancienne version de gvv dans la partie).
----EN : Runs the migrations newer than old_version (gvv's old version in the game).
+---**EN**
+---
+---Description: Runs the migrations newer than old_version (gvv's old version in the game).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Exécute les migrations plus récentes que old_version (l'ancienne version de gvv dans la partie).
 ---@param old_version string?
 local function run(old_version)
     log('>>> gvv migrations from ' .. tostring(old_version) .. ' : start')

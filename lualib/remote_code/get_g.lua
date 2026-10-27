@@ -1,3 +1,13 @@
+---**EN**
+---
+---Description: Template of the code that returns a transportable copy of `_G` (console / copy_code).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Modèle du code qui renvoie une copie transportable de `_G` (console / copy_code).
+---@return string  Lua code starting with "=function"
 return function() return [[=function()
   local G,_,s,cp,wr,kn=_G,true,{}
   local B={_G=_,assert=_,collectgarbage=_,error=_,getmetatable=_,ipairs=_,load=_,loadstring=_,next=_,pairs=_,pcall=_,print=_,rawequal=_,rawlen=_,rawget=_,rawset=_,select=_,setmetatable=_,tonumber=_,tostring=_,type=_,xpcall=_,_VERSION=_,unpack=_,table=_,string=_,bit32=_,math=_,debug=_,serpent=_,log=_,localised_print=_,table_size=_,package=_,require=_,storage=_,remote=_,commands=_,settings=_,rcon=_,rendering=_,script=_,defines=_,game=_,}

@@ -22,6 +22,16 @@ local GLOBAL_OBJECTS = {'game', 'script', 'remote', 'commands', 'settings', 'pro
 local GLOBAL_PREFIX = "*"
 
 
+---**EN**
+---
+---Description: Configuration of the LuaObject tab: API global objects.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Configuration de l'onglet LuaObject : objets globaux de l'API.
+---@type GvvTreeConfig
 local config = {
     -- FR : Préfixe des noms des éléments de cet arbre
     -- EN : Names prefix of this tree elements
@@ -58,8 +68,15 @@ local config = {
 }
 
 
----FR : Éléments de la liste de gauche : les objets globaux de l'API.
----EN : Left list elements: the API global objects.
+---**EN**
+---
+---Description: Left list elements: the API global objects.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Éléments de la liste de gauche : les objets globaux de l'API.
 ---@param tree GvvGuiTree
 ---@return table[]
 function config.getItems(tree)
@@ -74,8 +91,15 @@ function config.getItems(tree)
 end
 
 
----FR : Racine à afficher pour l'objet choisi : son nom, suivi de son icône et de sa classe.
----EN : Root to show for the chosen object: its name, followed by its icon and class.
+---**EN**
+---
+---Description: Root to show for the chosen object: its name, followed by its icon and class.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Racine à afficher pour l'objet choisi : son nom, suivi de son icône et de sa classe.
 ---@param tree GvvGuiTree
 ---@param name string
 ---@return table[]  { key, caption, bottom_padding }
@@ -90,8 +114,15 @@ function config.getRoots(tree, name)
 end
 
 
----FR : Données d'une racine : l'objet global du même nom (ex. « game » donne game).
----EN : Data of a root: the global object of the same name (e.g. "game" gives game).
+---**EN**
+---
+---Description: Data of a root: the global object of the same name (e.g. "game" gives game).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Données d'une racine : l'objet global du même nom (ex. « game » donne game).
 ---@param tree GvvGuiTree
 ---@param root_key string
 ---@return any
@@ -100,8 +131,15 @@ function config.read(tree, root_key)
 end
 
 
----FR : Aucun dossier bloqué dans cet arbre.
----EN : No blocked folder in this tree.
+---**EN**
+---
+---Description: No blocked folder in this tree.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Aucun dossier bloqué dans cet arbre.
 ---@param tree GvvGuiTree
 ---@param path table
 ---@return boolean
@@ -110,8 +148,15 @@ function config.isBlocked(tree, path)
 end
 
 
----FR : Chemin complet pour le suivi : le même chemin, la racine préfixée par « * » (ex. « *game »).
----EN : Full path for the tracking: the same path, the root prefixed by "*" (e.g. "*game").
+---**EN**
+---
+---Description: Full path for the tracking: the same path, the root prefixed by "*" (e.g. "*game").
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Chemin complet pour le suivi : le même chemin, la racine préfixée par « * » (ex. « *game »).
 ---@param tree GvvGuiTree
 ---@param path table
 ---@return table

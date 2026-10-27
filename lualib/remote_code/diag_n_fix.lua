@@ -1,3 +1,16 @@
+---**EN**
+---
+---Description: Template of the code of the `diag` / `fix` interface functions (gvv.lua). `nilstr` is inserted where an
+---entry is found: "" for diag, "b[k]=nil" for fix (removes the entry).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Modèle du code des fonctions d'interface `diag` / `fix` (gvv.lua). `nilstr` est inséré là où une entrée
+---est trouvée : "" pour diag, "b[k]=nil" pour fix (supprime l'entrée).
+---@param nilstr string
+---@return string  Lua code starting with "=function"
 return function(nilstr) return [[=function()
 
   local rm,po,mt,c,e,p,l,j,it={},{},{},0,0,0,0,0

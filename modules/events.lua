@@ -5,6 +5,15 @@ local Migrations = require(gvv.defines.migrations)
 
 local Load = {}
 
+---**EN**
+---
+---Description: Example data shown in the storage tree (forces, surface), written again on each init / configuration change.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Données d'exemple affichées dans l'arbre storage (forces, surface), réécrites à chaque init / changement de configuration.
 Load.example_load = function()
   storage.example = {
     forces = {
@@ -27,12 +36,20 @@ if not _initiated_session_ then
   ------
 end
 
--- FR : Mise à jour de gvv (ou d'un autre mod) dans une partie existante.
---      Les migrations (core/migrations.lua) s'exécutent quand gvv lui-même change de version ;
---      elles remplacent l'ancienne migration 0.4, couverte par celle de 0.6.0.
--- EN : gvv (or another mod) updated in an existing game.
---      Migrations (core/migrations.lua) run when gvv itself changes version;
---      they replace the old 0.4 migration, covered by the 0.6.0 one.
+---**EN**
+---
+---Description: gvv (or another mod) updated in an existing game.
+---Migrations (core/migrations.lua) run when gvv itself changes version;
+---they replace the old 0.4 migration, covered by the 0.6.0 one.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Mise à jour de gvv (ou d'un autre mod) dans une partie existante.
+---Les migrations (core/migrations.lua) s'exécutent quand gvv lui-même change de version ;
+---elles remplacent l'ancienne migration 0.4, couverte par celle de 0.6.0.
+---@param data ConfigurationChangedData
 Load.on_configuration_changed = function(data)
   Load.register_meta_data()
   Load.register_volatiles()
@@ -46,16 +63,45 @@ Load.on_configuration_changed = function(data)
   end
 end
 
+---**EN**
+---
+---Description: New game: meta data, on_tick, example data.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Nouvelle partie : méta-données, on_tick, données d'exemple.
 Load.on_init = function()
   Load.register_meta_data()
   Load.register_volatiles()
   Load.example_load()
 end
 
+---**EN**
+---
+---Description: Game loaded: registers on_tick again according to `storage.meta_data` (no storage write).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Partie chargée : enregistre à nouveau on_tick selon `storage.meta_data` (aucune écriture dans storage).
 Load.on_load = function()
   Load.register_volatiles()
 end
 
+---**EN**
+---
+---Description: Creates / completes `storage.meta_data` (version, markers, settings, default tracking list read from the
+---mod settings on the first start).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Crée / complète `storage.meta_data` (version, marqueurs, paramètres, liste de suivi par défaut lue dans les
+---paramètres du mod au premier démarrage).
 Load.register_meta_data = function()
   if not storage.meta_data then storage.meta_data = {} end
   local version = script.active_mods['gvv']
@@ -102,6 +148,19 @@ Load.register_meta_data = function()
   end
 end
 
+---**EN**
+---
+---Description: Registers on_tick (or removes it) once per session, according to `storage.meta_data["enable-on-tick"]`.
+---
+---⚠ on_tick is registered with script.on_event, outside the event handler.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Enregistre on_tick (ou le retire) une fois par session, selon `storage.meta_data["enable-on-tick"]`.
+---
+---⚠ on_tick est enregistré avec script.on_event, en dehors de l'event handler.
 Load.register_volatiles = function()
   if not _one_of_three_volatiles_executed_ then
     if not _initiated_on_tick_ and storage.meta_data and storage.meta_data['enable-on-tick'] then
@@ -116,6 +175,7 @@ Load.register_volatiles = function()
 end
 
 ---------------------------------------------------------------------------------------------
+---@type GvvModule
 local module = {events = {}}
 ---------------------------------------------------------------------------------------------
 -- FR : Cycle de vie du mod

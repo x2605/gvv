@@ -9,6 +9,16 @@
   Used in luaobj_prop.lua
 ]]
 
+---**EN**
+---
+---Description: Parent class -> attribute -> exact class of the attribute value (recursive walk of luaobj_prop).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Classe parente -> attribut -> classe exacte de la valeur de l'attribut (descente récursive de luaobj_prop).
+---@type table<string, table<string, string>>
 local attribute_type_map = {
   LuaMapSettings = {
     pollution = "PollutionMapSettings",

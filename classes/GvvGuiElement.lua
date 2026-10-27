@@ -64,14 +64,27 @@ local sprite_valid = { sprite = true, ["sprite-button"] = true }       -- sprite
 local check_valid = { checkbox = true, radiobutton = true }            -- checked()
 
 
+---**EN**
+---
+---Description: Chainable builder of a GUI element description (spec given to `LuaGuiElement.add`), named
+---`gui_name-type-name` (copied from RitnLib `RitnLibGuiElement`). `get()` returns the description.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Constructeur chaînable de la description d'un élément GUI (spec passée à `LuaGuiElement.add`), nommé
+---`gui_name-type-name` (copié de `RitnLibGuiElement` de RitnLib). `get()` renvoie la description.
 ---@class GvvGuiElement
----@field object_name string
----@field gui_name string        Nom complet de l'élément en jeu / Full in-game element name
----@field name string            Partie « name » / "name" part
----@field type string            Type Factorio / Factorio type
----@field ui string              Nom de la fenêtre (gui_name de GvvGui) / Window name (GvvGui gui_name)
----@field action string          type_court-name, l'action déclenchée / short_type-name, the triggered action
----@field gui_element table      Description passée à LuaGuiElement.add / Description given to LuaGuiElement.add
+---@field object_name string     "GvvGuiElement"
+---@field gui_name string        Full in-game element name
+---@field name string            "name" part
+---@field type string            Factorio type
+---@field ui string              Window name (GvvGui gui_name)
+---@field action string          short_type-name, the triggered action
+---@field gui_element table      Description given to LuaGuiElement.add
+---@operator call(string, string, string): GvvGuiElement
+---@type GvvGuiElement
 GvvGuiElement = gvv.classFactory.newclass(function(self, ui_name, element_type, element_name)
     -- FR : Nom de la classe, utile dans les logs
     -- EN : Class name, useful in logs
@@ -106,12 +119,19 @@ GvvGuiElement = gvv.classFactory.newclass(function(self, ui_name, element_type, 
     if element_type == "scroll-pane" then
         self.gui_element.horizontal_scroll_policy = "never"
     end
-end)
+end) --[[@as GvvGuiElement]]
 ----------------------------------------------------------------
 
 
----FR : Ajoute l'élément à parent et renvoie le LuaGuiElement créé.
----EN : Adds the element to parent and returns the created LuaGuiElement.
+---**EN**
+---
+---Description: Adds the element to parent and returns the created LuaGuiElement.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ajoute l'élément à parent et renvoie le LuaGuiElement créé.
 ---@param parent LuaGuiElement
 ---@return LuaGuiElement?
 function GvvGuiElement:add(parent)
@@ -127,16 +147,30 @@ function GvvGuiElement:add(parent)
 end
 
 
----FR : Renvoie la description de l'élément, à passer à parent.add(...).
----EN : Returns the element description, to give to parent.add(...).
+---**EN**
+---
+---Description: Returns the element description, to give to parent.add(...).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Renvoie la description de l'élément, à passer à parent.add(...).
 ---@return table
 function GvvGuiElement:get()
     return self.gui_element
 end
 
 
----FR : Disposition horizontale des enfants (frame, flow) ou ligne horizontale (line).
----EN : Horizontal layout of children (frame, flow) or horizontal line (line).
+---**EN**
+---
+---Description: Horizontal layout of children (frame, flow) or horizontal line (line).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Disposition horizontale des enfants (frame, flow) ou ligne horizontale (line).
 ---@return GvvGuiElement
 function GvvGuiElement:horizontal()
     -- FR : Seulement pour les éléments qui ont une direction
@@ -148,8 +182,15 @@ function GvvGuiElement:horizontal()
 end
 
 
----FR : Disposition verticale des enfants (frame, flow) ou ligne verticale (line).
----EN : Vertical layout of children (frame, flow) or vertical line (line).
+---**EN**
+---
+---Description: Vertical layout of children (frame, flow) or vertical line (line).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Disposition verticale des enfants (frame, flow) ou ligne verticale (line).
 ---@return GvvGuiElement
 function GvvGuiElement:vertical()
     -- FR : Seulement pour les éléments qui ont une direction
@@ -161,8 +202,15 @@ function GvvGuiElement:vertical()
 end
 
 
----FR : Centre automatiquement la fenêtre à l'écran (frame seulement).
----EN : Automatically centres the window on screen (frame only).
+---**EN**
+---
+---Description: Automatically centres the window on screen (frame only).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Centre automatiquement la fenêtre à l'écran (frame seulement).
 ---@return GvvGuiElement
 function GvvGuiElement:autoCenter()
     if self.type == "frame" then
@@ -172,8 +220,15 @@ function GvvGuiElement:autoCenter()
 end
 
 
----FR : Élément visible ou caché à sa création.
----EN : Element visible or hidden when created.
+---**EN**
+---
+---Description: Element visible or hidden when created.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Élément visible ou caché à sa création.
 ---@param visible boolean
 ---@return GvvGuiElement
 function GvvGuiElement:visible(visible)
@@ -187,8 +242,15 @@ function GvvGuiElement:visible(visible)
 end
 
 
----FR : Élément actif ou grisé à sa création.
----EN : Element enabled or greyed out when created.
+---**EN**
+---
+---Description: Element enabled or greyed out when created.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Élément actif ou grisé à sa création.
 ---@param enabled boolean
 ---@return GvvGuiElement
 function GvvGuiElement:enabled(enabled)
@@ -202,8 +264,15 @@ function GvvGuiElement:enabled(enabled)
 end
 
 
----FR : Texte affiché sur l'élément (texte simple ou texte localisé).
----EN : Text displayed on the element (plain text or localised string).
+---**EN**
+---
+---Description: Text displayed on the element (plain text or localised string).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte affiché sur l'élément (texte simple ou texte localisé).
 ---@param caption LocalisedString
 ---@return GvvGuiElement
 function GvvGuiElement:caption(caption)
@@ -216,8 +285,15 @@ function GvvGuiElement:caption(caption)
 end
 
 
----FR : Infobulle affichée au survol (texte simple ou texte localisé).
----EN : Tooltip shown on hover (plain text or localised string).
+---**EN**
+---
+---Description: Tooltip shown on hover (plain text or localised string).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Infobulle affichée au survol (texte simple ou texte localisé).
 ---@param tooltip LocalisedString
 ---@return GvvGuiElement
 function GvvGuiElement:tooltip(tooltip)
@@ -231,8 +307,15 @@ function GvvGuiElement:tooltip(tooltip)
 end
 
 
----FR : Position de l'élément parmi les enfants de son parent (1 = premier).
----EN : Element position among its parent's children (1 = first).
+---**EN**
+---
+---Description: Element position among its parent's children (1 = first).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Position de l'élément parmi les enfants de son parent (1 = premier).
 ---@param index integer
 ---@return GvvGuiElement
 function GvvGuiElement:index(index)
@@ -246,10 +329,17 @@ function GvvGuiElement:index(index)
 end
 
 
----FR : Texte de départ d'un champ de saisie (textfield, text-box).
----     Corrigé par rapport à RitnLib, qui testait la variable « tooltip » au lieu de « text ».
----EN : Starting text of an input field (textfield, text-box).
----     Fixed compared to RitnLib, which tested the "tooltip" variable instead of "text".
+---**EN**
+---
+---Description: Starting text of an input field (textfield, text-box).
+---Fixed compared to RitnLib, which tested the "tooltip" variable instead of "text".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte de départ d'un champ de saisie (textfield, text-box).
+---Corrigé par rapport à RitnLib, qui testait la variable « tooltip » au lieu de « text ».
 ---@param text string
 ---@return GvvGuiElement
 function GvvGuiElement:text(text)
@@ -267,8 +357,15 @@ function GvvGuiElement:text(text)
 end
 
 
----FR : Style Factorio de l'élément (ex. « frame_action_button »).
----EN : Factorio style of the element (e.g. "frame_action_button").
+---**EN**
+---
+---Description: Factorio style of the element (e.g. "frame_action_button").
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Style Factorio de l'élément (ex. « frame_action_button »).
 ---@param style string
 ---@return GvvGuiElement
 function GvvGuiElement:style(style)
@@ -282,8 +379,15 @@ function GvvGuiElement:style(style)
 end
 
 
----FR : Image affichée (sprite, sprite-button), ex. « utility/close ».
----EN : Displayed image (sprite, sprite-button), e.g. "utility/close".
+---**EN**
+---
+---Description: Displayed image (sprite, sprite-button), e.g. "utility/close".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Image affichée (sprite, sprite-button), ex. « utility/close ».
 ---@param sprite string
 ---@return GvvGuiElement
 function GvvGuiElement:spritePath(sprite)
@@ -301,8 +405,15 @@ function GvvGuiElement:spritePath(sprite)
 end
 
 
----FR : Barre de défilement horizontale d'un scroll-pane (« auto », « never », « always »...).
----EN : Horizontal scroll bar of a scroll-pane ("auto", "never", "always"...).
+---**EN**
+---
+---Description: Horizontal scroll bar of a scroll-pane ("auto", "never", "always"...).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Barre de défilement horizontale d'un scroll-pane (« auto », « never », « always »...).
 ---@param policy string
 ---@return GvvGuiElement
 function GvvGuiElement:horizontalScrollPolicy(policy)
@@ -318,8 +429,15 @@ function GvvGuiElement:horizontalScrollPolicy(policy)
 end
 
 
----FR : Barre de défilement verticale d'un scroll-pane (« auto », « never », « always »...).
----EN : Vertical scroll bar of a scroll-pane ("auto", "never", "always"...).
+---**EN**
+---
+---Description: Vertical scroll bar of a scroll-pane ("auto", "never", "always"...).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Barre de défilement verticale d'un scroll-pane (« auto », « never », « always »...).
 ---@param policy string
 ---@return GvvGuiElement
 function GvvGuiElement:verticalScrollPolicy(policy)
@@ -335,8 +453,15 @@ function GvvGuiElement:verticalScrollPolicy(policy)
 end
 
 
----FR : L'élément sprite prend la taille de son image (true) ou garde la taille de son style (false).
----EN : The sprite element takes its image size (true) or keeps its style size (false).
+---**EN**
+---
+---Description: The sprite element takes its image size (true) or keeps its style size (false).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: L'élément sprite prend la taille de son image (true) ou garde la taille de son style (false).
 ---@param resize boolean
 ---@return GvvGuiElement
 function GvvGuiElement:resizeSprite(resize)
@@ -352,8 +477,15 @@ function GvvGuiElement:resizeSprite(resize)
 end
 
 
----FR : État de départ d'une case à cocher ou d'un bouton radio (coché par défaut).
----EN : Starting state of a checkbox or radio button (checked by default).
+---**EN**
+---
+---Description: Starting state of a checkbox or radio button (checked by default).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: État de départ d'une case à cocher ou d'un bouton radio (coché par défaut).
 ---@param state? boolean
 ---@return GvvGuiElement
 function GvvGuiElement:checked(state)
@@ -374,8 +506,15 @@ function GvvGuiElement:checked(state)
 end
 
 
----FR : Valeur de départ d'une barre de progression (0 à 100, 0 par défaut).
----EN : Starting value of a progress bar (0 to 100, 0 by default).
+---**EN**
+---
+---Description: Starting value of a progress bar (0 to 100, 0 by default).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Valeur de départ d'une barre de progression (0 à 100, 0 par défaut).
 ---@param value? number
 ---@return GvvGuiElement
 function GvvGuiElement:progress(value)
@@ -396,8 +535,15 @@ function GvvGuiElement:progress(value)
 end
 
 
----FR : Boutons de la souris acceptés par un bouton ({"left"} par défaut, ex. {"left", "right"}).
----EN : Mouse buttons accepted by a button ({"left"} by default, e.g. {"left", "right"}).
+---**EN**
+---
+---Description: Mouse buttons accepted by a button ({"left"} by default, e.g. {"left", "right"}).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Boutons de la souris acceptés par un bouton ({"left"} par défaut, ex. {"left", "right"}).
 ---@param filter? string[]
 ---@return GvvGuiElement
 function GvvGuiElement:mouseButtonFilter(filter)
@@ -418,12 +564,19 @@ function GvvGuiElement:mouseButtonFilter(filter)
 end
 
 
----FR : Données attachées à l'élément (element.tags) : clé, chemin, index... pour les éléments dynamiques
----     (lignes de l'arbre, entrées du suivi), au lieu de les coder dans le nom.
----     Factorio copie la table : on la relit plus tard avec element.tags.
----EN : Data attached to the element (element.tags): key, path, index... for dynamic elements
----     (tree rows, tracking entries), instead of encoding them in the name.
----     Factorio copies the table: it is read back later with element.tags.
+---**EN**
+---
+---Description: Data attached to the element (element.tags): key, path, index... for dynamic elements
+---(tree rows, tracking entries), instead of encoding them in the name.
+---Factorio copies the table: it is read back later with element.tags.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Données attachées à l'élément (element.tags) : clé, chemin, index... pour les éléments dynamiques
+---(lignes de l'arbre, entrées du suivi), au lieu de les coder dans le nom.
+---Factorio copie la table : on la relit plus tard avec element.tags.
 ---@param tags table
 ---@return GvvGuiElement
 function GvvGuiElement:tags(tags)

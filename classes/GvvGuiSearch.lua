@@ -31,9 +31,27 @@ local TREE_TABS = { glob = 2, prop = 3, gobj = 4 }
 local TREE_ENGINES = { glob = "storage", prop = "property", gobj = "luaobject" }
 
 
+---**EN**
+---
+---Description: Search in the trees ("gvv_search"): magnifier button, one panel per tree, results highlighted;
+---the rows are walked by the trees engine (GvvGuiTree).
+---
+---⚠ Temporary wrapper, created on each event. Do not store the instance in `storage`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Recherche dans les arbres (« gvv_search ») : bouton loupe, un panneau par arbre, résultats surlignés ;
+---les lignes sont parcourues par le moteur des arbres (GvvGuiTree).
+---
+---⚠ Wrapper temporaire, créé à chaque évènement. Ne pas stocker l'instance dans `storage`.
 ---@class GvvGuiSearch : GvvGui
----@field specs table              Description des éléments (gui/search.lua) / Elements description (gui/search.lua)
----@field tools LuaGuiElement?     Barre d'outils de la fenêtre principale / Main window toolbar
+---@field object_name string     "GvvGuiSearch"
+---@field specs table            Elements description (gui/search.lua)
+---@field tools LuaGuiElement?   Main window toolbar
+---@operator call(table): GvvGuiSearch
+---@type GvvGuiSearch
 GvvGuiSearch = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Recherche « gvv_search » ; ses panneaux sont dans les onglets des arbres
     -- EN : "gvv_search" search; its panels are inside the trees tabs
@@ -64,7 +82,7 @@ GvvGuiSearch = gvv.classFactory.newclass(GvvGui, function(self, event)
         self.gui_action["checkbox-" .. filter.name .. "-checked_state_changed"] = "action_filter"
     end
     --------------------------------------------------
-end)
+end) --[[@as GvvGuiSearch]]
 ----------------------------------------------------------------
 
 
@@ -73,8 +91,15 @@ end)
 -- EN : ELEMENTS ACCESS
 ---------------------------------------------------------------------------------------------
 
----FR : Moteur de l'arbre (GvvGuiTree) qui porte ce nom de recherche.
----EN : Tree engine (GvvGuiTree) that has this search name.
+---**EN**
+---
+---Description: Tree engine (GvvGuiTree) that has this search name.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Moteur de l'arbre (GvvGuiTree) qui porte ce nom de recherche.
 ---@param tree_name string  'glob', 'prop' ou 'gobj'
 ---@return GvvGuiTree
 function GvvGuiSearch:getEngine(tree_name)
@@ -82,8 +107,15 @@ function GvvGuiSearch:getEngine(tree_name)
 end
 
 
----FR : Conteneur de l'arbre (zone défilante du moteur), ou nil.
----EN : Tree container (engine scrolling area), or nil.
+---**EN**
+---
+---Description: Tree container (engine scrolling area), or nil.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Conteneur de l'arbre (zone défilante du moteur), ou nil.
 ---@param tree_name string  'glob', 'prop' ou 'gobj'
 ---@return LuaGuiElement?
 function GvvGuiSearch:getTree(tree_name)
@@ -91,8 +123,15 @@ function GvvGuiSearch:getTree(tree_name)
 end
 
 
----FR : Panneau de recherche d'un arbre (à côté de l'arbre), ou nil.
----EN : Search panel of a tree (next to the tree), or nil.
+---**EN**
+---
+---Description: Search panel of a tree (next to the tree), or nil.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Panneau de recherche d'un arbre (à côté de l'arbre), ou nil.
 ---@param tree_name string
 ---@return LuaGuiElement?
 function GvvGuiSearch:getPanel(tree_name)
@@ -104,8 +143,15 @@ function GvvGuiSearch:getPanel(tree_name)
 end
 
 
----FR : Élément d'un panneau de recherche, par sa partie « type-name » (ex. « textfield-text »), ou nil.
----EN : Element of a search panel, by its "type-name" part (e.g. "textfield-text"), or nil.
+---**EN**
+---
+---Description: Element of a search panel, by its "type-name" part (e.g. "textfield-text"), or nil.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Élément d'un panneau de recherche, par sa partie « type-name » (ex. « textfield-text »), ou nil.
 ---@param tree_name string
 ---@param type_name string
 ---@return LuaGuiElement?
@@ -124,8 +170,15 @@ function GvvGuiSearch:getPart(tree_name, type_name)
 end
 
 
----FR : Arbre du panneau qui contient l'élément ('glob', 'prop' ou 'gobj'), lu dans les tags du panneau, ou nil.
----EN : Tree of the panel that contains the element ('glob', 'prop' or 'gobj'), read in the panel tags, or nil.
+---**EN**
+---
+---Description: Tree of the panel that contains the element ('glob', 'prop' or 'gobj'), read in the panel tags, or nil.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Arbre du panneau qui contient l'élément ('glob', 'prop' ou 'gobj'), lu dans les tags du panneau, ou nil.
 ---@param element LuaGuiElement
 ---@return string?
 function GvvGuiSearch:findTreeName(element)
@@ -145,10 +198,17 @@ end
 -- EN : BUILDING
 ---------------------------------------------------------------------------------------------
 
----FR : Bouton loupe dans la barre d'outils, juste après le bouton de rafraîchissement des arbres (comme avant).
----     Appelé par GvvGuiMain:open, après les outils des arbres.
----EN : Magnifier button inside the toolbar, right after the trees refresh button (as before).
----     Called by GvvGuiMain:open, after the trees tools.
+---**EN**
+---
+---Description: Magnifier button inside the toolbar, right after the trees refresh button (as before).
+---Called by GvvGuiMain:open, after the trees tools.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton loupe dans la barre d'outils, juste après le bouton de rafraîchissement des arbres (comme avant).
+---Appelé par GvvGuiMain:open, après les outils des arbres.
 ---@return GvvGuiSearch
 function GvvGuiSearch:buildButton()
     if not check.isValidLuaObject(self.tools) then
@@ -172,12 +232,19 @@ function GvvGuiSearch:buildButton()
 end
 
 
----FR : Panneau de recherche d'un arbre, à droite de l'arbre (repris de l'ancien build_search_panel).
----     Appelé par l'ancien code qui construit les onglets des arbres.
----EN : Search panel of a tree, on the right of the tree (taken from the old build_search_panel).
----     Called by the old code that builds the trees tabs.
+---**EN**
+---
+---Description: Search panel of a tree, on the right of the tree (taken from the old build_search_panel).
+---Called by the old code that builds the trees tabs.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Panneau de recherche d'un arbre, à droite de l'arbre (repris de l'ancien build_search_panel).
+---Appelé par l'ancien code qui construit les onglets des arbres.
 ---@param tree_name string    'glob', 'prop' ou 'gobj'
----@param parent LuaGuiElement Conteneur de la liste et de l'arbre / Container of the list and the tree
+---@param parent LuaGuiElement Container of the list and the tree
 ---@return GvvGuiSearch
 function GvvGuiSearch:buildPanel(tree_name, parent)
     local data = self:getData()
@@ -224,8 +291,15 @@ function GvvGuiSearch:buildPanel(tree_name, parent)
 end
 
 
----FR : Bouton loupe visible seulement sur les onglets des arbres (2 à 4). Appelé à chaque changement d'onglet.
----EN : Magnifier button visible only on the trees tabs (2 to 4). Called on each tab change.
+---**EN**
+---
+---Description: Magnifier button visible only on the trees tabs (2 to 4). Called on each tab change.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton loupe visible seulement sur les onglets des arbres (2 à 4). Appelé à chaque changement d'onglet.
 ---@param tab_index integer
 ---@return GvvGuiSearch
 function GvvGuiSearch:updateTools(tab_index)
@@ -242,8 +316,17 @@ end
 -- EN : SEARCH IN THE TREE (taken from the old legacy/search_tree.lua)
 ---------------------------------------------------------------------------------------------
 
--- FR : Retire le texte enrichi d'une clé affichée ([color=...], [img=...], crochets, guillemets)
--- EN : Removes the rich text of a displayed key ([color=...], [img=...], brackets, quotes)
+---**EN**
+---
+---Description: Removes the rich text of a displayed key ([color=...], [img=...], brackets, quotes)
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Retire le texte enrichi d'une clé affichée ([color=...], [img=...], crochets, guillemets)
+---@param text string
+---@return string
 local function removeRichKey(text)
     text = text:gsub('^(.-) %(%[color=[^%[]+][^%[]+%[/color]%)$', '%1')
     text = text:gsub('^%[img=[^%[]+](.-)$', '%1')
@@ -254,16 +337,32 @@ local function removeRichKey(text)
     return text
 end
 
--- FR : Retire le texte enrichi d'une valeur affichée (guillemets, [color=...])
--- EN : Removes the rich text of a displayed value (quotes, [color=...])
+---**EN**
+---
+---Description: Removes the rich text of a displayed value (quotes, [color=...])
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Retire le texte enrichi d'une valeur affichée (guillemets, [color=...])
+---@param text string
+---@return string
 local function removeRichValue(text)
     text = text:gsub('^"(.-)"$', '%1')
     text = text:gsub('^%[color=[^%[]+](.-)%[/color]$', '%1')
     return text
 end
 
----FR : Relance la recherche dans un arbre.
----EN : Runs the search again in a tree.
+---**EN**
+---
+---Description: Runs the search again in a tree.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Relance la recherche dans un arbre.
 ---@param tree_name string  'glob', 'prop' ou 'gobj'
 ---@return GvvGuiSearch
 function GvvGuiSearch:refresh(tree_name)
@@ -272,14 +371,21 @@ function GvvGuiSearch:refresh(tree_name)
 end
 
 
----FR : Cherche dans un arbre, surligne et liste les résultats, puis les renvoie (repris de l'ancien
----     Search_Tree.refresh). Recherche fermée : styles remis à zéro. Motif Lua invalide : texte en rouge,
----     pas de recherche. Les résultats ne sont plus gardés dans storage (ils contiennent des éléments GUI) :
----     un résultat choisi est retrouvé en relançant la recherche, qui donne les mêmes résultats.
----EN : Searches inside a tree, highlights and lists the results, then returns them (taken from the old
----     Search_Tree.refresh). Search closed: styles reset. Invalid Lua pattern: text in red,
----     no search. The results are no longer kept in storage (they hold GUI elements):
----     a chosen result is found by running the search again, which gives the same results.
+---**EN**
+---
+---Description: Searches inside a tree, highlights and lists the results, then returns them (taken from the old
+---Search_Tree.refresh). Search closed: styles reset. Invalid Lua pattern: text in red,
+---no search. The results are no longer kept in storage (they hold GUI elements):
+---a chosen result is found by running the search again, which gives the same results.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Cherche dans un arbre, surligne et liste les résultats, puis les renvoie (repris de l'ancien
+---Search_Tree.refresh). Recherche fermée : styles remis à zéro. Motif Lua invalide : texte en rouge,
+---pas de recherche. Les résultats ne sont plus gardés dans storage (ils contiennent des éléments GUI) :
+---un résultat choisi est retrouvé en relançant la recherche, qui donne les mêmes résultats.
 ---@param tree_name string  'glob', 'prop' ou 'gobj'
 ---@return table[]  { elem, name }
 function GvvGuiSearch:run(tree_name)
@@ -342,8 +448,15 @@ function GvvGuiSearch:run(tree_name)
 end
 
 
----FR : Relance la recherche dans les trois arbres.
----EN : Runs the search again in the three trees.
+---**EN**
+---
+---Description: Runs the search again in the three trees.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Relance la recherche dans les trois arbres.
 ---@return GvvGuiSearch
 function GvvGuiSearch:refreshAll()
     for _, tree_name in ipairs({'glob', 'prop', 'gobj'}) do
@@ -358,10 +471,17 @@ end
 -- EN : ACTIONS
 ---------------------------------------------------------------------------------------------
 
----FR : Loupe : affiche ou cache les panneaux de recherche des trois arbres ; à l'ouverture,
----     le champ de l'onglet affiché prend le focus.
----EN : Magnifier: shows or hides the search panels of the three trees; on opening,
----     the field of the displayed tab gets the focus.
+---**EN**
+---
+---Description: Magnifier: shows or hides the search panels of the three trees; on opening,
+---the field of the displayed tab gets the focus.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Loupe : affiche ou cache les panneaux de recherche des trois arbres ; à l'ouverture,
+---le champ de l'onglet affiché prend le focus.
 function GvvGuiSearch:action_toggle()
     local data = self:getData()
     data.show_search = not data.show_search
@@ -389,8 +509,15 @@ function GvvGuiSearch:action_toggle()
 end
 
 
----FR : Texte cherché modifié : gardé dans les réglages, puis recherche relancée.
----EN : Searched text modified: kept in the settings, then search run again.
+---**EN**
+---
+---Description: Searched text modified: kept in the settings, then search run again.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte cherché modifié : gardé dans les réglages, puis recherche relancée.
 function GvvGuiSearch:action_text()
     local tree_name = self:findTreeName(self.element)
     if tree_name == nil then
@@ -401,8 +528,15 @@ function GvvGuiSearch:action_text()
 end
 
 
----FR : Filtre coché / décoché : gardé dans les réglages, puis recherche relancée.
----EN : Filter checked / unchecked: kept in the settings, then search run again.
+---**EN**
+---
+---Description: Filter checked / unchecked: kept in the settings, then search run again.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Filtre coché / décoché : gardé dans les réglages, puis recherche relancée.
 function GvvGuiSearch:action_filter()
     local tree_name = self:findTreeName(self.element)
     if tree_name == nil then
@@ -414,8 +548,15 @@ function GvvGuiSearch:action_filter()
 end
 
 
----FR : Résultat choisi : l'arbre défile jusqu'à lui, puis la sélection est effacée.
----EN : Result chosen: the tree scrolls to it, then the selection is cleared.
+---**EN**
+---
+---Description: Result chosen: the tree scrolls to it, then the selection is cleared.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Résultat choisi : l'arbre défile jusqu'à lui, puis la sélection est effacée.
 function GvvGuiSearch:action_result()
     local tree_name = self:findTreeName(self.element)
     if tree_name == nil then

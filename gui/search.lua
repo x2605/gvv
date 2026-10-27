@@ -32,9 +32,16 @@ local FILTERS = {
 }
 
 
----FR : Description des éléments de la recherche.
----EN : Description of the search elements.
----@param gui_name string  Préfixe des noms (« gvv_search ») / Names prefix ("gvv_search")
+---**EN**
+---
+---Description: Description of the search elements.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Description des éléments de la recherche.
+---@param gui_name string  Names prefix ("gvv_search")
 ---@return table
 local function getElement(gui_name)
     local element = {

@@ -47,10 +47,17 @@ local KINDS = {
 }
 
 
----FR : Description des éléments d'une petite fenêtre du type donné.
----EN : Description of the elements of a small window of the given kind.
----@param gui_name string  Préfixe des noms (« gvv_dialog ») / Names prefix ("gvv_dialog")
----@param kind string      Type de la fenêtre / Window kind
+---**EN**
+---
+---Description: Description of the elements of a small window of the given kind.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Description des éléments d'une petite fenêtre du type donné.
+---@param gui_name string  Names prefix ("gvv_dialog")
+---@param kind string      Window kind
 ---@return table
 local function getElement(gui_name, kind)
     local element = {
@@ -118,10 +125,17 @@ local function getElement(gui_name, kind)
 end
 
 
----FR : Chemin de chaque élément d'une petite fenêtre depuis player.gui.screen, rangé par type de fenêtre :
----     content[kind][élément]. Utilisé par GvvGui:getElement(kind, élément).
----EN : Path of each element of a small window from player.gui.screen, sorted by window kind:
----     content[kind][element]. Used by GvvGui:getElement(kind, element).
+---**EN**
+---
+---Description: Path of each element of a small window from player.gui.screen, sorted by window kind:
+---content[kind][element]. Used by GvvGui:getElement(kind, element).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Chemin de chaque élément d'une petite fenêtre depuis player.gui.screen, rangé par type de fenêtre :
+---content[kind][élément]. Utilisé par GvvGui:getElement(kind, élément).
 ---@return table
 local function getContent()
     local content = {}

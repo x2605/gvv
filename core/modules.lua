@@ -8,6 +8,23 @@
 --      Each module may provide on_init, on_load, on_configuration_changed, add_commands
 --      and an events table; the event handler registers them with Factorio.
 ---------------------------------------------------------------------------------------------
+---**EN**
+---
+---Description: Shape of a gvv module (`modules/*.lua`), sent to `__core__/lualib/event_handler`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Forme d'un module de gvv (`modules/*.lua`), envoyé à `__core__/lualib/event_handler`.
+---@class GvvModule
+---@field events? table<defines.events|string, fun(event: table)>   Handlers indexed by event id or custom input name
+---@field on_init? fun()
+---@field on_load? fun()
+---@field on_configuration_changed? fun(data: ConfigurationChangedData)
+---@field add_commands? fun()
+
+---@type table<string, GvvModule>
 local modules = {}
 log('modules gvv')
 ---------------------------------------------------------------------------------------------

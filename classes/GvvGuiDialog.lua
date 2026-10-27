@@ -35,8 +35,26 @@ local LEGACY_NAMES = {
 local SEPARATOR = '\n--[[]]--\n'
 
 
+---**EN**
+---
+---Description: gvv small windows ("gvv_dialog"): dump, anycode, copy, edit, export, import. They share the same frame;
+---the kind is read from the frame tags.
+---
+---⚠ Temporary wrapper, created on each event. Do not store the instance in `storage`.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Petites fenêtres de gvv (« gvv_dialog ») : dump, anycode, copie, édition, export, import. Elles partagent
+---le même cadre ; le type est lu dans les tags du cadre.
+---
+---⚠ Wrapper temporaire, créé à chaque évènement. Ne pas stocker l'instance dans `storage`.
 ---@class GvvGuiDialog : GvvGui
----@field kind string?  Type de la petite fenêtre concernée / Kind of the small window concerned
+---@field object_name string     "GvvGuiDialog"
+---@field kind string?           Kind of the small window concerned
+---@operator call(table): GvvGuiDialog
+---@type GvvGuiDialog
 GvvGuiDialog = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Fenêtres « gvv_dialog » ; l'élément racine dépend du type, connu plus bas
     -- EN : "gvv_dialog" windows; the root element depends on the kind, known below
@@ -74,14 +92,21 @@ GvvGuiDialog = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- EN : Kind of the small window that contains the event element (nil if there is none)
     self:setKind(self:findKind(self.element))
     --------------------------------------------------
-end)
+end) --[[@as GvvGuiDialog]]
 ----------------------------------------------------------------
 
 
----FR : Type de la petite fenêtre qui contient l'élément (ex. « anycode »), ou nil.
----     On remonte jusqu'à l'élément posé directement dans player.gui.screen, puis on lit son nom.
----EN : Kind of the small window that contains the element (e.g. "anycode"), or nil.
----     Walk up to the element placed directly in player.gui.screen, then read its name.
+---**EN**
+---
+---Description: Kind of the small window that contains the element (e.g. "anycode"), or nil.
+---Walk up to the element placed directly in player.gui.screen, then read its name.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Type de la petite fenêtre qui contient l'élément (ex. « anycode »), ou nil.
+---On remonte jusqu'à l'élément posé directement dans player.gui.screen, puis on lit son nom.
 ---@param element LuaGuiElement?
 ---@return string?
 function GvvGuiDialog:findKind(element)
@@ -108,8 +133,15 @@ function GvvGuiDialog:findKind(element)
 end
 
 
----FR : Choisit le type de petite fenêtre concerné ; l'élément racine devient « frame-<kind> ».
----EN : Chooses the kind of small window concerned; the root element becomes "frame-<kind>".
+---**EN**
+---
+---Description: Chooses the kind of small window concerned; the root element becomes "frame-<kind>".
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Choisit le type de petite fenêtre concerné ; l'élément racine devient « frame-<kind> ».
 ---@param kind string?
 ---@return GvvGuiDialog
 function GvvGuiDialog:setKind(kind)
@@ -123,8 +155,15 @@ function GvvGuiDialog:setKind(kind)
 end
 
 
----FR : Élément de la petite fenêtre du type actuel (ex. getPart("code")), ou nil.
----EN : Element of the small window of the current kind (e.g. getPart("code")), or nil.
+---**EN**
+---
+---Description: Element of the small window of the current kind (e.g. getPart("code")), or nil.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Élément de la petite fenêtre du type actuel (ex. getPart("code")), ou nil.
 ---@param part string
 ---@return LuaGuiElement?
 function GvvGuiDialog:getPart(part)
@@ -142,12 +181,19 @@ end
 -- EN : BUILDING
 ---------------------------------------------------------------------------------------------
 
----FR : Construit le cadre commun d'une petite fenêtre (titre, déplacement, bouton fermer)
----     et renvoie le cadre, son contenu (flow-inner) et la description des éléments.
----     Repris de Util.create_frame_w_closebtn.
----EN : Builds the common frame of a small window (title, drag, close button)
----     and returns the frame, its content (flow-inner) and the elements description.
----     Taken from Util.create_frame_w_closebtn.
+---**EN**
+---
+---Description: Builds the common frame of a small window (title, drag, close button)
+---and returns the frame, its content (flow-inner) and the elements description.
+---Taken from Util.create_frame_w_closebtn.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Construit le cadre commun d'une petite fenêtre (titre, déplacement, bouton fermer)
+---et renvoie le cadre, son contenu (flow-inner) et la description des éléments.
+---Repris de Util.create_frame_w_closebtn.
 ---@param kind string
 ---@param title LocalisedString
 ---@return LuaGuiElement frame
@@ -192,10 +238,17 @@ function GvvGuiDialog:buildFrame(kind, title)
 end
 
 
----FR : Ajoute un texte en lecture seule : sur une ligne (textfield), ou plusieurs (text-box) si multiline.
----     Le texte d'origine est rangé dans les tags, pour être remis en place s'il est modifié.
----EN : Adds a read-only text: on one line (textfield), or several (text-box) if multiline.
----     The original text is stored in the tags, to be put back if it is modified.
+---**EN**
+---
+---Description: Adds a read-only text: on one line (textfield), or several (text-box) if multiline.
+---The original text is stored in the tags, to be put back if it is modified.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ajoute un texte en lecture seule : sur une ligne (textfield), ou plusieurs (text-box) si multiline.
+---Le texte d'origine est rangé dans les tags, pour être remis en place s'il est modifié.
 ---@param inner LuaGuiElement
 ---@param element table
 ---@param text string
@@ -221,12 +274,19 @@ function GvvGuiDialog:addReadOnlyText(inner, element, text, multiline)
 end
 
 
----FR : Ajoute le pied de fenêtre : zone de déplacement + bouton de validation, aligné à droite.
----EN : Adds the window footer: drag area + confirm button, aligned to the right.
+---**EN**
+---
+---Description: Adds the window footer: drag area + confirm button, aligned to the right.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ajoute le pied de fenêtre : zone de déplacement + bouton de validation, aligné à droite.
 ---@param frame LuaGuiElement
 ---@param inner LuaGuiElement
 ---@param element table
----@param caption LocalisedString  Texte du bouton / Button text
+---@param caption LocalisedString  Button text
 function GvvGuiDialog:addConfirmFooter(frame, inner, element, caption)
     -- FR : Conteneur aligné à droite
     -- EN : Container aligned to the right
@@ -252,8 +312,15 @@ function GvvGuiDialog:addConfirmFooter(frame, inner, element, caption)
 end
 
 
----FR : Ajoute le code saisi par le joueur (text-box), vide ou avec un texte de départ.
----EN : Adds the code typed by the player (text-box), empty or with a starting text.
+---**EN**
+---
+---Description: Adds the code typed by the player (text-box), empty or with a starting text.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ajoute le code saisi par le joueur (text-box), vide ou avec un texte de départ.
 ---@param inner LuaGuiElement
 ---@param element table
 ---@param width integer
@@ -272,8 +339,15 @@ function GvvGuiDialog:addCode(inner, element, width, height, text)
 end
 
 
----FR : Détruit la petite fenêtre du type donné si elle est ouverte. Renvoie true si elle l'était.
----EN : Destroys the small window of the given kind if it is open. Returns true if it was.
+---**EN**
+---
+---Description: Destroys the small window of the given kind if it is open. Returns true if it was.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Détruit la petite fenêtre du type donné si elle est ouverte. Renvoie true si elle l'était.
 ---@param kind string
 ---@return boolean
 function GvvGuiDialog:destroyKind(kind)
@@ -291,8 +365,15 @@ end
 -- EN : OPENING, one window kind per method
 ---------------------------------------------------------------------------------------------
 
----FR : Fenêtre « dump » : texte à copier, ex. le résultat de /gdump. Remplace une fenêtre dump déjà ouverte.
----EN : "dump" window: text to copy, e.g. the result of /gdump. Replaces a dump window already open.
+---**EN**
+---
+---Description: "dump" window: text to copy, e.g. the result of /gdump. Replaces a dump window already open.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fenêtre « dump » : texte à copier, ex. le résultat de /gdump. Remplace une fenêtre dump déjà ouverte.
 ---@param text string
 ---@param title LocalisedString
 ---@return GvvGuiDialog
@@ -312,10 +393,17 @@ function GvvGuiDialog:openDump(text, title)
 end
 
 
----FR : Fenêtre « anycode » : saisie d'un code à ajouter au suivi.
----     Si elle est déjà ouverte, elle est recentrée et une erreur l'indique (comme avant).
----EN : "anycode" window: typing a code to add to the tracking.
----     If it is already open, it is centred again and an error says so (as before).
+---**EN**
+---
+---Description: "anycode" window: typing a code to add to the tracking.
+---If it is already open, it is centred again and an error says so (as before).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fenêtre « anycode » : saisie d'un code à ajouter au suivi.
+---Si elle est déjà ouverte, elle est recentrée et une erreur l'indique (comme avant).
 ---@return boolean
 function GvvGuiDialog:openAnycode()
     if not self.isPresent then
@@ -344,12 +432,19 @@ function GvvGuiDialog:openAnycode()
 end
 
 
----FR : Fenêtre « copy » : code ou valeur d'une entrée du suivi, à copier.
----     entry_name (code de l'entrée) : si donné, un bouton « modifier » ouvre la fenêtre edit.
----     Remplace une fenêtre copy déjà ouverte.
----EN : "copy" window: code or value of a tracking entry, to copy.
----     entry_name (the entry code): if given, an "edit" button opens the edit window.
----     Replaces a copy window already open.
+---**EN**
+---
+---Description: "copy" window: code or value of a tracking entry, to copy.
+---entry_name (the entry code): if given, an "edit" button opens the edit window.
+---Replaces a copy window already open.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fenêtre « copy » : code ou valeur d'une entrée du suivi, à copier.
+---entry_name (code de l'entrée) : si donné, un bouton « modifier » ouvre la fenêtre edit.
+---Remplace une fenêtre copy déjà ouverte.
 ---@param text string
 ---@param entry_name? string
 ---@return GvvGuiDialog
@@ -413,12 +508,19 @@ function GvvGuiDialog:openCopy(text, entry_name)
 end
 
 
----FR : Fenêtre « edit » : modification du code d'une entrée du suivi.
----     Si elle est déjà ouverte, elle est recentrée et une erreur l'indique (comme avant).
----EN : "edit" window: editing the code of a tracking entry.
----     If it is already open, it is centred again and an error says so (as before).
----@param text string        Code actuel de l'entrée / Current entry code
----@param entry_name string  Nom de l'entrée (son code d'origine) / Entry name (its original code)
+---**EN**
+---
+---Description: "edit" window: editing the code of a tracking entry.
+---If it is already open, it is centred again and an error says so (as before).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fenêtre « edit » : modification du code d'une entrée du suivi.
+---Si elle est déjà ouverte, elle est recentrée et une erreur l'indique (comme avant).
+---@param text string        Current entry code
+---@param entry_name string  Entry name (its original code)
 ---@return boolean
 function GvvGuiDialog:openEdit(text, entry_name)
     if not self.isPresent then
@@ -458,8 +560,15 @@ function GvvGuiDialog:openEdit(text, entry_name)
 end
 
 
----FR : Fenêtre « export » : la liste de suivi actuelle, à copier. Remplace une fenêtre export déjà ouverte.
----EN : "export" window: the current tracking list, to copy. Replaces an export window already open.
+---**EN**
+---
+---Description: "export" window: the current tracking list, to copy. Replaces an export window already open.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fenêtre « export » : la liste de suivi actuelle, à copier. Remplace une fenêtre export déjà ouverte.
 ---@return GvvGuiDialog
 function GvvGuiDialog:openExport()
     if not self.isPresent then
@@ -482,8 +591,15 @@ function GvvGuiDialog:openExport()
 end
 
 
----FR : Fenêtre « import » : saisie d'une liste de suivi à importer. Remplace une fenêtre import déjà ouverte.
----EN : "import" window: typing a tracking list to import. Replaces an import window already open.
+---**EN**
+---
+---Description: "import" window: typing a tracking list to import. Replaces an import window already open.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fenêtre « import » : saisie d'une liste de suivi à importer. Remplace une fenêtre import déjà ouverte.
 ---@return GvvGuiDialog
 function GvvGuiDialog:openImport()
     if not self.isPresent then
@@ -514,8 +630,15 @@ end
 -- EN : GROUPED CLOSINGS (called by the main window and the migrations)
 ---------------------------------------------------------------------------------------------
 
----FR : Ferme les petites fenêtres fermées avec la fenêtre principale (toutes sauf dump).
----EN : Closes the small windows closed with the main window (all except dump).
+---**EN**
+---
+---Description: Closes the small windows closed with the main window (all except dump).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Ferme les petites fenêtres fermées avec la fenêtre principale (toutes sauf dump).
 ---@return GvvGuiDialog
 function GvvGuiDialog:closeWithMain()
     if not self.isPresent then
@@ -530,10 +653,17 @@ function GvvGuiDialog:closeWithMain()
 end
 
 
----FR : Clic dans la fenêtre principale : ferme les petites fenêtres concernées
----     (anycode seulement si son code est vide, pour ne pas perdre une saisie).
----EN : Click in the main window: closes the small windows concerned
----     (anycode only if its code is empty, so as not to lose a typed code).
+---**EN**
+---
+---Description: Click in the main window: closes the small windows concerned
+---(anycode only if its code is empty, so as not to lose a typed code).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Clic dans la fenêtre principale : ferme les petites fenêtres concernées
+---(anycode seulement si son code est vide, pour ne pas perdre une saisie).
 ---@return GvvGuiDialog
 function GvvGuiDialog:closeOnMainFocus()
     if not self.isPresent then
@@ -555,8 +685,15 @@ function GvvGuiDialog:closeOnMainFocus()
 end
 
 
----FR : Détruit les petites fenêtres d'avant 0.6 (anciens noms) encore ouvertes.
----EN : Destroys the pre-0.6 small windows (old names) still open.
+---**EN**
+---
+---Description: Destroys the pre-0.6 small windows (old names) still open.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Détruit les petites fenêtres d'avant 0.6 (anciens noms) encore ouvertes.
 ---@return GvvGuiDialog
 function GvvGuiDialog:destroyLegacy()
     if not self.isPresent then
@@ -577,8 +714,15 @@ end
 -- EN : ACTIONS (events of the small windows elements)
 ---------------------------------------------------------------------------------------------
 
----FR : Bouton fermer : détruit la petite fenêtre.
----EN : Close button: destroys the small window.
+---**EN**
+---
+---Description: Close button: destroys the small window.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton fermer : détruit la petite fenêtre.
 function GvvGuiDialog:action_close()
     local frame = self:getMainElement()
     if frame ~= nil then
@@ -587,10 +731,17 @@ function GvvGuiDialog:action_close()
 end
 
 
----FR : Fenêtre fermée (Échap, ou autre fenêtre ouverte) : détruite,
----     sauf anycode si un code est en cours de saisie.
----EN : Window closed (Escape, or another window opened): destroyed,
----     except anycode if a code is being typed.
+---**EN**
+---
+---Description: Window closed (Escape, or another window opened): destroyed,
+---except anycode if a code is being typed.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Fenêtre fermée (Échap, ou autre fenêtre ouverte) : détruite,
+---sauf anycode si un code est en cours de saisie.
 function GvvGuiDialog:action_closed()
     if self.kind == "anycode" then
         local code = self:getPart("code")
@@ -602,8 +753,15 @@ function GvvGuiDialog:action_closed()
 end
 
 
----FR : Texte en lecture seule modifié par le joueur : on remet le texte d'origine (rangé dans les tags) et on le sélectionne.
----EN : Read-only text modified by the player: put the original text back (stored in the tags) and select it.
+---**EN**
+---
+---Description: Read-only text modified by the player: put the original text back (stored in the tags) and select it.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Texte en lecture seule modifié par le joueur : on remet le texte d'origine (rangé dans les tags) et on le sélectionne.
 function GvvGuiDialog:action_restore_text()
     local original = check.tryGet(self.element.tags, "text")
     if original ~= nil then
@@ -613,8 +771,15 @@ function GvvGuiDialog:action_restore_text()
 end
 
 
----FR : Code de la fenêtre anycode vidé : elle redevient player.opened, pour qu'Échap la ferme (comme avant).
----EN : Code of the anycode window emptied: it becomes player.opened again, so Escape closes it (as before).
+---**EN**
+---
+---Description: Code of the anycode window emptied: it becomes player.opened again, so Escape closes it (as before).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Code de la fenêtre anycode vidé : elle redevient player.opened, pour qu'Échap la ferme (comme avant).
 function GvvGuiDialog:action_code_changed()
     if self.kind ~= "anycode" or self.element.text ~= '' then
         return
@@ -625,8 +790,15 @@ function GvvGuiDialog:action_code_changed()
 end
 
 
----FR : Bouton « modifier » de la fenêtre copy : ouvre la fenêtre edit avec ce code, puis ferme la fenêtre copy.
----EN : "edit" button of the copy window: opens the edit window with this code, then closes the copy window.
+---**EN**
+---
+---Description: "edit" button of the copy window: opens the edit window with this code, then closes the copy window.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton « modifier » de la fenêtre copy : ouvre la fenêtre edit avec ce code, puis ferme la fenêtre copy.
 function GvvGuiDialog:action_edit()
     local frame = self:getMainElement()
     local text_element = self:getPart("text_field") or self:getPart("text_box")
@@ -648,8 +820,15 @@ function GvvGuiDialog:action_edit()
 end
 
 
----FR : Bouton de validation : son effet dépend du type de fenêtre.
----EN : Confirm button: its effect depends on the window kind.
+---**EN**
+---
+---Description: Confirm button: its effect depends on the window kind.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Bouton de validation : son effet dépend du type de fenêtre.
 function GvvGuiDialog:action_confirm()
     if self.kind == "anycode" then
         self:confirmAnycode()
@@ -661,8 +840,15 @@ function GvvGuiDialog:action_confirm()
 end
 
 
----FR : anycode : ajoute le code au suivi, ferme la fenêtre et affiche l'onglet suivi.
----EN : anycode: adds the code to the tracking, closes the window and shows the tracking tab.
+---**EN**
+---
+---Description: anycode: adds the code to the tracking, closes the window and shows the tracking tab.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: anycode : ajoute le code au suivi, ferme la fenêtre et affiche l'onglet suivi.
 function GvvGuiDialog:confirmAnycode()
     local data = self:getData()
     local code = self:getPart("code")
@@ -675,8 +861,15 @@ function GvvGuiDialog:confirmAnycode()
 end
 
 
----FR : edit : remplace l'entrée par le nouveau code, à la même place dans la liste (repris de l'ancien code).
----EN : edit: replaces the entry with the new code, at the same place in the list (taken from the old code).
+---**EN**
+---
+---Description: edit: replaces the entry with the new code, at the same place in the list (taken from the old code).
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: edit : remplace l'entrée par le nouveau code, à la même place dans la liste (repris de l'ancien code).
 function GvvGuiDialog:confirmEdit()
     local data = self:getData()
     local frame = self:getMainElement()
@@ -694,10 +887,17 @@ function GvvGuiDialog:confirmEdit()
 end
 
 
----FR : import : ajoute les codes saisis au suivi (séparés par « --[[]]-- »). Les codes déjà présents
----     ne sont pas ajoutés deux fois ; ils sont cochés, comme les nouveaux. Repris de l'ancien code.
----EN : import: adds the typed codes to the tracking (separated by "--[[]]--"). Codes already present
----     are not added twice; they are checked, like the new ones. Taken from the old code.
+---**EN**
+---
+---Description: import: adds the typed codes to the tracking (separated by "--[[]]--"). Codes already present
+---are not added twice; they are checked, like the new ones. Taken from the old code.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: import : ajoute les codes saisis au suivi (séparés par « --[[]]-- »). Les codes déjà présents
+---ne sont pas ajoutés deux fois ; ils sont cochés, comme les nouveaux. Repris de l'ancien code.
 function GvvGuiDialog:confirmImport()
     local data = self:getData()
     local code_element = self:getPart("code")

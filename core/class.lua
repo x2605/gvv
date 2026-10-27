@@ -14,12 +14,11 @@
 ---@class GvvClassFactory
 ---@field newclass fun(super: table|fun(self: any, ...: any): any, init?: fun(self: any, ...: any): any): table
 
----FR : Crée une nouvelle classe, avec ou sans classe parente.
----     La classe renvoyée s'appelle comme une fonction : `MaClasse(args)` crée une instance et lance `init`.
----     ⚠ Les champs du parent sont copiés superficiellement : une table du parent reste partagée.
----EN : Creates a new class, with or without a parent class.
----     The returned class is callable: `MyClass(args)` creates an instance and runs `init`.
----     ⚠ The parent's fields are shallow-copied: a parent's table stays shared.
+---**EN**
+---
+---Description: Creates a new class, with or without a parent class.
+---The returned class is callable: `MyClass(args)` creates an instance and runs `init`.
+---⚠ The parent's fields are shallow-copied: a parent's table stays shared.
 ---
 ---```lua
 ---local A = newclass(function(self, value) self.value = value end)
@@ -27,8 +26,16 @@
 ---local instance = B(10)
 ---instance:is_a(A) -- true
 ---```
----@param super table|fun(self: any, ...: any): any  Classe parente, ou fonction init sans parent / Parent class, or init function without parent
----@param init? fun(self: any, ...: any): any        Fonction init (si un parent est donné) / Init function (when a parent is given)
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Crée une nouvelle classe, avec ou sans classe parente.
+---La classe renvoyée s'appelle comme une fonction : `MaClasse(args)` crée une instance et lance `init`.
+---⚠ Les champs du parent sont copiés superficiellement : une table du parent reste partagée.
+---@param super table|fun(self: any, ...: any): any  Parent class, or init function without parent
+---@param init? fun(self: any, ...: any): any        Init function (when a parent is given)
 ---@return table
 local function newclass(super, init)
     -- FR : La nouvelle classe : une table qui contiendra ses méthodes

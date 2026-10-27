@@ -2,6 +2,26 @@
 
 local Doctor = {}
 
+---**EN**
+---
+---Description: Diagnoses ("diag") or fixes ("fix") the storage of a mod through its gvv interface, writes the report into
+---`storage.report` and prints the result to the player.
+---
+---⚠ Raises an error if the mod doesn't load the gvv interface (message shown to the player). "fix" removes
+---entries from the mod storage.
+---
+---──────────────────────────────
+---
+---**FR**
+---
+---Description: Diagnostique (« diag ») ou répare (« fix ») le storage d'un mod par son interface gvv, écrit le rapport dans
+---`storage.report` et affiche le résultat au joueur.
+---
+---⚠ Lève une erreur si le mod ne charge pas l'interface gvv (message affiché au joueur). « fix » supprime
+---des entrées du storage du mod.
+---@param g table  Player gvv data
+---@param mod_name string
+---@param action "diag"|"fix"
 Doctor.take_a_look = function(g, mod_name, action)
   mod_name = mod_name:gsub('^%s*(.-)%s*$', '%1')..''
   local interface = remote.interfaces['__'..mod_name..'__gvv']
