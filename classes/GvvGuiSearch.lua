@@ -19,7 +19,6 @@
 --      Elements description: gui/search.lua.
 ---------------------------------------------------------------------------------------------
 local check = require(gvv.defines.lualib.common.check)
-local Util = require(gvv.defines.lualib.common.util)
 local fGui = require(gvv.defines.gui.search)
 ---------------------------------------------------------------------------------------------
 
@@ -263,19 +262,33 @@ local function removeRichValue(text)
     return text
 end
 
----FR : Relance la recherche dans un arbre (repris de l'ancien Search_Tree.refresh).
----     Recherche fermée : styles remis à zéro. Motif Lua invalide : texte en rouge, pas de recherche.
----EN : Runs the search again in a tree (taken from the old Search_Tree.refresh).
----     Search closed: styles reset. Invalid Lua pattern: text in red, no search.
+---FR : Relance la recherche dans un arbre.
+---EN : Runs the search again in a tree.
 ---@param tree_name string  'glob', 'prop' ou 'gobj'
 ---@return GvvGuiSearch
 function GvvGuiSearch:refresh(tree_name)
+    self:run(tree_name)
+    return self
+end
+
+
+---FR : Cherche dans un arbre, surligne et liste les résultats, puis les renvoie (repris de l'ancien
+---     Search_Tree.refresh). Recherche fermée : styles remis à zéro. Motif Lua invalide : texte en rouge,
+---     pas de recherche. Les résultats ne sont plus gardés dans storage (ils contiennent des éléments GUI) :
+---     un résultat choisi est retrouvé en relançant la recherche, qui donne les mêmes résultats.
+---EN : Searches inside a tree, highlights and lists the results, then returns them (taken from the old
+---     Search_Tree.refresh). Search closed: styles reset. Invalid Lua pattern: text in red,
+---     no search. The results are no longer kept in storage (they hold GUI elements):
+---     a chosen result is found by running the search again, which gives the same results.
+---@param tree_name string  'glob', 'prop' ou 'gobj'
+---@return table[]  { elem, name }
+function GvvGuiSearch:run(tree_name)
     local data = self:getData()
     local panel = self:getPanel(tree_name)
     local input = self:getPart(tree_name, "textfield-text")
     local result = self:getPart(tree_name, "listbox-result")
     if data == nil or panel == nil or input == nil or result == nil then
-        return self
+        return {}
     end
 
     local engine = self:getEngine(tree_name)
@@ -285,13 +298,12 @@ function GvvGuiSearch:refresh(tree_name)
     -- FR : Résultats précédents effacés
     -- EN : Previous results cleared
     result.clear_items()
-    data.data.search[tree_name] = {}
 
     -- FR : Recherche fermée : styles remis à zéro dans l'arbre
     -- EN : Search closed: styles reset in the tree
     if not panel.visible then
         engine:searchReset()
-        return self
+        return {}
     end
 
     -- FR : Motif Lua : vérifié (rouge s'il est invalide) ; sinon les caractères spéciaux sont échappés
@@ -300,7 +312,7 @@ function GvvGuiSearch:refresh(tree_name)
         local valid = pcall(string.match, '', text)
         if not valid then
             input.style.font_color = {1, 0, 0}
-            return self
+            return {}
         end
         input.style.font_color = {0, 0, 0}
     else
@@ -316,18 +328,17 @@ function GvvGuiSearch:refresh(tree_name)
     -- FR : Lignes parcourues par le moteur de l'arbre ; arbre vide : rien à chercher
     -- EN : Rows walked by the tree engine; empty tree: nothing to search
     if not engine:searchScan(state) then
-        return self
+        return {}
     end
 
-    -- FR : Résultats gardés (pour défiler jusqu'à eux) et affichés dans la liste
-    -- EN : Results kept (to scroll to them) and shown in the list
-    data.data.search[tree_name] = Util.deepcopytbl(state.found)
+    -- FR : Résultats affichés dans la liste
+    -- EN : Results shown in the list
     local items = {}
     for index, found in ipairs(state.found) do
         items[index] = found.name
     end
     result.items = items
-    return self
+    return state.found
 end
 
 
@@ -407,8 +418,18 @@ end
 ---EN : Result chosen: the tree scrolls to it, then the selection is cleared.
 function GvvGuiSearch:action_result()
     local tree_name = self:findTreeName(self.element)
-    local tree = tree_name and self:getTree(tree_name)
-    local found = check.getPath(self:getData(), {"data", "search", tree_name, self.element.selected_index})
+    if tree_name == nil then
+        return
+    end
+
+    -- FR : Ligne choisie, puis résultats retrouvés en relançant la recherche (mêmes résultats, même ordre)
+    -- EN : Chosen line, then results found again by running the search again (same results, same order)
+    local index = self.element.selected_index
+    local found = self:run(tree_name)[index]
+
+    -- FR : L'arbre défile jusqu'au résultat
+    -- EN : The tree scrolls to the result
+    local tree = self:getTree(tree_name)
     if tree ~= nil and found ~= nil and check.isValidLuaObject(found.elem) then
         tree.scroll_to_element(found.elem, 'top-third')
     end

@@ -2,56 +2,6 @@
 
 local Util = {}
 
--- mode debug
-local debug = false
-Util.debug = debug 
-
--- Logging helper
-Util.logger =  function(msg)
-    if debug then log("[gvv.logger] " .. msg)  end
-end
-
---닫기 버튼이 있는 프레임 만들기
-Util.create_frame_w_closebtn = function(player, frame_name, title)
-  local frame = player.gui.screen.add{type = 'frame', name = frame_name, direction = 'vertical'}
-  frame.add{type = 'flow', name = 'header', direction = 'horizontal'}
-  frame.header.drag_target = frame
-  local tit = frame.header.add{type = 'label', caption = title, style = 'frame_title'}
-  tit.drag_target = frame
-  local drag = frame.header.add{type = 'empty-widget', name = 'dragspace', style = 'draggable_space_header'}
-  drag.drag_target = frame
-  drag.style.right_margin = 8
-  drag.style.height = 24
-  drag.style.horizontally_stretchable = true
-  local closebtn = frame.header.add{type = 'sprite-button', name = 'closebtn', sprite = 'utility/close', style = 'frame_action_button', mouse_button_filter = {'left'}}
-  local innerframe = frame.add{type = 'flow', name = 'innerframe', direction = 'vertical'}
-  frame.auto_center = true
-  return frame, closebtn, innerframe
-end
-
---최상위 프레임 검색
-Util.get_top_frame = function(gui_elem)
-  local parent = gui_elem.parent
-  if parent and parent.valid and parent.parent and parent.parent.valid then
-    return Util.get_top_frame(parent)
-  elseif parent and parent.valid then
-    return gui_elem
-  else
-    return nil
-  end
-end
-
-Util.find_parent_gui = function(elem, finding_elem)
-  if not finding_elem or not finding_elem.valid then return end
-  if elem.parent and elem.parent == finding_elem then
-    return true, elem
-  elseif elem.parent and elem.parent.valid then
-    return Util.find_parent_gui(elem.parent, finding_elem)
-  else
-    return false
-  end
-end
-
 --접근가능한 모드 목록 얻기
 Util.get_accessible_mod_list = function()
   local list = {}
@@ -144,15 +94,6 @@ Util.push_checked = function(array, direction)
     array = unchecked
   end
   return array
-end
-
---caption으로 자식 gui얻기
-Util.get_guichild_by_caption = function(parent, caption)
-  for _, child in pairs(parent.children) do
-    if child.caption == caption then
-      return child
-    end
-  end
 end
 
 return Util

@@ -12,10 +12,6 @@
 ---------------------------------------------------------------------------------------------
 local check = require(gvv.defines.lualib.common.check)
 ---------------------------------------------------------------------------------------------
--- FR : Ancien code, utilisé par la migration 0.6.0
--- EN : Old code, used by the 0.6.0 migration
-local Legacy_Tree = require(gvv.defines.legacy.tree)
----------------------------------------------------------------------------------------------
 
 
 ---FR : Découpe une version « 0.5.21 » en nombres {0, 5, 21}. Renvoie nil si le format est inconnu.
@@ -91,16 +87,12 @@ local function migration_0_6_0()
     end
 
     for index, data in pairs(storage.players) do
-        -- FR : Sauvegarde des dossiers ouverts, seulement si l'ancienne fenêtre est encore ouverte ;
-        --      protégée : une erreur ne doit pas bloquer la migration
-        -- EN : Save the opened folders, only if the old window is still open;
-        --      protected: an error must not block the migration
+        -- FR : Ancienne fenêtre encore ouverte : détruite. Ses dossiers ouverts ne sont pas gardés
+        --      (l'ancien code des arbres a été supprimé en 3.7) ; ceux gardés à sa dernière fermeture restent.
+        -- EN : Old window still open: destroyed. Its opened folders are not kept
+        --      (the old trees code was removed in 3.7); those kept when it was last closed remain.
         local old_frame = check.getPath(data, {"gui", "frame"})
         if check.isValidLuaObject(old_frame) then
-            local saved, message = pcall(Legacy_Tree.save_on_quit, data)
-            if not saved then
-                log('> gvv migration 0.6.0 : save_on_quit failed for player ' .. tostring(index) .. ' : ' .. tostring(message))
-            end
             old_frame.destroy()
         end
 
@@ -108,9 +100,18 @@ local function migration_0_6_0()
         -- EN : Old gvv small windows still open (player still present only)
         GvvGuiDialog({ player_index = index }):destroyLegacy()
 
-        -- FR : Les anciennes références d'éléments ne servent plus
-        -- EN : The old element references are no longer used
-        data.gui = {}
+        -- FR : Les anciennes références d'éléments GUI gardées dans storage ne servent plus :
+        --      fenêtre (data.gui), lignes des arbres (tree_item_*), résultats de recherche (search)
+        -- EN : The old GUI element references kept in storage are no longer used:
+        --      window (data.gui), tree rows (tree_item_*), search results (search)
+        data.gui = nil
+        if data.data then
+            data.data.tree_item_glob = nil
+            data.data._G_tree_item_glob = nil
+            data.data.tree_item_prop = nil
+            data.data.tree_item_gobj = nil
+            data.data.search = nil
+        end
     end
 
     log('> gvv migration 0.6.0 : done')

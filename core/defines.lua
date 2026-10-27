@@ -72,15 +72,6 @@ local defines = {
         commands = directory .. ".modules.commands",
     },
 
-    -- FR : Ancien code des fenêtres, migré fenêtre par fenêtre vers classes/ et gui/ (étape 3),
-    --      puis supprimé. Le dossier legacy/ disparaît à la fin de la restructuration.
-    -- EN : Old windows code, migrated window by window to classes/ and gui/ (step 3),
-    --      then removed. The legacy/ folder disappears at the end of the restructuring.
-    legacy = {
-        gui = directory .. ".legacy.gui",
-        tree = directory .. ".legacy.tree",
-    },
-
     -- FR : Bibliothèque de gvv, rangée par partie
     -- EN : gvv library, sorted by part
     lualib = {

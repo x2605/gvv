@@ -1,7 +1,6 @@
 -- 커맨드
 
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
-local Gui = require(gvv.defines.legacy.gui)
 
 local Commands = {}
 
@@ -21,7 +20,7 @@ Commands.gvv = function(data)
     end
   end
   if player then
-    Gui.open_main(data.player_index)
+    GvvGuiMain({player_index = data.player_index}):toggle()
   else
     localised_print{"",'[COMMAND-ERROR] gvv : ',{"gvv-mod-command-help.need-graphic"}}
   end
@@ -88,7 +87,7 @@ Commands.gdump = function(data, lang)
   end
   if rmt_glob then
     if player then
-      Gui.copyable_dump(data.player_index, Table_to_str.to_lang(rmt_glob, lang), '/gdump-'..lang..' '..mod_name)
+      GvvGuiDialog({player_index = data.player_index}):openDump(Table_to_str.to_lang(rmt_glob, lang), '/gdump-'..lang..' '..mod_name)
     else
       localised_print{"",'[COMMAND] gdump-',lang,'(gvv) : "',mod_name,'" ',Table_to_str.to_lang(rmt_glob, lang)}
     end

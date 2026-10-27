@@ -220,14 +220,6 @@ function GvvPlayer:initData()
     if not data.data.tracking_list then
         data.data.tracking_list = {}
     end
-    if not data.data.search then
-        data.data.search = {}
-    end
-    for _, tree_name in ipairs({"glob", "prop", "gobj"}) do
-        if not data.data.search[tree_name] then
-            data.data.search[tree_name] = {}
-        end
-    end
 
     return data, first_time
 end

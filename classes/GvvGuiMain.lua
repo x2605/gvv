@@ -107,11 +107,6 @@ function GvvGuiMain:open()
     -- EN : Same for the old small windows
     GvvGuiDialog(self.event):destroyLegacy()
 
-    -- FR : Les références d'éléments de l'ancien code repartent de zéro
-    --      (elles pointaient vers une fenêtre qui n'existe plus)
-    -- EN : The old code's element references start again from scratch
-    --      (they pointed to a window that no longer exists)
-    data.gui = {}
     -- FR : Dernier élément ouvert dans chaque onglet (tab2 : last_sub_mod, tab3 : last_sub_obj, tab4 : last_sub_gobj)
     -- EN : Last element opened in each tab (tab2: last_sub_mod, tab3: last_sub_obj, tab4: last_sub_gobj)
     data.tabs = {}
@@ -210,27 +205,18 @@ function GvvGuiMain:open()
     local tabbed = inner.add(element.tabbed.tabs)
     tabbed.style.horizontally_stretchable = true
 
-    local contents = {}
     for _, tab_info in ipairs(fGui.TABS) do
         local tab = tabbed.add(element.tab[tab_info.name])
         local content = tabbed.add(element.content[tab_info.name])
         content.style.horizontally_stretchable = true
         content.style.vertically_stretchable = true
         tabbed.add_tab(tab, content)
-        contents[tab_info.name] = content
     end
     -- FR : Premier onglet (suivi de variables) sélectionné à l'ouverture
     -- EN : First tab (variable tracking) selected on opening
     tabbed.selected_tab_index = 1
 
     --------------------------------------------------
-    -- FR : Références gardées temporairement pour l'ancien code, qui s'en sert partout
-    --      (g.gui.frame : gvv est-il ouvert ? g.gui.tabpane : quel onglet ?). Supprimées en 3.7.
-    -- EN : References kept temporarily for the old code, which uses them everywhere
-    --      (g.gui.frame: is gvv open? g.gui.tabpane: which tab?). Removed in 3.7.
-    data.gui.frame = frame
-    data.gui.tabpane = tabbed
-
     -- FR : Onglet suivi et ses outils (en premier dans la barre d'outils) : construits par sa propre classe (3.4)
     -- EN : Tracking tab and its tools (first in the toolbar): built by its own class (3.4)
     GvvGuiTracking(self.event):build(first_time)
