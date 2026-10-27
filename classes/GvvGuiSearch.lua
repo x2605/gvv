@@ -7,8 +7,7 @@
 --      surligne les résultats et fait défiler l'arbre jusqu'au résultat choisi.
 --      Comportement repris de l'ancien code (legacy/search_tree.lua, legacy/gui_event.lua), sans changement :
 --      la recherche ne porte que sur les lignes affichées (dossiers ouverts).
---      L'arbre storage est parcouru par le moteur GvvGuiTree (3.6a) ; les arbres property et LuaObject
---      suivent encore la structure de l'ancien arbre (legacy/tree.lua), jusqu'à la 3.6b.
+--      Les lignes des arbres sont parcourues par le moteur des arbres (GvvGuiTree, 3.6).
 --      Description des éléments : gui/search.lua.
 -- EN : Search in gvv trees (step 3.5 of the 0.6 restructuring).
 --      Builds the magnifier button (toolbar) and one search panel per tree
@@ -16,8 +15,7 @@
 --      highlights the results and scrolls the tree to the chosen result.
 --      Behaviour taken from the old code (legacy/search_tree.lua, legacy/gui_event.lua), unchanged:
 --      the search only covers the displayed rows (opened folders).
---      The storage tree is walked by the GvvGuiTree engine (3.6a); the property and LuaObject trees
---      still follow the old tree structure (legacy/tree.lua), until 3.6b.
+--      The tree rows are walked by the trees engine (GvvGuiTree, 3.6).
 --      Elements description: gui/search.lua.
 ---------------------------------------------------------------------------------------------
 local check = require(gvv.defines.lualib.common.check)
@@ -28,6 +26,10 @@ local fGui = require(gvv.defines.gui.search)
 -- FR : Arbres qui ont une recherche, et numéro de leur onglet
 -- EN : Trees that have a search, and their tab number
 local TREE_TABS = { glob = 2, prop = 3, gobj = 4 }
+
+-- FR : Nom de recherche d'un arbre -> nom de sa configuration (GvvGuiTree)
+-- EN : Search name of a tree -> name of its configuration (GvvGuiTree)
+local TREE_ENGINES = { glob = "storage", prop = "property", gobj = "luaobject" }
 
 
 ---@class GvvGuiSearch : GvvGui
@@ -72,20 +74,21 @@ end)
 -- EN : ELEMENTS ACCESS
 ---------------------------------------------------------------------------------------------
 
----FR : Conteneur de l'arbre (ancien code : g.gui.sub_globtree, sub_proptree, sub_gobjtree), ou nil.
----EN : Tree container (old code: g.gui.sub_globtree, sub_proptree, sub_gobjtree), or nil.
+---FR : Moteur de l'arbre (GvvGuiTree) qui porte ce nom de recherche.
+---EN : Tree engine (GvvGuiTree) that has this search name.
+---@param tree_name string  'glob', 'prop' ou 'gobj'
+---@return GvvGuiTree
+function GvvGuiSearch:getEngine(tree_name)
+    return GvvGuiTree(self.event, TREE_ENGINES[tree_name])
+end
+
+
+---FR : Conteneur de l'arbre (zone défilante du moteur), ou nil.
+---EN : Tree container (engine scrolling area), or nil.
 ---@param tree_name string  'glob', 'prop' ou 'gobj'
 ---@return LuaGuiElement?
 function GvvGuiSearch:getTree(tree_name)
-    -- FR : Arbre storage : dans le moteur des arbres (3.6a) / EN : storage tree: inside the trees engine (3.6a)
-    if tree_name == 'glob' then
-        return GvvGuiTree(self.event, 'storage'):getPane()
-    end
-    local tree = check.getPath(self:getData(), {"gui", "sub_" .. tree_name .. "tree"})
-    if check.isValidLuaObject(tree) then
-        return tree
-    end
-    return nil
+    return self:getEngine(tree_name):getPane()
 end
 
 
@@ -157,7 +160,7 @@ function GvvGuiSearch:buildButton()
     -- EN : Position: right after the trees refresh button (old code)
     local spec = self.specs.button.toggle
     for index, tool in ipairs(self.tools.children) do
-        if tool.name == 'tree_refresh_btn' then
+        if tool.name == 'gvv_trees-button-refresh' then
             spec.index = index + 1
         end
     end
@@ -260,91 +263,6 @@ local function removeRichValue(text)
     return text
 end
 
--- FR : Remet le style normal sur toutes les lignes de l'arbre, dossiers compris (recherche fermée)
--- EN : Puts the normal style back on all tree rows, folders included (search closed)
-local function resetScan(parent_container)
-    for _, container in ipairs(parent_container.children) do
-        if container.valid and container.label_container then
-            container.label_container.style = 'transparent-frame_gvv-mod'
-            if container.content_container then
-                resetScan(container.content_container.folder)
-            end
-        end
-    end
-end
-
--- FR : Lignes d'un dossier fermé : style normal, pas de recherche dedans
--- EN : Rows of a closed folder: normal style, no search inside
-local function notScan(parent_container)
-    for _, container in ipairs(parent_container.children) do
-        if container.valid and container.label_container then
-            container.label_container.style = 'transparent-frame_gvv-mod'
-        end
-    end
-end
-
--- FR : Cherche dans les lignes affichées d'un dossier, et dans ses sous-dossiers ouverts.
---      state : { text (texte cherché, déjà préparé), found (résultats), key, value, case (filtres) }
--- EN : Searches the displayed rows of a folder, and its opened sub-folders.
---      state: { text (searched text, already prepared), found (results), key, value, case (filters) }
-local function scan(parent_container, state)
-    for _, container in ipairs(parent_container.children) do
-        if container.valid and container.label_container
-            and container.visible and type(container.label_container['_gvv-mod_key_label'].caption) == 'string' then
-
-            local label = container.label_container['_gvv-mod_key_label']
-            local value_element = container.label_container['_gvv-mod_key_value']
-
-            -- FR : Clé et valeur sans texte enrichi, en minuscules si la casse est ignorée
-            -- EN : Key and value without rich text, in lower case if case is ignored
-            local key = removeRichKey(label.caption)
-            if not state.case then
-                key = key:lower()
-            end
-            local value = nil
-            if value_element then
-                value = removeRichValue(value_element.caption)
-                if not state.case then
-                    value = value:lower()
-                end
-            end
-
-            if state.text ~= '' and state.key and key:match(state.text) then
-                -- FR : Trouvé dans la clé
-                -- EN : Found in the key
-                local name = label.caption
-                if value then
-                    name = label.caption .. ' = ' .. value_element.caption
-                end
-                state.found[#state.found + 1] = { elem = label, name = name }
-                container.label_container.style = 'highlighted-frame_gvv-mod'
-            elseif state.text ~= '' and state.value and value and value:match(state.text) then
-                -- FR : Trouvé dans la valeur
-                -- EN : Found in the value
-                state.found[#state.found + 1] = { elem = label, name = label.caption .. ' = ' .. value_element.caption }
-                container.label_container.style = 'highlighted-frame_gvv-mod'
-            else
-                container.label_container.style = 'transparent-frame_gvv-mod'
-            end
-
-            -- FR : Sous-dossier : ouvert -> on cherche dedans ; fermé -> style normal
-            -- EN : Sub-folder: opened -> search inside; closed -> normal style
-            if container.content_container and container.content_container.visible then
-                scan(container.content_container.folder, state)
-            elseif container.content_container then
-                notScan(container.content_container.folder)
-            end
-        end
-    end
-end
-
--- FR : Arbre prêt pour la recherche : une racine dessinée (pas un objet global « * ») avec son contenu
--- EN : Tree ready for search: a drawn root (not a "*" global object) with its content
-local function treeReady(tree)
-    return tree and tree.children[1] and not tree.children[1].name:match('^[*]') and tree.children[2] and tree.children[3]
-end
-
-
 ---FR : Relance la recherche dans un arbre (repris de l'ancien Search_Tree.refresh).
 ---     Recherche fermée : styles remis à zéro. Motif Lua invalide : texte en rouge, pas de recherche.
 ---EN : Runs the search again in a tree (taken from the old Search_Tree.refresh).
@@ -360,7 +278,7 @@ function GvvGuiSearch:refresh(tree_name)
         return self
     end
 
-    local tree = self:getTree(tree_name)
+    local engine = self:getEngine(tree_name)
     local settings = data.search_settings[tree_name]
     local text = settings.text
 
@@ -372,11 +290,7 @@ function GvvGuiSearch:refresh(tree_name)
     -- FR : Recherche fermée : styles remis à zéro dans l'arbre
     -- EN : Search closed: styles reset in the tree
     if not panel.visible then
-        if tree_name == 'glob' then
-            GvvGuiTree(self.event, 'storage'):searchReset()
-        elseif treeReady(tree) then
-            resetScan(tree.children[3].content_container.folder)
-        end
+        engine:searchReset()
         return self
     end
 
@@ -399,22 +313,10 @@ function GvvGuiSearch:refresh(tree_name)
 
     local state = { text = text, found = {}, key = settings.key, value = settings.value, case = settings.case,
         removeRichKey = removeRichKey, removeRichValue = removeRichValue }
-    if tree_name == 'glob' then
-        -- FR : Arbre storage : parcouru par le moteur des arbres (3.6a), racines _G puis storage
-        -- EN : storage tree: walked by the trees engine (3.6a), _G then storage roots
-        if not GvvGuiTree(self.event, 'storage'):searchScan(state) then
-            return self
-        end
-    else
-        if not treeReady(tree) then
-            return self
-        end
-        local root = tree.children[3]
-        if root.content_container.visible then
-            scan(root.content_container.folder, state)
-        else
-            notScan(root.content_container.folder)
-        end
+    -- FR : Lignes parcourues par le moteur de l'arbre ; arbre vide : rien à chercher
+    -- EN : Rows walked by the tree engine; empty tree: nothing to search
+    if not engine:searchScan(state) then
+        return self
     end
 
     -- FR : Résultats gardés (pour défiler jusqu'à eux) et affichés dans la liste

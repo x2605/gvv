@@ -1,16 +1,14 @@
 ---------------------------------------------------------------------------------------------
 -- MODULE : GUI
 ---------------------------------------------------------------------------------------------
--- FR : Aiguillage des évènements GUI. Chaque évènement est d'abord proposé aux fenêtres déjà
---      migrées (classes Gvv*, liste gui_classes) ; si aucune ne le traite, il part vers l'ancien
---      code (legacy/gui_event.lua). Pendant l'étape 3, on ajoute une fenêtre à gui_classes et on retire
---      ses branches de l'ancien code ; à la fin, l'ancien code disparaît.
--- EN : GUI events dispatcher. Each event is first offered to the already migrated windows
---      (Gvv* classes, gui_classes list); if none handles it, it goes to the old code
---      (legacy/gui_event.lua). During step 3, a window is added to gui_classes and its branches
---      are removed from the old code; at the end, the old code disappears.
----------------------------------------------------------------------------------------------
-local Legacy_Gui_Event = require(gvv.defines.legacy.gui_event)
+-- FR : Aiguillage des évènements GUI. Chaque évènement est proposé aux fenêtres (classes Gvv*,
+--      liste gui_classes), dans l'ordre ; la première qui le traite arrête la recherche.
+--      Un clic que personne ne traite, dans la fenêtre principale, ferme les petites fenêtres
+--      concernées (comme l'ancien legacy/gui_event.lua, supprimé en 3.6b).
+-- EN : GUI events dispatcher. Each event is offered to the windows (Gvv* classes,
+--      gui_classes list), in order; the first one that handles it stops the search.
+--      A click nobody handles, inside the main window, closes the small windows concerned
+--      (as the old legacy/gui_event.lua did, removed in 3.6b).
 ---------------------------------------------------------------------------------------------
 
 -- FR : Fenêtres migrées, dans l'ordre où elles reçoivent les évènements
@@ -25,10 +23,36 @@ local gui_classes = {
     GvvGuiDialog,   -- FR : petites fenêtres (3.2) / EN : small windows (3.2)
     GvvGuiHelp,     -- FR : onglet aide (3.3) / EN : help tab (3.3)
     GvvGuiSearch,   -- FR : recherche dans les arbres (3.5) / EN : search in the trees (3.5)
-    -- FR : Arbres (3.6) : une entrée par onglet, le moteur reçoit le nom de sa configuration
-    -- EN : Trees (3.6): one entry per tab, the engine receives its configuration name
-    function(event) return GvvGuiTree(event, "storage") end,
+    -- FR : Arbres (3.6) et leurs outils : l'arbre est choisi par le préfixe de l'élément
+    -- EN : Trees (3.6) and their tools: the tree is chosen by the element prefix
+    GvvGuiTree.fromEvent,
 }
+
+
+-- FR : Clic que personne n'a traité : s'il est dans la fenêtre principale, les petites fenêtres
+--      concernées se ferment (anycode seulement si vide). Repris de l'ancien Gui_Event.on_gui_click.
+-- EN : Click nobody handled: if it is inside the main window, the small windows
+--      concerned close (anycode only if empty). Taken from the old Gui_Event.on_gui_click.
+local function onUnhandledClick(event)
+    local frame = GvvGuiMain(event):getMainElement()
+
+    -- FR : Fenêtre principale fermée : rien à faire
+    -- EN : Main window closed: nothing to do
+    if frame == nil then
+        return
+    end
+
+    -- FR : On remonte les parents de l'élément cliqué jusqu'à trouver la fenêtre principale
+    -- EN : Go up the clicked element parents until the main window is found
+    local element = event.element
+    while element ~= nil and element.valid do
+        if element == frame then
+            GvvGuiDialog(event):closeOnMainFocus()
+            return
+        end
+        element = element.parent
+    end
+end
 
 
 -- FR : Exécute un handler GUI dans un pcall : une erreur est affichée au joueur au lieu de planter.
@@ -63,11 +87,10 @@ local function dispatcher(method_name)
             end
         end
 
-        -- FR : Aucune fenêtre migrée ne l'a traité : l'ancien code s'en charge
-        -- EN : No migrated window handled it: the old code takes care of it
-        local legacy_handler = Legacy_Gui_Event[method_name]
-        if legacy_handler then
-            legacy_handler(event)
+        -- FR : Clic que personne n'a traité
+        -- EN : Click nobody handled
+        if method_name == "on_gui_click" then
+            onUnhandledClick(event)
         end
     end)
 end
@@ -96,8 +119,27 @@ module.events['toggle-main-frame_gvv-mod'] = protected(function(event)
         main:toggle()
     end
 end)
--- FR : Raccourci Shift+X (rafraîchir), encore géré par l'ancien code
--- EN : Shift+X shortcut (refresh), still handled by the old code
-module.events['refresh_gvv-mod'] = Legacy_Gui_Event['refresh_gvv-mod']
+-- FR : Raccourci Shift+X : rafraîchit l'onglet affiché (suivi : les valeurs ; arbres : l'arbre)
+--      (admins seulement en multijoueur). Repris de l'ancien Gui_Event['refresh_gvv-mod'].
+-- EN : Shift+X shortcut: refreshes the displayed tab (tracking: the values; trees: the tree)
+--      (admins only in multiplayer). Taken from the old Gui_Event['refresh_gvv-mod'].
+module.events['refresh_gvv-mod'] = protected(function(event)
+    local main = GvvGuiMain(event)
+    local tabbed = main:getElement("tabbed", "tabs")
+
+    -- FR : Droit d'utiliser gvv, et fenêtre ouverte
+    -- EN : Right to use gvv, and window open
+    if not main:canUseGvv() or tabbed == nil then
+        return
+    end
+
+    -- FR : Onglet suivi : ses valeurs ; onglets des arbres : l'arbre affiché
+    -- EN : Tracking tab: its values; trees tabs: the displayed tree
+    if tabbed.selected_tab_index == 1 then
+        GvvGuiTracking(event):refreshValues()
+    else
+        GvvGuiTree.refreshTab(event)
+    end
+end)
 ---------------------------------------------------------------------------------------------
 return module

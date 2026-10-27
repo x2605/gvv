@@ -1,4 +1,8 @@
 -- 트리
+-- FR : Ancien arbre, remplacé par classes/GvvGuiTree.lua (étape 3.6). Il ne sert plus qu'à la migration 0.6.0
+--      (core/migrations.lua : save_on_quit sur une ancienne fenêtre encore ouverte). Retiré en 3.7.
+-- EN : Old tree, replaced by classes/GvvGuiTree.lua (step 3.6). It is only used by the 0.6.0 migration
+--      (core/migrations.lua: save_on_quit on an old window still open). Removed in 3.7.
 
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 local Util = require(gvv.defines.lualib.common.util)

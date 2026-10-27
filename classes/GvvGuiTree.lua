@@ -2,23 +2,28 @@
 -- GVV GUI TREE
 ---------------------------------------------------------------------------------------------
 -- FR : Moteur générique des arbres de gvv (étape 3.6 de la restructuration 0.6).
---      Une seule classe pour tous les onglets d'arbre : GvvGuiTree(event, "storage"). Les particularités
+--      Une seule classe pour tous les onglets d'arbre : GvvGuiTree(event, "storage" | "property" | "luaobject").
+--      Les particularités
 --      de chaque onglet (liste de gauche, racines, lecture des données, options) viennent de son fichier
 --      de configuration gui/tree/<onglet>.lua, au lieu des « if tab == ... » de l'ancien code.
 --      Le moteur construit l'onglet, la liste de gauche et l'arbre, ouvre / ferme les dossiers (chargés
 --      à la demande), gère « continuer à charger », les clics droits (suivi, objets Lua), garde les
 --      dossiers ouverts et fournit le parcours des lignes à la recherche (GvvGuiSearch).
+--      Il gère aussi les outils communs aux arbres, dans la barre d'outils de la fenêtre principale
+--      (préfixe gvv_trees : rafraîchir, cases n/a, nil, méthodes).
 --      Les données d'une ligne sont dans ses tags (tags.key, tags.folder, tags.root, tags.cont_from),
 --      au lieu des listes de références d'éléments rangées dans storage par l'ancien code.
 --      Comportement repris de l'ancien code (legacy/tree.lua, legacy/gui_event.lua), sans changement.
 --      Description des éléments : gui/tree.lua.
 -- EN : Generic engine of gvv trees (step 3.6 of the 0.6 restructuring).
---      One class for all the tree tabs: GvvGuiTree(event, "storage"). Each tab specifics (left list,
+--      One class for all the tree tabs: GvvGuiTree(event, "storage" | "property" | "luaobject"). Each tab specifics (left list,
 --      roots, data reading, options) come from its configuration file gui/tree/<tab>.lua, instead of the
 --      old code's "if tab == ...".
 --      The engine builds the tab, the left list and the tree, opens / closes the folders (loaded on
 --      demand), handles "continue to load", right clicks (tracking, Lua objects), keeps the opened
 --      folders and provides the rows walk to the search (GvvGuiSearch).
+--      It also handles the tools shared by the trees, inside the main window toolbar
+--      (gvv_trees prefix: refresh, n/a, nil, methods boxes).
 --      A row data is in its tags (tags.key, tags.folder, tags.root, tags.cont_from), instead of the
 --      element references lists the old code stored in storage.
 --      Behaviour taken from the old code (legacy/tree.lua, legacy/gui_event.lua), unchanged.
@@ -30,10 +35,22 @@ local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 local Sprite = require(gvv.defines.lualib.common.sprite)
 local fGui = require(gvv.defines.gui.tree)
 ---------------------------------------------------------------------------------------------
--- FR : Ancien code : ajout d'un objet Lua à l'onglet property (migré en 3.6b)
--- EN : Old code: adding a Lua object to the property tab (migrated in 3.6b)
-local Legacy_Tree = require(gvv.defines.legacy.tree)
----------------------------------------------------------------------------------------------
+
+-- FR : Arbres, dans l'ordre des onglets ; chacun a sa configuration gui/tree/<nom>.lua
+-- EN : Trees, in the tabs order; each one has its configuration gui/tree/<name>.lua
+local TREE_NAMES = { "storage", "property", "luaobject" }
+
+-- FR : Préfixe des noms des outils des arbres (gvv_trees-button-refresh...)
+-- EN : Names prefix of the trees tools (gvv_trees-button-refresh...)
+local TOOLS_NAME = "gvv_trees"
+
+-- FR : Cases des outils : partie « name » de la case -> réglage du joueur
+-- EN : Tools boxes: "name" part of the box -> player setting
+local SHOW_SETTINGS = {
+    na = "show_na",
+    ["nil"] = "show_nil",
+    func = "show_func",
+}
 
 -- FR : Styles de la clé : normal et « suivi » (clic droit pour passer de l'un à l'autre)
 -- EN : Key styles: normal and "tracked" (right click to switch from one to the other)
@@ -94,6 +111,198 @@ GvvGuiTree = gvv.classFactory.newclass(GvvGui, function(self, event, tree_name)
     --------------------------------------------------
 end)
 ----------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------
+-- FR : FONCTIONS DE LA CLASSE (sans arbre précis : appelées GvvGuiTree.nom(...))
+-- EN : CLASS FUNCTIONS (no specific tree: called GvvGuiTree.name(...))
+---------------------------------------------------------------------------------------------
+
+---FR : Arbre qui reçoit un évènement GUI, pour l'aiguillage de modules/gui.lua : celui dont le préfixe
+---     est celui de l'élément ; sinon l'arbre storage (il traite aussi les outils communs).
+---EN : Tree that receives a GUI event, for the modules/gui.lua dispatcher: the one whose prefix
+---     is the element's; otherwise the storage tree (it also handles the shared tools).
+---@param event table
+---@return GvvGuiTree
+function GvvGuiTree.fromEvent(event)
+    -- FR : Préfixe du nom de l'élément (nil sans élément, ou pour un ancien nom)
+    -- EN : Element name prefix (nil without element, or for an old name)
+    local gui_name = GvvGui.splitName(check.tryGet(check.tryGet(event, "element"), "name"))
+
+    -- FR : Arbre dont la configuration a ce préfixe
+    -- EN : Tree whose configuration has this prefix
+    for _, tree_name in ipairs(TREE_NAMES) do
+        if require(gvv.defines.gui.trees[tree_name]).gui_name == gui_name then
+            return GvvGuiTree(event, tree_name)
+        end
+    end
+
+    -- FR : Sinon l'arbre storage
+    -- EN : Otherwise the storage tree
+    return GvvGuiTree(event, TREE_NAMES[1])
+end
+
+
+---FR : Arbre affiché dans l'onglet donné (2 à 4), ou nil pour un autre onglet.
+---EN : Tree shown in the given tab (2 to 4), or nil for another tab.
+---@param event table
+---@param tab_index integer
+---@return GvvGuiTree?
+function GvvGuiTree.fromTab(event, tab_index)
+    for _, tree_name in ipairs(TREE_NAMES) do
+        if require(gvv.defines.gui.trees[tree_name]).tab_index == tab_index then
+            return GvvGuiTree(event, tree_name)
+        end
+    end
+    return nil
+end
+
+
+---FR : Tous les arbres (un par onglet), dans l'ordre des onglets.
+---EN : All the trees (one per tab), in the tabs order.
+---@param event table
+---@return GvvGuiTree[]
+function GvvGuiTree.all(event)
+    local trees = {}
+    for index, tree_name in ipairs(TREE_NAMES) do
+        trees[index] = GvvGuiTree(event, tree_name)
+    end
+    return trees
+end
+
+
+---FR : Valeur au bout d'un chemin complet (chemins du suivi et des objets ajoutés) :
+---     « *nom » : objet global de l'API ; « _G:<mod> » : _G du mod ; « <mod> » : storage du mod ; puis chaque clé.
+---     Une étape manquante lève une erreur (comme avant). Repris de l'ancien Tree.get_tree_value.
+---EN : Value at the end of a full path (tracking and added objects paths):
+---     "*name": API global object; "_G:<mod>": mod _G; "<mod>": mod storage; then each key.
+---     A missing step raises an error (as before). Taken from the old Tree.get_tree_value.
+---@param full_path table
+---@return any
+function GvvGuiTree.readFullPath(full_path)
+    local value
+    local first = full_path[1]
+
+    -- FR : Départ du chemin : objet global, _G ou storage d'un mod
+    -- EN : Path start: global object, _G or storage of a mod
+    if type(first) == 'string' then
+        if first:match('^[*]') then
+            value = assert(loadstring('return ' .. first:match('^[*](.*)')))()
+        elseif first:match('^_G:') then
+            value = remote.call('__' .. first:match('^_G:(.*)') .. '__gvv', '_G')
+        else
+            value = remote.call('__' .. first .. '__gvv', 'storage')
+        end
+    end
+
+    -- FR : Puis chaque clé du chemin
+    -- EN : Then each key of the path
+    for index = 2, #full_path do
+        value = value[full_path[index]]
+    end
+    return value
+end
+
+
+---FR : Texte d'une racine d'objet : son nom, puis l'icône et la classe de l'objet Lua (en bleu),
+---     ou son type (en rouge) si ce n'est pas un objet Lua. Repris de l'ancien draw_init.
+---EN : Text of an object root: its name, then the Lua object icon and class (in blue),
+---     or its type (in red) if it is not a Lua object. Taken from the old draw_init.
+---@param name string
+---@param value any
+---@return string
+function GvvGuiTree.objectCaption(name, value)
+    -- FR : Objet Lua : icône et classe
+    -- EN : Lua object: icon and class
+    if check.isLuaObject(value) then
+        return name .. ' ' .. Sprite.img(value) .. '([color=blue]' .. value.object_name .. '[/color])'
+    end
+
+    -- FR : Autre valeur (ex. defines, une table) : son type
+    -- EN : Other value (e.g. defines, a table): its type
+    return name .. ' ([color=1,0.3,0.3,1]' .. type(value) .. '[/color])'
+end
+
+
+---FR : Construit les outils des arbres dans la barre d'outils de la fenêtre principale (cachés au départ).
+---     Repris de l'ancien Gui.build_tools. Appelé par GvvGuiMain:open, après les outils du suivi.
+---EN : Builds the trees tools inside the main window toolbar (hidden at first).
+---     Taken from the old Gui.build_tools. Called by GvvGuiMain:open, after the tracking tools.
+---@param event table
+function GvvGuiTree.buildTools(event)
+    local main = GvvGuiMain(event)
+    local tools = main:getElement("flow", "tools")
+    local data = main:getData()
+    if tools == nil or data == nil then
+        return
+    end
+    local specs = fGui.getTools(TOOLS_NAME)
+
+    -- FR : Bouton de rafraîchissement
+    -- EN : Refresh button
+    local refresh = tools.add(specs.button.refresh)
+    refresh.style.width = 20
+    refresh.style.height = 20
+
+    -- FR : Cases n/a, nil, méthodes, cochées selon les réglages du joueur
+    -- EN : n/a, nil, methods boxes, checked according to the player settings
+    for _, box_name in ipairs({ "na", "nil", "func" }) do
+        local spec = specs.checkbox[box_name]
+        spec.state = data[SHOW_SETTINGS[box_name]]
+        tools.add(spec)
+    end
+end
+
+
+---FR : Changement d'onglet : outils des arbres affichés selon l'onglet (rafraîchir : onglets des arbres ;
+---     cases : onglets d'objets), et liste de l'arbre de l'onglet remplie à nouveau si sa configuration le demande.
+---     Repris de l'ancien Gui.change_tab. Appelé par GvvGuiMain:changeTab.
+---EN : Tab change: trees tools shown according to the tab (refresh: trees tabs;
+---     boxes: objects tabs), and list of the tab tree filled again if its configuration asks for it.
+---     Taken from the old Gui.change_tab. Called by GvvGuiMain:changeTab.
+---@param event table
+---@param tab_index integer
+function GvvGuiTree.changeTab(event, tab_index)
+    local tools = GvvGuiMain(event):getElement("flow", "tools")
+    local tree = GvvGuiTree.fromTab(event, tab_index)
+
+    -- FR : Bouton de rafraîchissement : sur les onglets des arbres
+    -- EN : Refresh button: on the trees tabs
+    local refresh = check.tryGet(tools, TOOLS_NAME .. "-button-refresh")
+    if refresh ~= nil then
+        refresh.visible = tree ~= nil
+    end
+
+    -- FR : Cases : sur les onglets d'objets (propriétés d'objets Lua)
+    -- EN : Boxes: on the objects tabs (Lua object properties)
+    for box_name in pairs(SHOW_SETTINGS) do
+        local box = check.tryGet(tools, TOOLS_NAME .. "-checkbox-" .. box_name)
+        if box ~= nil then
+            box.visible = tree ~= nil and tree.config.prop_allowed
+        end
+    end
+
+    -- FR : Liste remplie à nouveau (ex. les mods qui chargent gvv)
+    -- EN : List filled again (e.g. the mods loading gvv)
+    if tree ~= nil and tree.config.refill_on_tab then
+        tree:fillList()
+    end
+end
+
+
+---FR : Rafraîchit l'arbre de l'onglet affiché (bouton de rafraîchissement, Shift+X).
+---EN : Refreshes the tree of the displayed tab (refresh button, Shift+X).
+---@param event table
+function GvvGuiTree.refreshTab(event)
+    local tabbed = GvvGuiMain(event):getElement("tabbed", "tabs")
+    if tabbed == nil then
+        return
+    end
+    local tree = GvvGuiTree.fromTab(event, tabbed.selected_tab_index)
+    if tree ~= nil then
+        tree:refresh()
+    end
+end
 
 
 ---------------------------------------------------------------------------------------------
@@ -201,7 +410,22 @@ end
 ---@param path table
 ---@return any
 function GvvGuiTree:readPath(path)
-    return check.getPath(self.config.read(path[1]), path, 2)
+    return check.getPath(self.config.read(self, path[1]), path, 2)
+end
+
+
+---FR : Données à dessiner pour une valeur : dans les onglets d'objets, la liste des propriétés
+---     d'un objet Lua, ou d'une racine (comme avant) ; sinon la valeur elle-même.
+---EN : Data to draw for a value: in the objects tabs, the properties list
+---     of a Lua object, or of a root (as before); otherwise the value itself.
+---@param value any
+---@param is_root boolean
+---@return any
+function GvvGuiTree:expand(value, is_root)
+    if self.config.prop_allowed and (is_root or check.isLuaObject(value)) then
+        return Util.get_property_list(value, true)
+    end
+    return value
 end
 
 
@@ -277,13 +501,69 @@ function GvvGuiTree:fillList()
     end
     list.clear()
     local spec = self.specs.button.item
-    for index, item in ipairs(self.config.getItems()) do
+
+    -- FR : Boutons de souris acceptés (ex. clic droit pour retirer un objet ajouté)
+    -- EN : Accepted mouse buttons (e.g. right click to remove an added object)
+    spec.mouse_button_filter = self.config.item_buttons
+
+    for index, item in ipairs(self.config.getItems(self)) do
         -- FR : Bouton item_<n>, valeur dans ses tags
         -- EN : item_<n> button, value in its tags
         spec.name = self.gui_name .. "-button-item_" .. index
-        spec.caption = item
-        spec.tags = { item = item }
+        spec.caption = item.caption
+        spec.tooltip = item.tooltip
+        spec.tags = { item = item.value }
         list.add(spec)
+    end
+    return self
+end
+
+
+---FR : Bouton de la liste dont la valeur est item, ou nil.
+---EN : List button whose value is item, or nil.
+---@param item any
+---@return LuaGuiElement?
+function GvvGuiTree:getItemButton(item)
+    local list = self:getElement("pane", "list")
+    if list == nil then
+        return nil
+    end
+    for _, button in ipairs(list.children) do
+        if check.tryGet(button.tags, "item") == item then
+            return button
+        end
+    end
+    return nil
+end
+
+
+---FR : Retire un élément de la liste (ex. objet ajouté, clic droit) : oublié par la configuration,
+---     son bouton est détruit, et son arbre effacé s'il est affiché. Repris de l'ancien remove_prop_tree.
+---EN : Removes an element from the list (e.g. added object, right click): forgotten by the configuration,
+---     its button is destroyed, and its tree cleared if it is displayed. Taken from the old remove_prop_tree.
+---@param item any
+---@return GvvGuiTree
+function GvvGuiTree:removeItem(item)
+    -- FR : Oublié par la configuration (ex. retiré de data.data.docked_luaobj)
+    -- EN : Forgotten by the configuration (e.g. removed from data.data.docked_luaobj)
+    if self.config.forget then
+        self.config.forget(self, item)
+    end
+
+    -- FR : Son bouton
+    -- EN : Its button
+    local button = self:getItemButton(item)
+    if button ~= nil then
+        button.destroy()
+    end
+
+    -- FR : Son arbre, s'il est affiché
+    -- EN : Its tree, if it is displayed
+    for _, root in ipairs(self:getRoots()) do
+        if root.tags.item == item then
+            self:getPane().clear()
+            break
+        end
     end
     return self
 end
@@ -343,16 +623,16 @@ end
 ---@param parent LuaGuiElement   flow-folder parent, ou le conteneur de l'arbre pour une racine / parent flow-folder, or the tree container for a root
 ---@param key any
 ---@param caption LocalisedString
----@param is_root boolean
+---@param root_item? any   Racine : l'élément de la liste qu'elle affiche ; nil pour un dossier / Root: the list element it shows; nil for a folder
 ---@return LuaGuiElement row
 ---@return LuaGuiElement folder
 ---@return LuaGuiElement key_button
-function GvvGuiTree:addFolderRow(parent, key, caption, is_root)
+function GvvGuiTree:addFolderRow(parent, key, caption, root_item)
     local specs = self.specs
 
-    -- FR : Ligne de dossier ; clé et nature dans ses tags
-    -- EN : Folder row; key and kind in its tags
-    specs.flow.row.tags = { row = true, key = key, folder = true, root = is_root }
+    -- FR : Ligne de dossier ; clé et nature dans ses tags (une racine garde aussi l'élément de la liste)
+    -- EN : Folder row; key and kind in its tags (a root also keeps the list element)
+    specs.flow.row.tags = { row = true, key = key, folder = true, root = root_item ~= nil, item = root_item }
     local row = parent.add(specs.flow.row)
     local label = self:drawBranch(row, false)
 
@@ -392,11 +672,14 @@ end
 ---@param key_style string
 ---@param value_caption? LocalisedString
 ---@param value_is_object? boolean  Valeur objet Lua (bouton, clic droit pour l'ajouter) / Lua object value (button, right click to add it)
+---@param kind? string  « na », « nil » ou « func » : ligne cachée par la case du même nom / "na", "nil" or "func": row hidden by the box of the same name
 ---@return LuaGuiElement row
-function GvvGuiTree:addValueRow(parent, key, key_caption, key_style, value_caption, value_is_object)
+function GvvGuiTree:addValueRow(parent, key, key_caption, key_style, value_caption, value_is_object, kind)
     local specs = self.specs
 
-    specs.flow.row.tags = { row = true, key = key }
+    -- FR : Ligne de valeur ; clé et sorte (n/a, nil, méthode) dans ses tags
+    -- EN : Value row; key and kind (n/a, nil, method) in its tags
+    specs.flow.row.tags = { row = true, key = key, kind = kind }
     local row = parent.add(specs.flow.row)
     local label = self:drawBranch(row, true)
 
@@ -479,7 +762,7 @@ function GvvGuiTree:drawItems(tbl, folder, opened_tree, draw_from)
                 -- FR : Objet Lua (onglets d'objets) : dossier de ses propriétés
                 -- EN : Lua object (objects tabs): folder of its properties
                 local caption = Sprite.img(value) .. Table_to_str.to_richtext(key, true) .. ' ([color=blue]' .. value.object_name .. '[/color])'
-                local row, sub_folder = self:addFolderRow(folder, key, caption, false)
+                local row, sub_folder = self:addFolderRow(folder, key, caption)
                 if not opened_tree[key] then
                     self:setFolderClosed(row)
                 else
@@ -490,7 +773,8 @@ function GvvGuiTree:drawItems(tbl, folder, opened_tree, draw_from)
             elseif value_type == 'table' and getmetatable(value) == storage.meta_data._nil_ then
                 -- FR : Propriété nil (onglets d'objets), cachée selon la case nil
                 -- EN : nil property (objects tabs), hidden according to the nil box
-                local row = self:addValueRow(folder, key, Table_to_str.to_richtext(key, true), 'tree-item_gvv-mod', Table_to_str.to_richtext(nil))
+                local row = self:addValueRow(folder, key, Table_to_str.to_richtext(key, true), 'tree-item_gvv-mod',
+                    Table_to_str.to_richtext(nil), false, 'nil')
                 if not data.show_nil then
                     row.visible = false
                 end
@@ -499,7 +783,7 @@ function GvvGuiTree:drawItems(tbl, folder, opened_tree, draw_from)
                 -- FR : Propriété non disponible (onglets d'objets), cachée selon la case n/a
                 -- EN : Unavailable property (objects tabs), hidden according to the n/a box
                 local row = self:addValueRow(folder, key, '[color=0.5,0.5,0.5,0.5]' .. Table_to_str.to_richtext(key, true) .. '[/color]',
-                    'tree-item-na_gvv-mod', '[color=0.5,0,0,0.5]n/a[/color]')
+                    'tree-item-na_gvv-mod', '[color=0.5,0,0,0.5]n/a[/color]', false, 'na')
                 if not data.show_na then
                     row.visible = false
                 end
@@ -509,7 +793,7 @@ function GvvGuiTree:drawItems(tbl, folder, opened_tree, draw_from)
                     -- FR : Méthode (onglets d'objets), cachée selon la case méthodes
                     -- EN : Method (objects tabs), hidden according to the methods box
                     local row = self:addValueRow(folder, key, '[color=0.5,0.5,0.5,0.5]' .. Table_to_str.to_richtext(key, true) .. '(...)[/color]',
-                        'tree-item-func_gvv-mod')
+                        'tree-item-func_gvv-mod', nil, false, 'func')
                     if not data.show_func then
                         row.visible = false
                     end
@@ -522,7 +806,7 @@ function GvvGuiTree:drawItems(tbl, folder, opened_tree, draw_from)
             elseif value_type == 'table' then
                 -- FR : Table : dossier, ouvert si gardé ouvert, sinon fermé (chargé au premier clic)
                 -- EN : Table: folder, opened if kept opened, otherwise closed (loaded on first click)
-                local row, sub_folder = self:addFolderRow(folder, key, Table_to_str.to_richtext(key, true), false)
+                local row, sub_folder = self:addFolderRow(folder, key, Table_to_str.to_richtext(key, true))
                 if not opened_tree[key] then
                     self:setFolderClosed(row)
                 else
@@ -607,22 +891,28 @@ function GvvGuiTree:draw(selection)
         return self
     end
 
+    -- FR : Racines à dessiner ; la configuration peut lever une erreur (ex. objet ajouté qui n'existe plus)
+    -- EN : Roots to draw; the configuration may raise an error (e.g. added object that no longer exists)
+    local roots = self.config.getRoots(self, selection)
+
     -- FR : Dossiers ouverts de l'arbre affiché gardés, puis arbre vidé
     -- EN : Opened folders of the displayed tree kept, then tree emptied
     self:saveOpened()
     pane.clear()
 
-    for _, root in ipairs(self.config.getRoots(selection)) do
+    for _, root in ipairs(roots) do
         local opened_tree, opened_root = self:getOpened(root.key)
 
         -- FR : Données de la racine ; une erreur s'affiche comme une entrée « <ERROR> » (comme avant)
         -- EN : Root data; an error is shown as an "<ERROR>" entry (as before)
-        local read, value = pcall(self.config.read, root.key)
+        local read, value = pcall(function()
+            return self:expand(self.config.read(self, root.key), true)
+        end)
         if not read then
             value = {['<ERROR>'] = '<' .. tostring(value) .. '>'}
         end
 
-        local row, folder = self:addFolderRow(pane, root.key, root.caption, true)
+        local row, folder = self:addFolderRow(pane, root.key, root.caption, selection)
         self:drawItems(value, folder, opened_tree)
 
         -- FR : Racine fermée si elle l'était ; pas de traits devant une racine
@@ -648,7 +938,10 @@ end
 ---@return GvvGuiTree
 function GvvGuiTree:refresh()
     local selection = check.getPath(self:getData(), {"tabs", self.config.last_selection})
-    if selection ~= nil then
+
+    -- FR : Comme avant : seulement si l'élément est encore dans la liste (un objet retiré ne revient pas)
+    -- EN : As before: only if the element is still in the list (a removed object doesn't come back)
+    if selection ~= nil and self:getItemButton(selection) ~= nil then
         self:draw(selection)
         GvvGuiSearch(self.event):refresh(self.config.search)
     end
@@ -688,6 +981,44 @@ function GvvGuiTree:collectOpened(folder, opened_tree)
         if check.tryGet(row.tags, "folder") and content ~= nil and content.visible then
             opened_tree[row.tags.key] = {}
             self:collectOpened(self:child(content, "flow-folder"), opened_tree[row.tags.key])
+        end
+    end
+end
+
+
+---FR : Affiche ou cache les lignes d'une sorte (« na », « nil » ou « func ») dans tout l'arbre,
+---     puis ajuste les traits. Repris de l'ancien Tree.set_visible_item.
+---EN : Shows or hides the rows of a kind ("na", "nil" or "func") in the whole tree,
+---     then adjusts the lines. Taken from the old Tree.set_visible_item.
+---@param kind string
+---@param state boolean
+---@return GvvGuiTree
+function GvvGuiTree:setVisible(kind, state)
+    local pane = self:getPane()
+    if pane == nil then
+        return self
+    end
+    self:setRowsVisible(pane, kind, state)
+    self:reviseLines(pane)
+    return self
+end
+
+
+-- FR : Affiche ou cache les lignes d'une sorte dans un dossier, récursivement
+-- EN : Shows or hides the rows of a kind inside a folder, recursively
+function GvvGuiTree:setRowsVisible(folder, kind, state)
+    for _, row in ipairs(folder.children) do
+        -- FR : Ligne de cette sorte : affichée ou cachée
+        -- EN : Row of this kind: shown or hidden
+        if check.tryGet(row.tags, "kind") == kind then
+            row.visible = state
+        end
+
+        -- FR : Dossier : ses lignes aussi
+        -- EN : Folder: its rows too
+        local content = self:child(row, "flow-content")
+        if content ~= nil then
+            self:setRowsVisible(self:child(content, "flow-folder"), kind, state)
         end
     end
 end
@@ -808,19 +1139,65 @@ end
 -- EN : EVENTS
 ---------------------------------------------------------------------------------------------
 
----FR : Clic : boutons de la liste de gauche (item_<n>), puis les actions des lignes.
----EN : Click: left list buttons (item_<n>), then the rows actions.
+---FR : Clic : bouton de rafraîchissement des outils, boutons de la liste de gauche (item_<n>),
+---     puis les actions des lignes.
+---EN : Click: tools refresh button, left list buttons (item_<n>), then the rows actions.
 ---@return boolean
 function GvvGuiTree:on_gui_click(...)
     if not self.isPresent or not check.isValidLuaObject(self.element) then
         return false
     end
     local gui_name, short_type, element_name = GvvGui.splitName(self.element.name)
+
+    -- FR : Outils : rafraîchir l'arbre de l'onglet affiché
+    -- EN : Tools: refresh the tree of the displayed tab
+    if gui_name == TOOLS_NAME and short_type == "button" and element_name == "refresh" then
+        GvvGuiTree.refreshTab(self.event)
+        return true
+    end
+
+    -- FR : Liste : clic gauche choisit, clic droit retire (si la configuration le permet)
+    -- EN : List: left click chooses, right click removes (if the configuration allows it)
     if gui_name == self.gui_name and short_type == "button" and element_name:match("^item_%d+$") then
-        self:action_select()
+        if self.event.button == defines.mouse_button_type.right then
+            self:action_remove()
+        else
+            self:action_select()
+        end
         return true
     end
     return self:dispatch(nil, ...)
+end
+
+
+---FR : Case des outils cochée / décochée (n/a, nil, méthodes) : réglage gardé, lignes affichées ou cachées
+---     dans les arbres d'objets, puis recherche relancée. Repris de l'ancien code (chk_show_*).
+---EN : Tools box checked / unchecked (n/a, nil, methods): setting kept, rows shown or hidden
+---     in the objects trees, then search run again. Taken from the old code (chk_show_*).
+---@return boolean
+function GvvGuiTree:on_gui_checked_state_changed(...)
+    if not self.isPresent or not check.isValidLuaObject(self.element) then
+        return false
+    end
+    local gui_name, short_type, element_name = GvvGui.splitName(self.element.name)
+    if gui_name ~= TOOLS_NAME or short_type ~= "checkbox" or SHOW_SETTINGS[element_name] == nil then
+        return self:dispatch("checked_state_changed", ...)
+    end
+
+    -- FR : Réglage du joueur
+    -- EN : Player setting
+    local state = self.element.state
+    self:getData()[SHOW_SETTINGS[element_name]] = state
+
+    -- FR : Arbres d'objets : lignes de cette sorte affichées ou cachées, puis recherche relancée
+    -- EN : Objects trees: rows of this kind shown or hidden, then search run again
+    for _, tree in ipairs(GvvGuiTree.all(self.event)) do
+        if tree.config.prop_allowed then
+            tree:setVisible(element_name, state)
+            GvvGuiSearch(self.event):refresh(tree.config.search)
+        end
+    end
+    return true
 end
 
 
@@ -831,6 +1208,27 @@ function GvvGuiTree:action_select()
     self:draw(item)
     GvvGuiSearch(self.event):refresh(self.config.search)
     self:getData().tabs[self.config.last_selection] = item
+end
+
+
+---FR : Clic droit sur un élément de la liste : retiré (ex. objet ajouté), puis la recherche relancée.
+---EN : Right click on a list element: removed (e.g. added object), then the search run again.
+function GvvGuiTree:action_remove()
+    -- FR : Configuration qui ne permet pas de retirer : rien à faire
+    -- EN : Configuration that doesn't allow removing: nothing to do
+    if not self.config.forget then
+        return
+    end
+    local item = self.element.tags.item
+    self:removeItem(item)
+    GvvGuiSearch(self.event):refresh(self.config.search)
+
+    -- FR : Élément choisi en dernier retiré : plus rien à rafraîchir
+    -- EN : Last chosen element removed: nothing left to refresh
+    local tabs = self:getData().tabs
+    if tabs[self.config.last_selection] == item then
+        tabs[self.config.last_selection] = nil
+    end
 end
 
 
@@ -868,7 +1266,7 @@ end
 ---@param row LuaGuiElement
 function GvvGuiTree:toggleFolder(row)
     local path = self:pathOf(row)
-    if self.config.isBlocked(path) then
+    if self.config.isBlocked(self, path) then
         return
     end
 
@@ -879,10 +1277,7 @@ function GvvGuiTree:toggleFolder(row)
     -- FR : Dossier jamais chargé : lecture des données au bout du chemin
     -- EN : Folder never loaded: reading the data at the end of the path
     if #folder.children == 0 then
-        local value = self:readPath(path)
-        if self.config.prop_allowed and check.isLuaObject(value) then
-            value = Util.get_property_list(value, true)
-        end
+        local value = self:expand(self:readPath(path), #path == 1)
         if type(value) ~= 'table' then
             return self:onDataGone()
         end
@@ -910,10 +1305,8 @@ function GvvGuiTree:continueLoading(row)
     local cont_from = row.tags.cont_from
     row.destroy()
 
-    local value = self:readPath(self:pathOf(parent))
-    if self.config.prop_allowed and check.isLuaObject(value) then
-        value = Util.get_property_list(value, true)
-    end
+    local path = self:pathOf(parent)
+    local value = self:expand(self:readPath(path), #path == 1)
     if type(value) ~= 'table' then
         return self:onDataGone()
     end
@@ -930,7 +1323,7 @@ function GvvGuiTree:toggleTracked(row)
     local tracked = TRACKED_STYLE[key_button.style.name]
     if tracked ~= nil then
         key_button.style = tracked
-        GvvGuiTracking(self.event):add(self.config.fullPath(self:pathOf(row)))
+        GvvGuiTracking(self.event):add(self.config.fullPath(self, self:pathOf(row)))
         return
     end
     local untracked = UNTRACKED_STYLE[key_button.style.name]
@@ -951,10 +1344,13 @@ function GvvGuiTree:action_value()
     if self.element.style.name == 'tree-item-luaobj_gvv-mod' then
         self.element.style = 'tracked-tree-item-luaobj_gvv-mod'
         local row = self:rowOf(self.element)
-        local data = self:getData()
-        local button = Legacy_Tree.register_object_at(data, row.tags.key, self:pathOf(row), self.element.caption)
-        GvvGuiSearch(self.event):refresh('prop')
-        data.tabs.last_sub_obj = button.caption
+
+        -- FR : Ajout à l'onglet property (sa configuration), qui s'affiche avec l'arbre de l'objet
+        -- EN : Added to the property tab (its configuration), which is shown with the object tree
+        local property = GvvGuiTree(self.event, "property")
+        local index = property.config.addObject(property, row.tags.key, self.config.fullPath(self, self:pathOf(row)), self.element.caption)
+        GvvGuiSearch(self.event):refresh(property.config.search)
+        self:getData().tabs[property.config.last_selection] = index
     elseif self.element.style.name == 'tracked-tree-item-luaobj_gvv-mod' then
         self.element.style = 'tree-item-luaobj_gvv-mod'
     end

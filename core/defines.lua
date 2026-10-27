@@ -56,6 +56,8 @@ local defines = {
         -- EN : Configuration of each tree, by name (GvvGuiTree(event, name))
         trees = {
             storage = directory .. ".gui.tree.storage",
+            property = directory .. ".gui.tree.property",
+            luaobject = directory .. ".gui.tree.luaobject",
         },
     },
 
@@ -76,7 +78,6 @@ local defines = {
     --      then removed. The legacy/ folder disappears at the end of the restructuring.
     legacy = {
         gui = directory .. ".legacy.gui",
-        gui_event = directory .. ".legacy.gui_event",
         tree = directory .. ".legacy.tree",
     },
 

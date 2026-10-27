@@ -23,10 +23,6 @@ local Util = require(gvv.defines.lualib.common.util)
 local Table_to_str = require(gvv.defines.lualib.common.table_to_str)
 local fGui = require(gvv.defines.gui.tracking)
 ---------------------------------------------------------------------------------------------
--- FR : Ancien code de l'arbre : lecture d'une valeur par son chemin (migré en 3.6)
--- EN : Old tree code: reading a value through its path (migrated in 3.6)
-local Legacy_Tree = require(gvv.defines.legacy.tree)
----------------------------------------------------------------------------------------------
 
 -- FR : Codes d'exemple ajoutés à la première ouverture de gvv (sans liste par défaut dans les paramètres)
 -- EN : Example codes added the first time gvv is opened (without default list in the settings)
@@ -586,7 +582,7 @@ function GvvGuiTracking:refreshValues()
         -- EN : Value: through its path in the tree (table) or by running the code (text)
         local computed, value = pcall(function()
             if type(full_path) == 'table' then
-                return Legacy_Tree.get_tree_value(full_path)
+                return GvvGuiTree.readFullPath(full_path)
             elseif type(full_path) == 'string' then
                 return assert(loadstring('return ' .. full_path))()
             end

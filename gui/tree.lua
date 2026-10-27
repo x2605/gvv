@@ -87,9 +87,39 @@ local function getElement(gui_name)
 end
 
 
+---FR : Description des outils des arbres, dans la barre d'outils de la fenêtre principale :
+---     bouton de rafraîchissement (onglets 2 à 4), cases n/a, nil et méthodes (onglets property et LuaObject).
+---     Cachés au départ : GvvGuiTree.changeTab les affiche selon l'onglet.
+---EN : Description of the trees tools, inside the main window toolbar:
+---     refresh button (tabs 2 to 4), n/a, nil and methods boxes (property and LuaObject tabs).
+---     Hidden at first: GvvGuiTree.changeTab shows them according to the tab.
+---@param tools_name string  Préfixe des noms des outils (« gvv_trees ») / Tools names prefix ("gvv_trees")
+---@return table
+local function getTools(tools_name)
+    local element = {
+        button = {
+            -- FR : Rafraîchir l'arbre de l'onglet affiché
+            -- EN : Refresh the tree of the displayed tab
+            refresh = GvvGuiElement(tools_name, "sprite-button", "refresh"):spritePath("utility/reset_white")
+                :style("frame_action_button"):mouseButtonFilter({"left"})
+                :tooltip({"gvv-mod.tree-refresh"}):visible(false):get(),
+        },
+        -- FR : Lignes à afficher : n/a, nil, méthodes (l'état de départ est donné à la construction)
+        -- EN : Rows to show: n/a, nil, methods (the starting state is given on building)
+        checkbox = {
+            na = GvvGuiElement(tools_name, "checkbox", "na"):caption("n/a"):tooltip({"gvv-mod.show_na"}):visible(false):get(),
+            ["nil"] = GvvGuiElement(tools_name, "checkbox", "nil"):caption("nil"):tooltip({"gvv-mod.show_nil"}):visible(false):get(),
+            func = GvvGuiElement(tools_name, "checkbox", "func"):caption("method"):tooltip({"gvv-mod.show_func"}):visible(false):get(),
+        },
+    }
+    return element
+end
+
+
 ---------------------------------------------------------------------------------------------
 -- FR : Fonctions exportées
 -- EN : Exported functions
 return {
     getElement = getElement,
+    getTools = getTools,
 }

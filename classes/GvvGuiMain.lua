@@ -4,23 +4,18 @@
 -- FR : Fenêtre principale de gvv (étape 3.1 de la restructuration 0.6).
 --      Gère : l'ouverture, la fermeture et la bascule (Ctrl+Shift+V, /gvv), le bouton fermer,
 --      le redimensionnement, le changement d'onglet.
---      Le contenu de chaque onglet et les boutons propres à chaque onglet sont encore construits
---      par l'ancien code (legacy/gui.lua, fonctions build_*), dans les conteneurs créés ici.
+--      Le contenu de chaque onglet et les boutons propres à chaque onglet sont construits par la
+--      classe de l'onglet (GvvGuiTracking, GvvGuiTree, GvvGuiHelp), dans les conteneurs créés ici.
 --      Description des éléments : gui/main.lua.
 -- EN : gvv main window (step 3.1 of the 0.6 restructuring).
 --      Handles: opening, closing and toggling (Ctrl+Shift+V, /gvv), the close button,
 --      resizing, tab change.
---      The content of each tab and the buttons specific to each tab are still built
---      by the old code (legacy/gui.lua, build_* functions), inside the containers created here.
+--      The content of each tab and the buttons specific to each tab are built by the
+--      tab class (GvvGuiTracking, GvvGuiTree, GvvGuiHelp), inside the containers created here.
 --      Elements description: gui/main.lua.
 ---------------------------------------------------------------------------------------------
 local check = require(gvv.defines.lualib.common.check)
 local fGui = require(gvv.defines.gui.main)
----------------------------------------------------------------------------------------------
--- FR : Ancien code, appelé le temps de la migration des onglets
--- EN : Old code, called while the tabs are being migrated
-local Legacy_Gui = require(gvv.defines.legacy.gui)
-local Legacy_Tree = require(gvv.defines.legacy.tree)
 ---------------------------------------------------------------------------------------------
 
 -- FR : Nom de l'ancienne fenêtre principale (avant 0.6), détruite si elle traîne encore
@@ -240,23 +235,22 @@ function GvvGuiMain:open()
     -- EN : Tracking tab and its tools (first in the toolbar): built by its own class (3.4)
     GvvGuiTracking(self.event):build(first_time)
 
-    -- FR : Contenu construit par l'ancien code : outils des arbres, puis contenu des onglets des arbres
-    -- EN : Content built by the old code: trees tools, then trees tabs content
-    Legacy_Gui.build_tools(data, tools)
+    -- FR : Outils des arbres (rafraîchir, cases n/a, nil, méthodes) : construits par GvvGuiTree (3.6b)
+    -- EN : Trees tools (refresh, n/a, nil, methods boxes): built by GvvGuiTree (3.6b)
+    GvvGuiTree.buildTools(self.event)
     -- FR : Bouton loupe (après le rafraîchissement des arbres) : construit par GvvGuiSearch (3.5)
     -- EN : Magnifier button (after the trees refresh): built by GvvGuiSearch (3.5)
     GvvGuiSearch(self.event):buildButton()
-    -- FR : Onglet storage : construit par le moteur des arbres (3.6a) / EN : storage tab: built by the trees engine (3.6a)
-    GvvGuiTree(self.event, "storage"):build()
-    Legacy_Gui.build_property(data, contents.property)
-    Legacy_Gui.build_luaobject(data, contents.luaobject)
+
+    -- FR : Onglets des arbres (storage, property, LuaObject) : construits par le moteur des arbres (3.6)
+    -- EN : Trees tabs (storage, property, LuaObject): built by the trees engine (3.6)
+    for _, tree in ipairs(GvvGuiTree.all(self.event)) do
+        tree:build()
+    end
+
     -- FR : Onglet aide : construit par sa propre classe (3.3)
     -- EN : Help tab: built by its own class (3.3)
     GvvGuiHelp(self.event):build()
-
-    -- FR : Listes (mods, objets ajoutés, objets globaux)
-    -- EN : Lists (mods, added objects, global objects)
-    Legacy_Gui.fill_lists(data)
 
     return self
 end
@@ -283,8 +277,11 @@ function GvvGuiMain:close(ignore_save)
     local saved, message = true, nil
     if not ignore_save and data ~= nil then
         saved, message = pcall(function()
-            GvvGuiTree(self.event, "storage"):saveOpened()
-            Legacy_Tree.save_on_quit(data)
+            -- FR : Chaque arbre garde ses dossiers ouverts
+            -- EN : Each tree keeps its opened folders
+            for _, tree in ipairs(GvvGuiTree.all(self.event)) do
+                tree:saveOpened()
+            end
         end)
     end
 
@@ -377,16 +374,10 @@ function GvvGuiMain:changeTab(tab_index)
         tabbed.selected_tab_index = tab_index
     end
 
-    -- FR : Outils du suivi (GvvGuiTracking), loupe (GvvGuiSearch), liste des mods à jour (GvvGuiTree),
-    --      puis outils des arbres (ancien code, migré en 3.6b)
-    -- EN : Tracking tools (GvvGuiTracking), magnifier (GvvGuiSearch), mods list up to date (GvvGuiTree),
-    --      then trees tools (old code, migrated in 3.6b)
+    -- FR : Outils du suivi (GvvGuiTracking), loupe (GvvGuiSearch), outils des arbres et liste des mods à jour (GvvGuiTree)
+    -- EN : Tracking tools (GvvGuiTracking), magnifier (GvvGuiSearch), trees tools and mods list up to date (GvvGuiTree)
     GvvGuiTracking(self.event):updateTools(tab_index)
     GvvGuiSearch(self.event):updateTools(tab_index)
-    local storage_tree = GvvGuiTree(self.event, "storage")
-    if tab_index == storage_tree.config.tab_index then
-        storage_tree:fillList()
-    end
-    Legacy_Gui.change_tab(data, tab_index)
+    GvvGuiTree.changeTab(self.event, tab_index)
     return self
 end
