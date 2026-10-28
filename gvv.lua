@@ -15,7 +15,9 @@
   Original author: x2605, maintained by Ritn
 ]]
 
-local wrap_object -- forward declaration
+-- FR : déclaration anticipée (la fonction est définie plus bas)
+-- EN : forward declaration (the function is defined below)
+local wrap_object
 
 
 -- Classes à exclure du wrapping complet

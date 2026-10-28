@@ -18,11 +18,25 @@ local gui_classes = {
     --      et cache la confirmation de suppression (comme l'ancien code), puis laisse la main
     -- EN : Tracking comes first: on each click, it confirms the interval being typed
     --      and hides the removal confirmation (as the old code did), then passes on
-    GvvGuiTracking, -- FR : onglet suivi (3.4) / EN : tracking tab (3.4)
-    GvvGuiMain,     -- FR : fenêtre principale (3.1) / EN : main window (3.1)
-    GvvGuiDialog,   -- FR : petites fenêtres (3.2) / EN : small windows (3.2)
-    GvvGuiHelp,     -- FR : onglet aide (3.3) / EN : help tab (3.3)
-    GvvGuiSearch,   -- FR : recherche dans les arbres (3.5) / EN : search in the trees (3.5)
+    -- FR : onglet suivi (3.4)
+    -- EN : tracking tab (3.4)
+    GvvGuiTracking,
+
+    -- FR : fenêtre principale (3.1)
+    -- EN : main window (3.1)
+    GvvGuiMain,
+
+    -- FR : petites fenêtres (3.2)
+    -- EN : small windows (3.2)
+    GvvGuiDialog,
+
+    -- FR : onglet aide (3.3)
+    -- EN : help tab (3.3)
+    GvvGuiHelp,
+
+    -- FR : recherche dans les arbres (3.5)
+    -- EN : search in the trees (3.5)
+    GvvGuiSearch,
     -- FR : Arbres (3.6) et leurs outils : l'arbre est choisi par le préfixe de l'élément
     -- EN : Trees (3.6) and their tools: the tree is chosen by the element prefix
     GvvGuiTree.fromEvent,

@@ -25,10 +25,21 @@ local GUI_NAME = "gvv_search"
 -- FR : Filtres de la recherche : nom de l'élément, réglage dans data.search_settings[arbre], infobulle
 -- EN : Search filters: element name, setting in data.search_settings[tree], tooltip
 local FILTERS = {
-    { name = "key", setting = "key", tooltip = {"gvv-mod.search-key"} },            -- FR : chercher dans les clés / EN : search in keys
-    { name = "value", setting = "value", tooltip = {"gvv-mod.search-value"} },      -- FR : chercher dans les valeurs / EN : search in values
-    { name = "regexp", setting = "regexp", tooltip = {"gvv-mod.search-regexp"} },   -- FR : motif Lua / EN : Lua pattern
-    { name = "case", setting = "case", tooltip = {"gvv-mod.search-case"} },         -- FR : respecter la casse / EN : case sensitive
+    -- FR : chercher dans les clés
+    -- EN : search in keys
+    { name = "key", setting = "key", tooltip = {"gvv-mod.search-key"} },
+
+    -- FR : chercher dans les valeurs
+    -- EN : search in values
+    { name = "value", setting = "value", tooltip = {"gvv-mod.search-value"} },
+
+    -- FR : motif Lua
+    -- EN : Lua pattern
+    { name = "regexp", setting = "regexp", tooltip = {"gvv-mod.search-regexp"} },
+
+    -- FR : respecter la casse
+    -- EN : case sensitive
+    { name = "case", setting = "case", tooltip = {"gvv-mod.search-case"} },
 }
 
 

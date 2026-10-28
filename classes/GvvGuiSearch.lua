@@ -72,9 +72,17 @@ GvvGuiSearch = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Actions de la recherche
     -- EN : Search actions
     self.gui_action = {
-        ["button-toggle"] = "action_toggle",                                -- FR : loupe / EN : magnifier
-        ["textfield-text-text_changed"] = "action_text",                    -- FR : texte cherché / EN : searched text
-        ["listbox-result-selection_state_changed"] = "action_result",       -- FR : résultat choisi / EN : chosen result
+        -- FR : loupe
+        -- EN : magnifier
+        ["button-toggle"] = "action_toggle",
+
+        -- FR : texte cherché
+        -- EN : searched text
+        ["textfield-text-text_changed"] = "action_text",
+
+        -- FR : résultat choisi
+        -- EN : chosen result
+        ["listbox-result-selection_state_changed"] = "action_result",
     }
     -- FR : Une case par filtre : « checkbox-<filtre>-checked_state_changed »
     -- EN : One box per filter: "checkbox-<filter>-checked_state_changed"

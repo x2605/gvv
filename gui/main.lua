@@ -28,11 +28,25 @@
 -- EN : Tabs, in display order. name: "name" part of the tab-<name> and flow-<name> elements.
 --      Order matters: the old code still finds tabs by their number (1 = tracking... 5 = help).
 local TABS = {
-    { name = "tracking", caption = {"gvv-mod.tab-filtered-view"} },    -- 1 : suivi de variables / variable tracking
-    { name = "storage", caption = "storage" },                          -- 2 : storage et _G des mods / mods storage and _G
-    { name = "property", caption = "property" },                        -- 3 : objets Lua ajoutés / added Lua objects
-    { name = "luaobject", caption = "LuaObject" },                      -- 4 : objets globaux / global objects
-    { name = "help", caption = {"gvv-mod.help-tab"} },                  -- 5 : aide / help
+    -- FR : 1 : suivi de variables
+    -- EN : 1: variable tracking
+    { name = "tracking", caption = {"gvv-mod.tab-filtered-view"} },
+
+    -- FR : 2 : storage et _G des mods
+    -- EN : 2: mods storage and _G
+    { name = "storage", caption = "storage" },
+
+    -- FR : 3 : objets Lua ajoutés
+    -- EN : 3: added Lua objects
+    { name = "property", caption = "property" },
+
+    -- FR : 4 : objets globaux
+    -- EN : 4: global objects
+    { name = "luaobject", caption = "LuaObject" },
+
+    -- FR : 5 : aide
+    -- EN : 5: help
+    { name = "help", caption = {"gvv-mod.help-tab"} },
 }
 
 

@@ -28,9 +28,20 @@
 local modules = {}
 log('modules gvv')
 ---------------------------------------------------------------------------------------------
-modules.events =    require(gvv.defines.modules.events)     -- FR : cycle de vie du mod / EN : mod life cycle
-modules.player =    require(gvv.defines.modules.player)     -- FR : évènements joueurs / EN : player events
-modules.gui =       require(gvv.defines.modules.gui)        -- FR : évènements GUI et raccourcis / EN : GUI events and shortcuts
-modules.commands =  require(gvv.defines.modules.commands)   -- FR : commandes, paramètres du mod / EN : commands, mod settings
+-- FR : cycle de vie du mod
+-- EN : mod life cycle
+modules.events =    require(gvv.defines.modules.events)
+
+-- FR : évènements joueurs
+-- EN : player events
+modules.player =    require(gvv.defines.modules.player)
+
+-- FR : évènements GUI et raccourcis
+-- EN : GUI events and shortcuts
+modules.gui =       require(gvv.defines.modules.gui)
+
+-- FR : commandes, paramètres du mod
+-- EN : commands, mod settings
+modules.commands =  require(gvv.defines.modules.commands)
 ---------------------------------------------------------------------------------------------
 return modules

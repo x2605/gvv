@@ -24,7 +24,7 @@
 ---local A = newclass(function(self, value) self.value = value end)
 ---local B = newclass(A, function(self, value) A.init(self, value); self.extra = 42 end)
 ---local instance = B(10)
----instance:is_a(A) -- true
+---assert(instance:is_a(A))
 ---```
 ---
 ---──────────────────────────────

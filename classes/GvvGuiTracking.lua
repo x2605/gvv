@@ -88,19 +88,57 @@ GvvGuiTracking = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Actions de l'onglet et de ses outils
     -- EN : Tab and tools actions
     self.gui_action = {
-        ["button-refresh"] = "action_refresh",                          -- FR : rafraîchir / EN : refresh
-        ["slider-interval-value_changed"] = "action_interval_slider",   -- FR : curseur de l'intervalle / EN : interval slider
-        ["label-interval"] = "action_interval_edit",                    -- FR : clic sur l'intervalle / EN : click on the interval
-        ["textfield-interval-confirmed"] = "action_interval_confirm",   -- FR : intervalle saisi / EN : interval typed
-        ["button-remove"] = "action_remove",                            -- FR : supprimer (demande confirmation) / EN : remove (asks confirmation)
-        ["button-confirm_remove"] = "action_confirm_remove",            -- FR : confirmer la suppression / EN : confirm removal
-        ["button-cancel_remove"] = "action_cancel_remove",              -- FR : annuler la suppression / EN : cancel removal
-        ["button-up"] = "action_move",                                  -- FR : monter / EN : move up
-        ["button-down"] = "action_move",                                -- FR : descendre / EN : move down
-        ["button-check"] = "action_check",                              -- FR : cases à cocher / EN : checkboxes
-        ["button-export_import"] = "action_export_import",              -- FR : exporter / importer / EN : export / import
-        ["label-path"] = "action_copy_path",                            -- FR : code d'une entrée / EN : entry code
-        ["label-output"] = "action_copy_output",                        -- FR : valeur d'une entrée / EN : entry value
+        -- FR : rafraîchir
+        -- EN : refresh
+        ["button-refresh"] = "action_refresh",
+
+        -- FR : curseur de l'intervalle
+        -- EN : interval slider
+        ["slider-interval-value_changed"] = "action_interval_slider",
+
+        -- FR : clic sur l'intervalle
+        -- EN : click on the interval
+        ["label-interval"] = "action_interval_edit",
+
+        -- FR : intervalle saisi
+        -- EN : interval typed
+        ["textfield-interval-confirmed"] = "action_interval_confirm",
+
+        -- FR : supprimer (demande confirmation)
+        -- EN : remove (asks confirmation)
+        ["button-remove"] = "action_remove",
+
+        -- FR : confirmer la suppression
+        -- EN : confirm removal
+        ["button-confirm_remove"] = "action_confirm_remove",
+
+        -- FR : annuler la suppression
+        -- EN : cancel removal
+        ["button-cancel_remove"] = "action_cancel_remove",
+
+        -- FR : monter
+        -- EN : move up
+        ["button-up"] = "action_move",
+
+        -- FR : descendre
+        -- EN : move down
+        ["button-down"] = "action_move",
+
+        -- FR : cases à cocher
+        -- EN : checkboxes
+        ["button-check"] = "action_check",
+
+        -- FR : exporter / importer
+        -- EN : export / import
+        ["button-export_import"] = "action_export_import",
+
+        -- FR : code d'une entrée
+        -- EN : entry code
+        ["label-path"] = "action_copy_path",
+
+        -- FR : valeur d'une entrée
+        -- EN : entry value
+        ["label-output"] = "action_copy_output",
     }
     --------------------------------------------------
 end) --[[@as GvvGuiTracking]]

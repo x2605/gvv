@@ -75,12 +75,26 @@ GvvGuiDialog = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Actions communes à toutes les petites fenêtres
     -- EN : Actions shared by all the small windows
     self.gui_action = {
-        ["button-close"] = "action_close",                          -- FR : bouton fermer / EN : close button
-        ["button-confirm"] = "action_confirm",                      -- FR : valider (anycode, edit, import) / EN : confirm (anycode, edit, import)
-        ["button-edit"] = "action_edit",                            -- FR : modifier (copy) / EN : edit (copy)
-        ["textfield-text-text_changed"] = "action_restore_text",    -- FR : texte en lecture seule modifié / EN : read-only text modified
+        -- FR : bouton fermer
+        -- EN : close button
+        ["button-close"] = "action_close",
+
+        -- FR : valider (anycode, edit, import)
+        -- EN : confirm (anycode, edit, import)
+        ["button-confirm"] = "action_confirm",
+
+        -- FR : modifier (copy)
+        -- EN : edit (copy)
+        ["button-edit"] = "action_edit",
+
+        -- FR : texte en lecture seule modifié
+        -- EN : read-only text modified
+        ["textfield-text-text_changed"] = "action_restore_text",
         ["textbox-text-text_changed"] = "action_restore_text",
-        ["textbox-code-text_changed"] = "action_code_changed",      -- FR : code saisi modifié / EN : typed code modified
+
+        -- FR : code saisi modifié
+        -- EN : typed code modified
+        ["textbox-code-text_changed"] = "action_code_changed",
     }
     -- FR : Fermeture (Échap, ou autre fenêtre ouverte) : une action par type, ex. « frame-anycode-closed »
     -- EN : Closing (Escape, or another window opened): one action per kind, e.g. "frame-anycode-closed"

@@ -18,12 +18,38 @@ log('> imported : ' .. gvv.defines.class.core)
 -- EN : gvv classes (added along the 0.6 restructuring).
 --      Order matters: a child class is loaded after its parent class.
 ---------------------------------------------------------------------------------------------
-require(gvv.defines.class.player)        -- GvvPlayer : joueur / player
-require(gvv.defines.class.gui)           -- GvvGui : base des fenêtres (hérite de GvvPlayer) / windows base (inherits GvvPlayer)
-require(gvv.defines.class.gui_element)   -- GvvGuiElement : description d'un élément GUI / GUI element description
-require(gvv.defines.class.gui_main)      -- GvvGuiMain : fenêtre principale (hérite de GvvGui) / main window (inherits GvvGui)
-require(gvv.defines.class.gui_dialog)    -- GvvGuiDialog : petites fenêtres (hérite de GvvGui) / small windows (inherits GvvGui)
-require(gvv.defines.class.gui_help)      -- GvvGuiHelp : onglet aide (hérite de GvvGui) / help tab (inherits GvvGui)
-require(gvv.defines.class.gui_tracking)  -- GvvGuiTracking : onglet suivi (hérite de GvvGui) / tracking tab (inherits GvvGui)
-require(gvv.defines.class.gui_search)    -- GvvGuiSearch : recherche dans les arbres (hérite de GvvGui) / search in the trees (inherits GvvGui)
-require(gvv.defines.class.gui_tree)      -- GvvGuiTree : moteur des arbres (hérite de GvvGui) / trees engine (inherits GvvGui)
+-- FR : GvvPlayer : joueur
+-- EN : GvvPlayer: player
+require(gvv.defines.class.player)
+
+-- FR : GvvGui : base des fenêtres (hérite de GvvPlayer)
+-- EN : GvvGui: windows base (inherits GvvPlayer)
+require(gvv.defines.class.gui)
+
+-- FR : GvvGuiElement : description d'un élément GUI
+-- EN : GvvGuiElement: GUI element description
+require(gvv.defines.class.gui_element)
+
+-- FR : GvvGuiMain : fenêtre principale (hérite de GvvGui)
+-- EN : GvvGuiMain: main window (inherits GvvGui)
+require(gvv.defines.class.gui_main)
+
+-- FR : GvvGuiDialog : petites fenêtres (hérite de GvvGui)
+-- EN : GvvGuiDialog: small windows (inherits GvvGui)
+require(gvv.defines.class.gui_dialog)
+
+-- FR : GvvGuiHelp : onglet aide (hérite de GvvGui)
+-- EN : GvvGuiHelp: help tab (inherits GvvGui)
+require(gvv.defines.class.gui_help)
+
+-- FR : GvvGuiTracking : onglet suivi (hérite de GvvGui)
+-- EN : GvvGuiTracking: tracking tab (inherits GvvGui)
+require(gvv.defines.class.gui_tracking)
+
+-- FR : GvvGuiSearch : recherche dans les arbres (hérite de GvvGui)
+-- EN : GvvGuiSearch: search in the trees (inherits GvvGui)
+require(gvv.defines.class.gui_search)
+
+-- FR : GvvGuiTree : moteur des arbres (hérite de GvvGui)
+-- EN : GvvGuiTree: trees engine (inherits GvvGui)
+require(gvv.defines.class.gui_tree)

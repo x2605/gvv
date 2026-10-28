@@ -65,11 +65,25 @@ GvvPlayer = gvv.classFactory.newclass(function(self, LuaPlayer)
     --------------------------------------------------
     -- FR : Copie des informations du joueur utiles à gvv
     -- EN : Copy of the player information useful to gvv
-    self.player = LuaPlayer                 -- FR : le LuaPlayer lui-même / EN : the LuaPlayer itself
-    self.index = LuaPlayer.index            -- FR : index, clé de storage.players / EN : index, key of storage.players
-    self.name = LuaPlayer.name              -- FR : nom affiché / EN : displayed name
-    self.admin = LuaPlayer.admin            -- FR : admin ? (droit d'utiliser gvv en multijoueur) / EN : admin? (right to use gvv in multiplayer)
-    self.connected = LuaPlayer.connected    -- FR : connecté ? / EN : connected?
+    -- FR : le LuaPlayer lui-même
+    -- EN : the LuaPlayer itself
+    self.player = LuaPlayer
+
+    -- FR : index, clé de storage.players
+    -- EN : index, key of storage.players
+    self.index = LuaPlayer.index
+
+    -- FR : nom affiché
+    -- EN : displayed name
+    self.name = LuaPlayer.name
+
+    -- FR : admin ? (droit d'utiliser gvv en multijoueur)
+    -- EN : admin? (right to use gvv in multiplayer)
+    self.admin = LuaPlayer.admin
+
+    -- FR : connecté ?
+    -- EN : connected?
+    self.connected = LuaPlayer.connected
     --------------------------------------------------
 end) --[[@as GvvPlayer]]
 ----------------------------------------------------------------
@@ -203,22 +217,40 @@ function GvvPlayer:initData()
     -- FR : Réglages de la fenêtre et de l'affichage
     -- EN : Window and display settings
     if not data.track_interval_tick then
-        data.track_interval_tick = 60       -- FR : intervalle du suivi (ticks) / EN : tracking interval (ticks)
+
+        -- FR : intervalle du suivi (ticks)
+        -- EN : tracking interval (ticks)
+        data.track_interval_tick = 60
     end
     if not data.last_width then
-        data.last_width = 900               -- FR : largeur de la fenêtre / EN : window width
+
+        -- FR : largeur de la fenêtre
+        -- EN : window width
+        data.last_width = 900
     end
     if not data.last_height then
-        data.last_height = 600              -- FR : hauteur de la fenêtre / EN : window height
+
+        -- FR : hauteur de la fenêtre
+        -- EN : window height
+        data.last_height = 600
     end
     if data.show_na == nil then
-        data.show_na = true                 -- FR : afficher les n/a / EN : show n/a
+
+        -- FR : afficher les n/a
+        -- EN : show n/a
+        data.show_na = true
     end
     if data.show_nil == nil then
-        data.show_nil = true                -- FR : afficher les nil / EN : show nil
+
+        -- FR : afficher les nil
+        -- EN : show nil
+        data.show_nil = true
     end
     if data.show_func == nil then
-        data.show_func = false              -- FR : afficher les méthodes / EN : show methods
+
+        -- FR : afficher les méthodes
+        -- EN : show methods
+        data.show_func = false
     end
 
     --------------------------------------------------
@@ -234,23 +266,41 @@ function GvvPlayer:initData()
     end
     for _, settings in pairs(data.search_settings) do
         if not settings.text then
-            settings.text = ''              -- FR : texte cherché / EN : searched text
+
+            -- FR : texte cherché
+            -- EN : searched text
+            settings.text = ''
         end
         if settings.key == nil then
-            settings.key = true             -- FR : chercher dans les clés / EN : search in keys
+
+            -- FR : chercher dans les clés
+            -- EN : search in keys
+            settings.key = true
         end
         if settings.value == nil then
-            settings.value = false          -- FR : chercher dans les valeurs / EN : search in values
+
+            -- FR : chercher dans les valeurs
+            -- EN : search in values
+            settings.value = false
         end
         if settings.regexp == nil then
-            settings.regexp = false         -- FR : motif Lua / EN : Lua pattern
+
+            -- FR : motif Lua
+            -- EN : Lua pattern
+            settings.regexp = false
         end
         if settings.case == nil then
-            settings.case = false           -- FR : respecter la casse / EN : case sensitive
+
+            -- FR : respecter la casse
+            -- EN : case sensitive
+            settings.case = false
         end
     end
     if data.show_search == nil then
-        data.show_search = false            -- FR : panneau de recherche visible / EN : search panel visible
+
+        -- FR : panneau de recherche visible
+        -- EN : search panel visible
+        data.show_search = false
     end
 
     --------------------------------------------------

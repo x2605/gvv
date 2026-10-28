@@ -60,10 +60,21 @@ GvvGuiMain = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Actions de la fenêtre : élément (type-name[-évènement]) -> méthode
     -- EN : Window actions: element (type-name[-event]) -> method
     self.gui_action = {
-        ["button-close"] = "action_close",                                  -- FR : bouton fermer / EN : close button
-        ["slider-width-value_changed"] = "action_resize",                   -- FR : curseur largeur / EN : width slider
-        ["slider-height-value_changed"] = "action_resize",                  -- FR : curseur hauteur / EN : height slider
-        ["tabbed-tabs-selected_tab_changed"] = "action_change_tab",         -- FR : changement d'onglet / EN : tab change
+        -- FR : bouton fermer
+        -- EN : close button
+        ["button-close"] = "action_close",
+
+        -- FR : curseur largeur
+        -- EN : width slider
+        ["slider-width-value_changed"] = "action_resize",
+
+        -- FR : curseur hauteur
+        -- EN : height slider
+        ["slider-height-value_changed"] = "action_resize",
+
+        -- FR : changement d'onglet
+        -- EN : tab change
+        ["tabbed-tabs-selected_tab_changed"] = "action_change_tab",
     }
     --------------------------------------------------
 end) --[[@as GvvGuiMain]]
@@ -173,7 +184,10 @@ function GvvGuiMain:open()
     top.style.left_padding = 8
 
     local header = top.add(element.flow.header)
-    header.drag_target = frame                              -- FR : déplacer la fenêtre / EN : drag the window
+
+    -- FR : déplacer la fenêtre
+    -- EN : drag the window
+    header.drag_target = frame
     header.style.vertically_stretchable = false
 
     local title = header.add(element.label.title)

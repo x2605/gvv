@@ -90,16 +90,42 @@ GvvGuiHelp = gvv.classFactory.newclass(GvvGui, function(self, event)
     -- FR : Actions de l'onglet
     -- EN : Tab actions
     self.gui_action = {
-        ["textfield-text-text_changed"] = "action_restore_text",                -- FR : texte à copier modifié / EN : text to copy modified
+        -- FR : texte à copier modifié
+        -- EN : text to copy modified
+        ["textfield-text-text_changed"] = "action_restore_text",
         ["textbox-text-text_changed"] = "action_restore_text",
-        ["dropdown-enable-selection_state_changed"] = "action_enable_mod",      -- FR : mod du code d'activation / EN : enabling code mod
-        ["dropdown-disable-selection_state_changed"] = "action_disable_mod",    -- FR : mod du code de désactivation / EN : disabling code mod
-        ["listbox-option-selection_state_changed"] = "action_mod_string",       -- FR : forme du nom de mod / EN : mod name form
-        ["listbox-mod-selection_state_changed"] = "action_mod_string",          -- FR : mod choisi / EN : chosen mod
-        ["button-diagnose"] = "action_diagnose",                                -- FR : diagnostic / EN : diagnosis
-        ["button-fix"] = "action_fix",                                          -- FR : nettoyage / EN : fixing
-        ["button-clear_report"] = "action_clear_report",                        -- FR : effacer storage.report / EN : clear storage.report
-        ["button-demo"] = "action_demo",                                        -- FR : démonstration / EN : demonstration
+
+        -- FR : mod du code d'activation
+        -- EN : enabling code mod
+        ["dropdown-enable-selection_state_changed"] = "action_enable_mod",
+
+        -- FR : mod du code de désactivation
+        -- EN : disabling code mod
+        ["dropdown-disable-selection_state_changed"] = "action_disable_mod",
+
+        -- FR : forme du nom de mod
+        -- EN : mod name form
+        ["listbox-option-selection_state_changed"] = "action_mod_string",
+
+        -- FR : mod choisi
+        -- EN : chosen mod
+        ["listbox-mod-selection_state_changed"] = "action_mod_string",
+
+        -- FR : diagnostic
+        -- EN : diagnosis
+        ["button-diagnose"] = "action_diagnose",
+
+        -- FR : nettoyage
+        -- EN : fixing
+        ["button-fix"] = "action_fix",
+
+        -- FR : effacer storage.report
+        -- EN : clear storage.report
+        ["button-clear_report"] = "action_clear_report",
+
+        -- FR : démonstration
+        -- EN : demonstration
+        ["button-demo"] = "action_demo",
     }
     -- FR : Un bouton par page dans la liste : « button-page_<nom> »
     -- EN : One button per page in the list: "button-page_<name>"

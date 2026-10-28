@@ -132,8 +132,13 @@ GvvGuiTree = gvv.classFactory.newclass(GvvGui, function(self, event, tree_name)
     -- FR : Actions des lignes de l'arbre (les boutons de la liste sont traités dans on_gui_click)
     -- EN : Tree rows actions (the list buttons are handled in on_gui_click)
     self.gui_action = {
-        ["button-key"] = "action_key",          -- FR : clé : dossier, « continuer à charger », suivi / EN : key: folder, "continue to load", tracking
-        ["button-value"] = "action_value",      -- FR : valeur objet Lua / EN : Lua object value
+        -- FR : clé : dossier, « continuer à charger », suivi
+        -- EN : key: folder, "continue to load", tracking
+        ["button-key"] = "action_key",
+
+        -- FR : valeur objet Lua
+        -- EN : Lua object value
+        ["button-value"] = "action_value",
     }
     --------------------------------------------------
 end) --[[@as GvvGuiTree]]

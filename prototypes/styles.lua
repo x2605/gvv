@@ -27,13 +27,33 @@ local default_gui = data.raw['gui-style'].default
 
 -- FR : Positions de couleurs unies dans la feuille d'images de l'interface
 -- EN : Plain colour positions inside the interface image sheet
-local TRANSPARENT = {25, 8}             -- FR : transparent / EN : transparent
-local DARK = {8, 8}                     -- FR : fond sombre / EN : dark background
-local LINE = {76, 8}                    -- FR : trait clair (arbres, séparateurs) / EN : light line (trees, dividers)
-local PRESSED = {8, 25}                 -- FR : bouton enfoncé / EN : pressed button
-local HIGHLIGHT = {287, 79}             -- FR : surlignage de la recherche / EN : search highlight
-local TRACKED = {337, 56}               -- FR : ligne suivie / EN : tracked row
-local TRACKED_OBJECT = {355, 161}       -- FR : objet Lua ajouté / EN : added Lua object
+-- FR : transparent
+-- EN : transparent
+local TRANSPARENT = {25, 8}
+
+-- FR : fond sombre
+-- EN : dark background
+local DARK = {8, 8}
+
+-- FR : trait clair (arbres, séparateurs)
+-- EN : light line (trees, dividers)
+local LINE = {76, 8}
+
+-- FR : bouton enfoncé
+-- EN : pressed button
+local PRESSED = {8, 25}
+
+-- FR : surlignage de la recherche
+-- EN : search highlight
+local HIGHLIGHT = {287, 79}
+
+-- FR : ligne suivie
+-- EN : tracked row
+local TRACKED = {337, 56}
+
+-- FR : objet Lua ajouté
+-- EN : added Lua object
+local TRACKED_OBJECT = {355, 161}
 
 
 -- FR : Fond d'une seule couleur (position dans la feuille d'images)
